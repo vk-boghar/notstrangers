@@ -1,0 +1,465 @@
+# Validation report
+
+Generated 2026-09-24 by `python -m pipeline.run`.
+
+**Status: PASSED** — 2458 rows · 2434 parsed from NCRB raw files · 0 errors · 1 warnings
+
+## Errors (build fails)
+
+- (none)
+
+## Warnings
+
+- 2024/court_state: blank/non-numeric value for Ladakh col 4 ('-')
+
+## Known source discrepancies (open questions — see spec §12)
+
+- RESOLVED — NCRB 2024 POCSO total: Table 4A.2(ii) col. 228 prints 69,191 cases (70,132 victims). Dataful's article cites 67,809; that figure does not appear in the NCRB table and is not used.
+- RESOLVED — Tamil Nadu POCSO 2023/2024: the Policy Note totals (4,581 / 6,969) match NCRB exactly. The smaller pair reported by DT Next (3,407 / 5,319) is the Section 4 & 6 subset (NCRB: 3,407 / 5,320).
+- FTSC pendency: spec lists ~2,02,175 pending as of 30 Apr 2026; the Rajya Sabha reply reported 2,45,579 pending at 31 Dec 2025. The Apr-2026 figure is held in data/raw/manual/_held.csv until confirmed.
+- NCRB's conviction rate is convicted ÷ cases in which trials were completed (convicted + discharged + acquitted), per the column formula printed in Tables 4A.5/4A.6 — not convicted ÷ (convicted + acquitted).
+
+## Held rows (data/raw/manual/_held.csv — not published)
+
+- ftsc_capacity IN 2026-04-30 pending = 202175 — HELD: spec lists ~2,02,175 pending as of 30 Apr 2026, but the same reply reports 2,45,579 pending at 31 Dec 2025. Confirm against the sansad.in answer PDF before moving this row into ftsc.csv.
+
+## Cross-check vs mirrors (NCRB wins)
+
+- (none)
+
+## Outstanding NCRB tables (status: todo in tables.yaml)
+
+- (none)
+
+## Merge log
+
+- superseded by parse: cac_total IN 2024 
+- superseded by parse: cac_rate IN 2024 
+- superseded by parse: pocso_total IN 2024 
+- superseded by parse: pocso_relationship IN 2024 total
+- superseded by parse: pocso_relationship IN 2024 known_total
+- superseded by parse: pocso_relationship IN 2024 friends_online_partners
+- superseded by parse: pocso_relationship IN 2024 family_friends_neighbours_known
+- superseded by parse: pocso_relationship IN 2024 family_members
+- superseded by parse: pocso_relationship IN 2024 unknown
+- superseded by parse: pocso_victims_age IN 2023 lt6
+- superseded by parse: pocso_victims_age IN 2023 6_12
+- superseded by parse: pocso_victims_age IN 2023 12_16
+- superseded by parse: pocso_victims_age IN 2023 16_18
+
+## Checks passed
+
+- All 2458 rows carry source_table, source_url, tier and as_of_date
+- anchor ✓ cac_total/cases IN 2024 = 187702
+- anchor ✓ cac_rate/rate_per_lakh_children IN 2024 = 42.3
+- anchor ✓ pocso_total/cases IN 2024 = 69191
+- anchor ✓ pocso_relationship/cases IN 2024 total = 44126
+- anchor ✓ pocso_relationship/cases IN 2024 known_total = 42634
+- anchor ✓ pocso_relationship/cases IN 2024 friends_online_partners = 22308
+- anchor ✓ pocso_relationship/cases IN 2024 family_friends_neighbours_known = 16668
+- anchor ✓ pocso_relationship/cases IN 2024 family_members = 3658
+- anchor ✓ pocso_relationship/cases IN 2024 unknown = 1492
+- anchor ✓ pocso_victims_age/victims IN 2023 lt6 = 762
+- anchor ✓ pocso_victims_age/victims IN 2023 6_12 = 3229
+- anchor ✓ pocso_victims_age/victims IN 2023 12_16 = 15444
+- anchor ✓ pocso_victims_age/victims IN 2023 16_18 = 21411
+- sum ✓ pocso_relationship AN 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (82)
+- sum ✓ pocso_relationship AN 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (76)
+- sum ✓ pocso_relationship AN 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (77)
+- sum ✓ pocso_relationship AP 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1002)
+- sum ✓ pocso_relationship AP 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (858)
+- sum ✓ pocso_relationship AP 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (943)
+- sum ✓ pocso_relationship AR 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (28)
+- sum ✓ pocso_relationship AR 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (43)
+- sum ✓ pocso_relationship AR 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (23)
+- sum ✓ pocso_relationship AS 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1257)
+- sum ✓ pocso_relationship AS 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1822)
+- sum ✓ pocso_relationship AS 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2197)
+- sum ✓ pocso_relationship BR 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (749)
+- sum ✓ pocso_relationship BR 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (925)
+- sum ✓ pocso_relationship BR 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1030)
+- sum ✓ pocso_relationship CH 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1)
+- sum ✓ pocso_relationship CH 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (0)
+- sum ✓ pocso_relationship CH 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2)
+- sum ✓ pocso_relationship CT 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1809)
+- sum ✓ pocso_relationship CT 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1503)
+- sum ✓ pocso_relationship CT 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1770)
+- sum ✓ pocso_relationship DH 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (43)
+- sum ✓ pocso_relationship DH 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (51)
+- sum ✓ pocso_relationship DH 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (23)
+- sum ✓ pocso_relationship DL 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (892)
+- sum ✓ pocso_relationship DL 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1055)
+- sum ✓ pocso_relationship DL 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1038)
+- sum ✓ pocso_relationship GA 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1)
+- sum ✓ pocso_relationship GA 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (0)
+- sum ✓ pocso_relationship GA 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (0)
+- sum ✓ pocso_relationship GJ 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2131)
+- sum ✓ pocso_relationship GJ 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2279)
+- sum ✓ pocso_relationship GJ 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2449)
+- sum ✓ pocso_relationship HP 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (0)
+- sum ✓ pocso_relationship HP 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1)
+- sum ✓ pocso_relationship HP 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (15)
+- sum ✓ pocso_relationship HR 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1331)
+- sum ✓ pocso_relationship HR 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1444)
+- sum ✓ pocso_relationship HR 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1557)
+- sum ✓ pocso_relationship IN 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (37907)
+- sum ✓ pocso_relationship IN 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (40434)
+- sum ✓ pocso_relationship IN 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (44126)
+- sum ✓ pocso_relationship IN-STATES 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (36584)
+- sum ✓ pocso_relationship IN-STATES 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (38976)
+- sum ✓ pocso_relationship IN-STATES 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (42671)
+- sum ✓ pocso_relationship IN-UTS 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1323)
+- sum ✓ pocso_relationship IN-UTS 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1458)
+- sum ✓ pocso_relationship IN-UTS 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1455)
+- sum ✓ pocso_relationship JH 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (570)
+- sum ✓ pocso_relationship JH 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (657)
+- sum ✓ pocso_relationship JH 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (562)
+- sum ✓ pocso_relationship JK 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (238)
+- sum ✓ pocso_relationship JK 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (214)
+- sum ✓ pocso_relationship JK 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (228)
+- sum ✓ pocso_relationship KA 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2299)
+- sum ✓ pocso_relationship KA 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3101)
+- sum ✓ pocso_relationship KA 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3278)
+- sum ✓ pocso_relationship KL 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1812)
+- sum ✓ pocso_relationship KL 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1799)
+- sum ✓ pocso_relationship KL 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2088)
+- sum ✓ pocso_relationship LA 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (0)
+- sum ✓ pocso_relationship LA 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3)
+- sum ✓ pocso_relationship LA 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (4)
+- sum ✓ pocso_relationship LD 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (5)
+- sum ✓ pocso_relationship LD 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2)
+- sum ✓ pocso_relationship LD 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1)
+- sum ✓ pocso_relationship MH 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (4182)
+- sum ✓ pocso_relationship MH 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (4600)
+- sum ✓ pocso_relationship MH 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (4829)
+- sum ✓ pocso_relationship ML 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (278)
+- sum ✓ pocso_relationship ML 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (328)
+- sum ✓ pocso_relationship ML 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (348)
+- sum ✓ pocso_relationship MN 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (45)
+- sum ✓ pocso_relationship MN 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (43)
+- sum ✓ pocso_relationship MN 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (50)
+- sum ✓ pocso_relationship MP 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3646)
+- sum ✓ pocso_relationship MP 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3866)
+- sum ✓ pocso_relationship MP 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3721)
+- sum ✓ pocso_relationship MZ 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (63)
+- sum ✓ pocso_relationship MZ 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (75)
+- sum ✓ pocso_relationship MZ 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (103)
+- sum ✓ pocso_relationship NL 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (21)
+- sum ✓ pocso_relationship NL 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (7)
+- sum ✓ pocso_relationship NL 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (12)
+- sum ✓ pocso_relationship OR 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1720)
+- sum ✓ pocso_relationship OR 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1631)
+- sum ✓ pocso_relationship OR 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1786)
+- sum ✓ pocso_relationship PB 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (630)
+- sum ✓ pocso_relationship PB 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (616)
+- sum ✓ pocso_relationship PB 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (558)
+- sum ✓ pocso_relationship PY 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (62)
+- sum ✓ pocso_relationship PY 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (57)
+- sum ✓ pocso_relationship PY 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (82)
+- sum ✓ pocso_relationship RJ 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1694)
+- sum ✓ pocso_relationship RJ 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1867)
+- sum ✓ pocso_relationship RJ 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1626)
+- sum ✓ pocso_relationship SK 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (73)
+- sum ✓ pocso_relationship SK 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (65)
+- sum ✓ pocso_relationship SK 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (54)
+- sum ✓ pocso_relationship TG 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1753)
+- sum ✓ pocso_relationship TG 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1760)
+- sum ✓ pocso_relationship TG 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (2078)
+- sum ✓ pocso_relationship TN 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3620)
+- sum ✓ pocso_relationship TN 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3407)
+- sum ✓ pocso_relationship TN 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (5320)
+- sum ✓ pocso_relationship TR 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (78)
+- sum ✓ pocso_relationship TR 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (83)
+- sum ✓ pocso_relationship TR 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (116)
+- sum ✓ pocso_relationship UP 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3448)
+- sum ✓ pocso_relationship UP 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3728)
+- sum ✓ pocso_relationship UP 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (3671)
+- sum ✓ pocso_relationship UT 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (646)
+- sum ✓ pocso_relationship UT 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (646)
+- sum ✓ pocso_relationship UT 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (631)
+- sum ✓ pocso_relationship WB 2022: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1698)
+- sum ✓ pocso_relationship WB 2023: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1822)
+- sum ✓ pocso_relationship WB 2024: friends_online_partners + family_friends_neighbours_known + family_members + unknown = total (1856)
+- sum ✓ pocso_relationship AN 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (79)
+- sum ✓ pocso_relationship AN 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (76)
+- sum ✓ pocso_relationship AN 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (77)
+- sum ✓ pocso_relationship AP 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (994)
+- sum ✓ pocso_relationship AP 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (853)
+- sum ✓ pocso_relationship AP 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (943)
+- sum ✓ pocso_relationship AR 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (28)
+- sum ✓ pocso_relationship AR 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (36)
+- sum ✓ pocso_relationship AR 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (23)
+- sum ✓ pocso_relationship AS 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1152)
+- sum ✓ pocso_relationship AS 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1691)
+- sum ✓ pocso_relationship AS 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1990)
+- sum ✓ pocso_relationship BR 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (683)
+- sum ✓ pocso_relationship BR 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (826)
+- sum ✓ pocso_relationship BR 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (942)
+- sum ✓ pocso_relationship CH 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (0)
+- sum ✓ pocso_relationship CH 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (0)
+- sum ✓ pocso_relationship CH 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2)
+- sum ✓ pocso_relationship CT 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1752)
+- sum ✓ pocso_relationship CT 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1493)
+- sum ✓ pocso_relationship CT 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1743)
+- sum ✓ pocso_relationship DH 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (43)
+- sum ✓ pocso_relationship DH 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (51)
+- sum ✓ pocso_relationship DH 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (23)
+- sum ✓ pocso_relationship DL 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (877)
+- sum ✓ pocso_relationship DL 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1051)
+- sum ✓ pocso_relationship DL 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1002)
+- sum ✓ pocso_relationship GA 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1)
+- sum ✓ pocso_relationship GA 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (0)
+- sum ✓ pocso_relationship GA 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (0)
+- sum ✓ pocso_relationship GJ 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2116)
+- sum ✓ pocso_relationship GJ 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2259)
+- sum ✓ pocso_relationship GJ 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2398)
+- sum ✓ pocso_relationship HP 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (0)
+- sum ✓ pocso_relationship HP 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1)
+- sum ✓ pocso_relationship HP 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (15)
+- sum ✓ pocso_relationship HR 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1155)
+- sum ✓ pocso_relationship HR 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1261)
+- sum ✓ pocso_relationship HR 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1344)
+- sum ✓ pocso_relationship IN 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (36682)
+- sum ✓ pocso_relationship IN 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (39076)
+- sum ✓ pocso_relationship IN 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (42634)
+- sum ✓ pocso_relationship IN-STATES 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (35407)
+- sum ✓ pocso_relationship IN-STATES 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (37640)
+- sum ✓ pocso_relationship IN-STATES 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (41243)
+- sum ✓ pocso_relationship IN-UTS 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1275)
+- sum ✓ pocso_relationship IN-UTS 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1436)
+- sum ✓ pocso_relationship IN-UTS 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1391)
+- sum ✓ pocso_relationship JH 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (562)
+- sum ✓ pocso_relationship JH 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (657)
+- sum ✓ pocso_relationship JH 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (549)
+- sum ✓ pocso_relationship JK 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (209)
+- sum ✓ pocso_relationship JK 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (196)
+- sum ✓ pocso_relationship JK 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (200)
+- sum ✓ pocso_relationship KA 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2264)
+- sum ✓ pocso_relationship KA 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3096)
+- sum ✓ pocso_relationship KA 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3256)
+- sum ✓ pocso_relationship KL 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1792)
+- sum ✓ pocso_relationship KL 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1787)
+- sum ✓ pocso_relationship KL 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2062)
+- sum ✓ pocso_relationship LA 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (0)
+- sum ✓ pocso_relationship LA 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3)
+- sum ✓ pocso_relationship LA 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (4)
+- sum ✓ pocso_relationship LD 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (5)
+- sum ✓ pocso_relationship LD 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2)
+- sum ✓ pocso_relationship LD 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1)
+- sum ✓ pocso_relationship MH 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (4171)
+- sum ✓ pocso_relationship MH 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (4597)
+- sum ✓ pocso_relationship MH 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (4760)
+- sum ✓ pocso_relationship ML 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (275)
+- sum ✓ pocso_relationship ML 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (277)
+- sum ✓ pocso_relationship ML 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (294)
+- sum ✓ pocso_relationship MN 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (45)
+- sum ✓ pocso_relationship MN 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (42)
+- sum ✓ pocso_relationship MN 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (46)
+- sum ✓ pocso_relationship MP 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3618)
+- sum ✓ pocso_relationship MP 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3756)
+- sum ✓ pocso_relationship MP 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3570)
+- sum ✓ pocso_relationship MZ 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (62)
+- sum ✓ pocso_relationship MZ 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (75)
+- sum ✓ pocso_relationship MZ 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (97)
+- sum ✓ pocso_relationship NL 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (16)
+- sum ✓ pocso_relationship NL 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (6)
+- sum ✓ pocso_relationship NL 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (12)
+- sum ✓ pocso_relationship OR 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1648)
+- sum ✓ pocso_relationship OR 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1631)
+- sum ✓ pocso_relationship OR 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1669)
+- sum ✓ pocso_relationship PB 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (628)
+- sum ✓ pocso_relationship PB 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (610)
+- sum ✓ pocso_relationship PB 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (556)
+- sum ✓ pocso_relationship PY 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (62)
+- sum ✓ pocso_relationship PY 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (57)
+- sum ✓ pocso_relationship PY 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (82)
+- sum ✓ pocso_relationship RJ 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1549)
+- sum ✓ pocso_relationship RJ 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1751)
+- sum ✓ pocso_relationship RJ 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1600)
+- sum ✓ pocso_relationship SK 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (67)
+- sum ✓ pocso_relationship SK 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (64)
+- sum ✓ pocso_relationship SK 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (54)
+- sum ✓ pocso_relationship TG 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1738)
+- sum ✓ pocso_relationship TG 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1757)
+- sum ✓ pocso_relationship TG 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (2076)
+- sum ✓ pocso_relationship TN 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3615)
+- sum ✓ pocso_relationship TN 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3404)
+- sum ✓ pocso_relationship TN 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (5297)
+- sum ✓ pocso_relationship TR 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (78)
+- sum ✓ pocso_relationship TR 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (83)
+- sum ✓ pocso_relationship TR 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (116)
+- sum ✓ pocso_relationship UP 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3254)
+- sum ✓ pocso_relationship UP 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3539)
+- sum ✓ pocso_relationship UP 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (3581)
+- sum ✓ pocso_relationship UT 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (646)
+- sum ✓ pocso_relationship UT 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (644)
+- sum ✓ pocso_relationship UT 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (631)
+- sum ✓ pocso_relationship WB 2022: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1498)
+- sum ✓ pocso_relationship WB 2023: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1444)
+- sum ✓ pocso_relationship WB 2024: friends_online_partners + family_friends_neighbours_known + family_members = known_total (1619)
+- sum ✓ pocso_victims_age AN 2022: lt6 + 6_12 + 12_16 + 16_18 = total (82)
+- sum ✓ pocso_victims_age AN 2023: lt6 + 6_12 + 12_16 + 16_18 = total (77)
+- sum ✓ pocso_victims_age AN 2024: lt6 + 6_12 + 12_16 + 16_18 = total (77)
+- sum ✓ pocso_victims_age AP 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1205)
+- sum ✓ pocso_victims_age AP 2023: lt6 + 6_12 + 12_16 + 16_18 = total (861)
+- sum ✓ pocso_victims_age AP 2024: lt6 + 6_12 + 12_16 + 16_18 = total (946)
+- sum ✓ pocso_victims_age AR 2022: lt6 + 6_12 + 12_16 + 16_18 = total (28)
+- sum ✓ pocso_victims_age AR 2023: lt6 + 6_12 + 12_16 + 16_18 = total (43)
+- sum ✓ pocso_victims_age AR 2024: lt6 + 6_12 + 12_16 + 16_18 = total (41)
+- sum ✓ pocso_victims_age AS 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1307)
+- sum ✓ pocso_victims_age AS 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1829)
+- sum ✓ pocso_victims_age AS 2024: lt6 + 6_12 + 12_16 + 16_18 = total (2226)
+- sum ✓ pocso_victims_age BR 2022: lt6 + 6_12 + 12_16 + 16_18 = total (749)
+- sum ✓ pocso_victims_age BR 2023: lt6 + 6_12 + 12_16 + 16_18 = total (925)
+- sum ✓ pocso_victims_age BR 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1064)
+- sum ✓ pocso_victims_age CH 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1)
+- sum ✓ pocso_victims_age CH 2023: lt6 + 6_12 + 12_16 + 16_18 = total (0)
+- sum ✓ pocso_victims_age CH 2024: lt6 + 6_12 + 12_16 + 16_18 = total (2)
+- sum ✓ pocso_victims_age CT 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1815)
+- sum ✓ pocso_victims_age CT 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1505)
+- sum ✓ pocso_victims_age CT 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1790)
+- sum ✓ pocso_victims_age DH 2022: lt6 + 6_12 + 12_16 + 16_18 = total (43)
+- sum ✓ pocso_victims_age DH 2023: lt6 + 6_12 + 12_16 + 16_18 = total (51)
+- sum ✓ pocso_victims_age DH 2024: lt6 + 6_12 + 12_16 + 16_18 = total (23)
+- sum ✓ pocso_victims_age DL 2022: lt6 + 6_12 + 12_16 + 16_18 = total (901)
+- sum ✓ pocso_victims_age DL 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1057)
+- sum ✓ pocso_victims_age DL 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1039)
+- sum ✓ pocso_victims_age GA 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1)
+- sum ✓ pocso_victims_age GA 2023: lt6 + 6_12 + 12_16 + 16_18 = total (0)
+- sum ✓ pocso_victims_age GA 2024: lt6 + 6_12 + 12_16 + 16_18 = total (0)
+- sum ✓ pocso_victims_age GJ 2022: lt6 + 6_12 + 12_16 + 16_18 = total (2140)
+- sum ✓ pocso_victims_age GJ 2023: lt6 + 6_12 + 12_16 + 16_18 = total (2301)
+- sum ✓ pocso_victims_age GJ 2024: lt6 + 6_12 + 12_16 + 16_18 = total (2452)
+- sum ✓ pocso_victims_age HP 2022: lt6 + 6_12 + 12_16 + 16_18 = total (0)
+- sum ✓ pocso_victims_age HP 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1)
+- sum ✓ pocso_victims_age HP 2024: lt6 + 6_12 + 12_16 + 16_18 = total (16)
+- sum ✓ pocso_victims_age HR 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1340)
+- sum ✓ pocso_victims_age HR 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1449)
+- sum ✓ pocso_victims_age HR 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1568)
+- sum ✓ pocso_victims_age IN 2022: lt6 + 6_12 + 12_16 + 16_18 = total (38444)
+- sum ✓ pocso_victims_age IN 2023: lt6 + 6_12 + 12_16 + 16_18 = total (40846)
+- sum ✓ pocso_victims_age IN 2024: lt6 + 6_12 + 12_16 + 16_18 = total (44567)
+- sum ✓ pocso_victims_age IN-STATES 2022: lt6 + 6_12 + 12_16 + 16_18 = total (37103)
+- sum ✓ pocso_victims_age IN-STATES 2023: lt6 + 6_12 + 12_16 + 16_18 = total (39384)
+- sum ✓ pocso_victims_age IN-STATES 2024: lt6 + 6_12 + 12_16 + 16_18 = total (43111)
+- sum ✓ pocso_victims_age IN-UTS 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1341)
+- sum ✓ pocso_victims_age IN-UTS 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1462)
+- sum ✓ pocso_victims_age IN-UTS 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1456)
+- sum ✓ pocso_victims_age JH 2022: lt6 + 6_12 + 12_16 + 16_18 = total (570)
+- sum ✓ pocso_victims_age JH 2023: lt6 + 6_12 + 12_16 + 16_18 = total (657)
+- sum ✓ pocso_victims_age JH 2024: lt6 + 6_12 + 12_16 + 16_18 = total (562)
+- sum ✓ pocso_victims_age JK 2022: lt6 + 6_12 + 12_16 + 16_18 = total (240)
+- sum ✓ pocso_victims_age JK 2023: lt6 + 6_12 + 12_16 + 16_18 = total (215)
+- sum ✓ pocso_victims_age JK 2024: lt6 + 6_12 + 12_16 + 16_18 = total (228)
+- sum ✓ pocso_victims_age KA 2022: lt6 + 6_12 + 12_16 + 16_18 = total (2326)
+- sum ✓ pocso_victims_age KA 2023: lt6 + 6_12 + 12_16 + 16_18 = total (3117)
+- sum ✓ pocso_victims_age KA 2024: lt6 + 6_12 + 12_16 + 16_18 = total (3286)
+- sum ✓ pocso_victims_age KL 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1846)
+- sum ✓ pocso_victims_age KL 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1808)
+- sum ✓ pocso_victims_age KL 2024: lt6 + 6_12 + 12_16 + 16_18 = total (2094)
+- sum ✓ pocso_victims_age LA 2022: lt6 + 6_12 + 12_16 + 16_18 = total (0)
+- sum ✓ pocso_victims_age LA 2023: lt6 + 6_12 + 12_16 + 16_18 = total (3)
+- sum ✓ pocso_victims_age LA 2024: lt6 + 6_12 + 12_16 + 16_18 = total (4)
+- sum ✓ pocso_victims_age LD 2022: lt6 + 6_12 + 12_16 + 16_18 = total (5)
+- sum ✓ pocso_victims_age LD 2023: lt6 + 6_12 + 12_16 + 16_18 = total (2)
+- sum ✓ pocso_victims_age LD 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1)
+- sum ✓ pocso_victims_age MH 2022: lt6 + 6_12 + 12_16 + 16_18 = total (4260)
+- sum ✓ pocso_victims_age MH 2023: lt6 + 6_12 + 12_16 + 16_18 = total (4672)
+- sum ✓ pocso_victims_age MH 2024: lt6 + 6_12 + 12_16 + 16_18 = total (4980)
+- sum ✓ pocso_victims_age ML 2022: lt6 + 6_12 + 12_16 + 16_18 = total (299)
+- sum ✓ pocso_victims_age ML 2023: lt6 + 6_12 + 12_16 + 16_18 = total (355)
+- sum ✓ pocso_victims_age ML 2024: lt6 + 6_12 + 12_16 + 16_18 = total (353)
+- sum ✓ pocso_victims_age MN 2022: lt6 + 6_12 + 12_16 + 16_18 = total (45)
+- sum ✓ pocso_victims_age MN 2023: lt6 + 6_12 + 12_16 + 16_18 = total (45)
+- sum ✓ pocso_victims_age MN 2024: lt6 + 6_12 + 12_16 + 16_18 = total (54)
+- sum ✓ pocso_victims_age MP 2022: lt6 + 6_12 + 12_16 + 16_18 = total (3658)
+- sum ✓ pocso_victims_age MP 2023: lt6 + 6_12 + 12_16 + 16_18 = total (3893)
+- sum ✓ pocso_victims_age MP 2024: lt6 + 6_12 + 12_16 + 16_18 = total (3730)
+- sum ✓ pocso_victims_age MZ 2022: lt6 + 6_12 + 12_16 + 16_18 = total (65)
+- sum ✓ pocso_victims_age MZ 2023: lt6 + 6_12 + 12_16 + 16_18 = total (76)
+- sum ✓ pocso_victims_age MZ 2024: lt6 + 6_12 + 12_16 + 16_18 = total (106)
+- sum ✓ pocso_victims_age NL 2022: lt6 + 6_12 + 12_16 + 16_18 = total (22)
+- sum ✓ pocso_victims_age NL 2023: lt6 + 6_12 + 12_16 + 16_18 = total (7)
+- sum ✓ pocso_victims_age NL 2024: lt6 + 6_12 + 12_16 + 16_18 = total (12)
+- sum ✓ pocso_victims_age OR 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1720)
+- sum ✓ pocso_victims_age OR 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1631)
+- sum ✓ pocso_victims_age OR 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1786)
+- sum ✓ pocso_victims_age PB 2022: lt6 + 6_12 + 12_16 + 16_18 = total (630)
+- sum ✓ pocso_victims_age PB 2023: lt6 + 6_12 + 12_16 + 16_18 = total (640)
+- sum ✓ pocso_victims_age PB 2024: lt6 + 6_12 + 12_16 + 16_18 = total (575)
+- sum ✓ pocso_victims_age PY 2022: lt6 + 6_12 + 12_16 + 16_18 = total (69)
+- sum ✓ pocso_victims_age PY 2023: lt6 + 6_12 + 12_16 + 16_18 = total (57)
+- sum ✓ pocso_victims_age PY 2024: lt6 + 6_12 + 12_16 + 16_18 = total (82)
+- sum ✓ pocso_victims_age RJ 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1694)
+- sum ✓ pocso_victims_age RJ 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1868)
+- sum ✓ pocso_victims_age RJ 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1646)
+- sum ✓ pocso_victims_age SK 2022: lt6 + 6_12 + 12_16 + 16_18 = total (74)
+- sum ✓ pocso_victims_age SK 2023: lt6 + 6_12 + 12_16 + 16_18 = total (66)
+- sum ✓ pocso_victims_age SK 2024: lt6 + 6_12 + 12_16 + 16_18 = total (60)
+- sum ✓ pocso_victims_age TG 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1754)
+- sum ✓ pocso_victims_age TG 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1760)
+- sum ✓ pocso_victims_age TG 2024: lt6 + 6_12 + 12_16 + 16_18 = total (2103)
+- sum ✓ pocso_victims_age TN 2022: lt6 + 6_12 + 12_16 + 16_18 = total (3676)
+- sum ✓ pocso_victims_age TN 2023: lt6 + 6_12 + 12_16 + 16_18 = total (3465)
+- sum ✓ pocso_victims_age TN 2024: lt6 + 6_12 + 12_16 + 16_18 = total (5359)
+- sum ✓ pocso_victims_age TR 2022: lt6 + 6_12 + 12_16 + 16_18 = total (78)
+- sum ✓ pocso_victims_age TR 2023: lt6 + 6_12 + 12_16 + 16_18 = total (86)
+- sum ✓ pocso_victims_age TR 2024: lt6 + 6_12 + 12_16 + 16_18 = total (120)
+- sum ✓ pocso_victims_age UP 2022: lt6 + 6_12 + 12_16 + 16_18 = total (3454)
+- sum ✓ pocso_victims_age UP 2023: lt6 + 6_12 + 12_16 + 16_18 = total (3855)
+- sum ✓ pocso_victims_age UP 2024: lt6 + 6_12 + 12_16 + 16_18 = total (3672)
+- sum ✓ pocso_victims_age UT 2022: lt6 + 6_12 + 12_16 + 16_18 = total (648)
+- sum ✓ pocso_victims_age UT 2023: lt6 + 6_12 + 12_16 + 16_18 = total (646)
+- sum ✓ pocso_victims_age UT 2024: lt6 + 6_12 + 12_16 + 16_18 = total (633)
+- sum ✓ pocso_victims_age WB 2022: lt6 + 6_12 + 12_16 + 16_18 = total (1699)
+- sum ✓ pocso_victims_age WB 2023: lt6 + 6_12 + 12_16 + 16_18 = total (1823)
+- sum ✓ pocso_victims_age WB 2024: lt6 + 6_12 + 12_16 + 16_18 = total (1877)
+- Σ states = All-India ✓ cac_court/pending_trial_end_year 2024
+- Σ states = All-India ✓ cac_court/trials_completed 2024
+- Σ states = All-India ✓ cac_total/— 2020
+- Σ states = All-India ✓ cac_total/— 2021
+- Σ states = All-India ✓ cac_total/— 2022
+- Σ states = All-India ✓ cac_total/— 2023
+- Σ states = All-India ✓ cac_total/— 2024
+- Σ states = All-India ✓ pocso_relationship/family_friends_neighbours_known 2022
+- Σ states = All-India ✓ pocso_relationship/family_friends_neighbours_known 2023
+- Σ states = All-India ✓ pocso_relationship/family_friends_neighbours_known 2024
+- Σ states = All-India ✓ pocso_relationship/family_members 2022
+- Σ states = All-India ✓ pocso_relationship/family_members 2023
+- Σ states = All-India ✓ pocso_relationship/family_members 2024
+- Σ states = All-India ✓ pocso_relationship/friends_online_partners 2022
+- Σ states = All-India ✓ pocso_relationship/friends_online_partners 2023
+- Σ states = All-India ✓ pocso_relationship/friends_online_partners 2024
+- Σ states = All-India ✓ pocso_relationship/known_total 2022
+- Σ states = All-India ✓ pocso_relationship/known_total 2023
+- Σ states = All-India ✓ pocso_relationship/known_total 2024
+- Σ states = All-India ✓ pocso_relationship/total 2022
+- Σ states = All-India ✓ pocso_relationship/total 2023
+- Σ states = All-India ✓ pocso_relationship/total 2024
+- Σ states = All-India ✓ pocso_relationship/unknown 2022
+- Σ states = All-India ✓ pocso_relationship/unknown 2023
+- Σ states = All-India ✓ pocso_relationship/unknown 2024
+- Σ states = All-India ✓ pocso_s4_6/— 2022
+- Σ states = All-India ✓ pocso_s4_6/— 2023
+- Σ states = All-India ✓ pocso_s4_6/— 2024
+- Σ states = All-India ✓ pocso_total/— 2022
+- Σ states = All-India ✓ pocso_total/— 2023
+- Σ states = All-India ✓ pocso_total/— 2024
+- Σ states = All-India ✓ pocso_total/— 2022
+- Σ states = All-India ✓ pocso_total/— 2023
+- Σ states = All-India ✓ pocso_total/— 2024
+- Σ states = All-India ✓ pocso_victims_age/12_16 2022
+- Σ states = All-India ✓ pocso_victims_age/12_16 2023
+- Σ states = All-India ✓ pocso_victims_age/12_16 2024
+- Σ states = All-India ✓ pocso_victims_age/16_18 2022
+- Σ states = All-India ✓ pocso_victims_age/16_18 2023
+- Σ states = All-India ✓ pocso_victims_age/16_18 2024
+- Σ states = All-India ✓ pocso_victims_age/6_12 2022
+- Σ states = All-India ✓ pocso_victims_age/6_12 2023
+- Σ states = All-India ✓ pocso_victims_age/6_12 2024
+- Σ states = All-India ✓ pocso_victims_age/lt6 2022
+- Σ states = All-India ✓ pocso_victims_age/lt6 2023
+- Σ states = All-India ✓ pocso_victims_age/lt6 2024
+- Σ states = All-India ✓ pocso_victims_age/total 2022
+- Σ states = All-India ✓ pocso_victims_age/total 2023
+- Σ states = All-India ✓ pocso_victims_age/total 2024

@@ -1,0 +1,18 @@
+---
+// Accessible table alternative for every chart (spec §6, §10).
+import { useT } from '../i18n';
+import type { Lang } from '../config/site';
+interface Props { lang: Lang; caption: string; head: string[]; rows: (string | number)[][]; numeric?: number[]; open?: boolean }
+const { lang, caption, head, rows, numeric = [], open = false } = Astro.props;
+const { t } = useT(lang);
+---
+<details class="table-alt" open={open}>
+  <summary>{t('common.view_table')}</summary>
+  <div class="table-scroll">
+    <table class="data">
+      <caption class="visually-hidden">{caption}</caption>
+      <thead><tr>{head.map((h, i) => <th scope="col" class={numeric.includes(i) ? 'n' : undefined}>{h}</th>)}</tr></thead>
+      <tbody>{rows.map((r) => <tr>{r.map((c, i) => i === 0 ? <th scope="row">{c}</th> : <td class={numeric.includes(i) ? 'n' : undefined}>{c}</td>)}</tr>)}</tbody>
+    </table>
+  </div>
+</details>

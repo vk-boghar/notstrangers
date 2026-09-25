@@ -1,0 +1,12 @@
+---
+import { useT } from '../i18n';
+import type { Lang } from '../config/site';
+import { PREVENTION_CONTENT_REVIEWED } from '../config/site';
+interface Props { lang: Lang; text: string }
+const { lang, text } = Astro.props;
+const { t } = useT(lang);
+---
+<aside class="action">
+  <h3>{t('common.what_this_means')} {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{t('common.draft')}</span>}</h3>
+  <p>{text}</p>
+</aside>

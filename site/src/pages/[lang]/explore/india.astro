@@ -1,0 +1,205 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Cite from '../../../components/Cite.astro';
+import Caveat from '../../../components/Caveat.astro';
+import ChoroplethMap from '../../../components/charts/ChoroplethMap.astro';
+import { LANGS, type Lang } from '../../../config/site';
+import { useT } from '../../../i18n';
+import { one, maybe, where, latestYear, fmtInt, fmt, lakh, pct, type Row } from '../../../lib/data';
+import topo from '../../../geo/india-states.topo.json';
+
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const { t } = useT(lang);
+const ta = lang === 'ta';
+
+// National headline figures (NCRB)
+const nYear = latestYear('pocso_total', 'IN')!;
+const pocso = one({ dataset: 'pocso_total', geo: 'IN', year: nYear, metric: 'cases' });
+const pocsoRate = one({ dataset: 'pocso_rate', geo: 'IN', year: nYear });
+const cac = one({ dataset: 'cac_total', geo: 'IN', year: nYear });
+const cacRate = one({ dataset: 'cac_rate', geo: 'IN', year: nYear });
+const ncmec = maybe({ dataset: 'ncmec_reports', geo: 'IN' });
+
+// State series
+const states = (dataset: string, metric: string, year: number, dim?: string) =>
+  where({ dataset, metric, year, dim }).filter((r) => r.geo_level === 'state');
+const years = [...new Set(where({ dataset: 'pocso_total', metric: 'cases' }).filter((r) => r.geo_level === 'state').map((r) => r.year))].sort();
+const mapYear = years[years.length - 1] ?? nYear;
+const byName = (rows: Row[]) => Object.fromEntries(rows.map((r) => [r.geo_name, r.value]));
+// Everything the map can show, for the client-side year/metric switch
+const mapData: Record<string, Record<number, Record<string, number>>> = { rate: {}, cases: {} };
+for (const y of years) {
+  mapData.rate[y] = byName(states('pocso_rate', 'rate_per_lakh_children', y));
+  mapData.cases[y] = byName(states('pocso_total', 'cases', y));
+}
+const hasStates = years.length > 0;
+const codeOf = Object.fromEntries(states('pocso_total', 'cases', mapYear).map((r) => [r.geo_name, r.geo_code]));
+
+// Table rows for the latest year
+const tableRows = states('pocso_total', 'cases', mapYear).map((c) => {
+  const g = c.geo_code;
+  const rate = maybe({ dataset: 'pocso_rate', geo: g, year: mapYear });
+  const kn = maybe({ dataset: 'pocso_relationship', geo: g, year: mapYear, dim: 'known_total' });
+  const tot = maybe({ dataset: 'pocso_relationship', geo: g, year: mapYear, dim: 'total' });
+  const conv = maybe({ dataset: 'cac_court', geo: g, year: mapYear, metric: 'conviction_rate_pct' });
+  const pend = maybe({ dataset: 'cac_court', geo: g, year: mapYear, metric: 'pendency_pct' });
+  const prev = maybe({ dataset: 'pocso_total', geo: g, year: mapYear - 1, metric: 'cases' });
+  return { c, rate, known: kn && tot && tot.value > 0 ? (kn.value / tot.value) * 100 : null, conv, pend, prev };
+}).sort((a, b) => (b.rate?.value ?? -1) - (a.rate?.value ?? -1));
+const citeRows = [pocso, pocsoRate, cac, cacRate];
+const tableCite = [states('pocso_total', 'cases', mapYear)[0], states('pocso_rate', 'rate_per_lakh_children', mapYear)[0],
+  states('pocso_relationship', 'cases', mapYear, 'total')[0], states('cac_court', 'conviction_rate_pct', mapYear)[0]].filter(Boolean) as Row[];
+---
+<Base lang={lang} title={t('explore.india_title')}>
+  <div class="wrap-wide page">
+    <p class="kicker">{t('nav.india')}</p>
+    <h1>{t('explore.india_title')}</h1>
+    <p class="lead">{t('explore.india_lead')}</p>
+
+    <div class="stats">
+      <div class="card"><span class="v num">{fmtInt(pocso.value)}</span><span>POCSO {t('common.cases')}, {nYear}</span></div>
+      <div class="card"><span class="v num">{fmt(pocsoRate.value, 1)}</span><span>{ta ? 'ஒரு லட்சம் குழந்தைகளுக்கு போக்சோ வழக்குகள்' : 'POCSO cases per lakh children'}</span></div>
+      <div class="card"><span class="v num">{pct(pocso.value, cac.value)}%</span><span>{ta ? 'குழந்தைகளுக்கு எதிரான அனைத்துக் குற்றங்களில் போக்சோ பங்கு' : 'of all crimes against children were POCSO cases'}</span></div>
+      <div class="card"><span class="v num">{fmtInt(cac.value)}</span><span>{ta ? `குழந்தைகளுக்கு எதிரான மொத்தக் குற்றங்கள் (${fmt(cacRate.value, 1)} / லட்சம்)` : `crimes against children, all heads (${fmt(cacRate.value, 1)} per lakh)`}</span></div>
+    </div>
+    <Cite rows={citeRows} lang={lang} csv="pocso_total" />
+    <Caveat lang={lang} />
+
+    <section class="section" aria-labelledby="map-h">
+      <h2 id="map-h">{ta ? 'மாநில வாரியான வரைபடம்' : 'State by state'}</h2>
+      <p class="takeaway">{ta
+        ? 'இடங்களை ஒப்பிட விகிதத்தைப் பயன்படுத்துங்கள் — அதிகக் குழந்தைகள் உள்ள மாநிலங்களில் இயல்பாகவே அதிக வழக்குகள் இருக்கும். அதிக விகிதம் என்பது அதிகப் புகார்களையும் குறிக்கலாம்.'
+        : 'Compare places by rate — states with more children will naturally have more cases. A high rate can also mean more cases are being reported.'}</p>
+      {hasStates ? (
+        <div class="map-grid" data-mapctl data-map={JSON.stringify(mapData)} data-codes={JSON.stringify(codeOf)} data-lang={lang}>
+          <div>
+            <div class="ctl">
+              <div class="seg-ctl" role="group" aria-label="Measure">
+                <button type="button" class="pill" aria-pressed="true" data-m="rate">{t('explore.map_metric_rate')}</button>
+                <button type="button" class="pill" aria-pressed="false" data-m="cases">{t('explore.map_metric_count')}</button>
+              </div>
+              <div class="seg-ctl" role="group" aria-label="Year">
+                {years.map((y) => <button type="button" class="pill" aria-pressed={y === mapYear ? 'true' : 'false'} data-y={y}>{y}</button>)}
+              </div>
+            </div>
+            <ChoroplethMap id="india-map" topo={topo} object="states" values={mapData.rate[mapYear]} format={(v) => fmt(v, 1)}
+              ariaLabel={`${t('explore.map_metric_rate')} ${mapYear}`} highlight="Tamil Nadu"
+              hrefFor={(n) => (codeOf[n] ? `/${lang}/explore/state/${codeOf[n].toLowerCase()}/` : undefined)} />
+            <p class="small muted" data-caption>{t('explore.map_metric_rate')} · {mapYear} · {ta ? 'ஒரு மாநிலத்தைத் தட்டி விவரம் பாருங்கள்.' : 'Tap a state for its full profile.'}</p>
+          </div>
+          <div class="side">
+            <h3>{ta ? 'தமிழ்நாடு' : 'Tamil Nadu'}</h3>
+            {(() => { const r = tableRows.find((x) => x.c.geo_code === 'TN'); return r ? (
+              <ul class="tn-facts">
+                <li><strong class="num">{fmtInt(r.c.value)}</strong> {ta ? `போக்சோ வழக்குகள் (${mapYear})` : `POCSO cases (${mapYear})`}{r.prev && <span class="muted"> · {ta ? 'முந்தைய ஆண்டு' : 'previous year'} {fmtInt(r.prev.value)}</span>}</li>
+                {r.rate && <li><strong class="num">{fmt(r.rate.value, 1)}</strong> {ta ? 'ஒரு லட்சம் குழந்தைகளுக்கு' : 'per lakh children'} <span class="muted">({ta ? 'இந்தியா' : 'India'} {fmt(pocsoRate.value, 1)})</span></li>}
+                {r.known !== null && <li><strong class="num">{fmt(r.known, 1)}%</strong> {ta ? 'குழந்தைக்குத் தெரிந்தவர் (பிரிவு 4 & 6)' : 'offender known to the child (Sec 4 & 6)'}</li>}
+                <li><a href={`/${lang}/explore/state/tn/`}>{ta ? 'முழு சுயவிவரம் →' : 'Full profile →'}</a> · <a href={`/${lang}/explore/tamil-nadu/`}>{ta ? 'தமிழ்நாடு தரவு →' : 'Tamil Nadu data →'}</a></li>
+              </ul>) : null; })()}
+          </div>
+        </div>
+      ) : (
+        <div class="pending"><p><strong>{t('explore.map_pending_title')}</strong></p><p>{t('explore.map_pending', { year: nYear })}</p></div>
+      )}
+    </section>
+
+    {hasStates && (
+      <section class="section" aria-labelledby="tbl-h">
+        <h2 id="tbl-h">{t('explore.table_title')} · {mapYear}</h2>
+        <p class="small muted">{ta
+          ? 'தண்டனை விகிதமும் நீதிமன்ற நிலுவையும் குழந்தைகளுக்கு எதிரான அனைத்துக் குற்றங்களுக்குமானவை (NCRB போக்சோவுக்குத் தனியாக மாநில வாரியாக வெளியிடுவதில்லை). தலைப்பைத் தட்டி வரிசைப்படுத்துங்கள்.'
+          : 'Conviction rate and court pendency are for all crimes against children — NCRB does not publish them for POCSO alone by state. Tap a heading to sort.'}</p>
+        <div class="table-scroll">
+          <table class="data sortable" data-sortable>
+            <thead><tr>
+              <th scope="col"><button type="button" data-k="0">{t('explore.state')}</button></th>
+              <th scope="col" class="n"><button type="button" data-k="1">POCSO {t('common.cases')}</button></th>
+              <th scope="col" class="n"><button type="button" data-k="2">{t('explore.rate')}</button></th>
+              <th scope="col" class="n"><button type="button" data-k="3">{ta ? 'தெரிந்தவர் %' : 'Known to child'}</button></th>
+              <th scope="col" class="n"><button type="button" data-k="4">{ta ? 'தண்டனை விகிதம்' : 'Conviction rate'}</button></th>
+              <th scope="col" class="n"><button type="button" data-k="5">{ta ? 'நீதிமன்ற நிலுவை' : 'Court pendency'}</button></th>
+            </tr></thead>
+            <tbody>
+              {tableRows.map(({ c, rate, known, conv, pend }) => (
+                <tr class:list={{ tn: c.geo_code === 'TN' }}>
+                  <th scope="row" data-v={c.geo_name}><a href={`/${lang}/explore/state/${c.geo_code.toLowerCase()}/`}>{c.geo_name}</a></th>
+                  <td class="n" data-v={c.value}>{fmtInt(c.value)}</td>
+                  <td class="n" data-v={rate?.value ?? -1}>{rate ? fmt(rate.value, 1) : '—'}</td>
+                  <td class="n" data-v={known ?? -1}>{known !== null ? `${fmt(known, 1)}%` : '—'}</td>
+                  <td class="n" data-v={conv?.value ?? -1}>{conv ? `${fmt(conv.value, 1)}%` : '—'}</td>
+                  <td class="n" data-v={pend?.value ?? -1}>{pend ? `${fmt(pend.value, 1)}%` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <Cite rows={tableCite} lang={lang} csv="all_data" />
+      </section>
+    )}
+
+    {ncmec && (
+      <section class="section" aria-labelledby="online-h">
+        <h2 id="online-h">{t('explore.online_title')}</h2>
+        <p class="takeaway">{t('explore.online_body', { year: ncmec.year, n: `${fmtInt(ncmec.value)} (${ta ? lakh(ncmec.value).replace('lakh', 'லட்சம்') : lakh(ncmec.value)})` })}</p>
+        <p class="caveat">{t('explore.online_caveat')}</p>
+        <Cite rows={ncmec} lang={lang} csv="ncmec_reports" />
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 2rem; }
+  .stats { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 1.5rem; }
+  .stats .card { display: grid; gap: 0.2rem; margin: 0; }
+  .stats .v { font-size: 1.6rem; font-weight: 700; }
+  .stats span:not(.v) { font-size: 0.875rem; color: var(--ink-2); line-height: 1.35; }
+  .map-grid { display: grid; gap: 1.5rem; }
+  @media (min-width: 900px) { .map-grid { grid-template-columns: 3fr 2fr; align-items: start; } }
+  .ctl { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 0.5rem; }
+  .seg-ctl { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .pill { font: inherit; font-size: 0.875rem; font-weight: 600; min-height: 36px; padding: 0.3rem 0.85rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .pill[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
+  .sortable th button { font: inherit; font-weight: 600; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+  tr.tn th, tr.tn td { background: var(--accent-soft); }
+  .side h3 { font-size: 1.05rem; }
+  .tn-facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+</style>
+<script is:inline>
+  (function () {
+    var root = document.querySelector('[data-mapctl]');
+    if (root) {
+      var data = JSON.parse(root.dataset.map), m = 'rate', y = null, ta = root.dataset.lang === 'ta';
+      var ys = root.querySelectorAll('[data-y]'); ys.forEach(function (b) { if (b.getAttribute('aria-pressed') === 'true') y = b.dataset.y; });
+      var OP = [0.16, 0.34, 0.52, 0.74, 1];
+      var fmt = function (v) { return m === 'rate' ? v.toFixed(1) : Math.round(v).toLocaleString('en-IN'); };
+      function paint() {
+        var vals = data[m][y] || {}, nums = Object.keys(vals).map(function (k) { return vals[k]; }).sort(function (a, b) { return a - b; });
+        var br = [0, 1, 2, 3, 4].map(function (i) { return nums[Math.floor(i * nums.length / 5)]; });
+        root.querySelectorAll('path[data-name]').forEach(function (p) {
+          var v = vals[p.dataset.name];
+          if (typeof v !== 'number') { p.style.fill = ''; p.style.fillOpacity = ''; return; }
+          var k = 0; for (var i = 0; i < 5; i++) if (v >= br[i]) k = i;
+          p.style.fill = 'var(--c-seq)'; p.style.fillOpacity = OP[k];
+          var tt = p.querySelector('title'); if (tt) tt.textContent = p.dataset.name + ': ' + fmt(v);
+        });
+        root.querySelectorAll('[data-i]').forEach(function (b) { b.textContent = fmt(br[+b.dataset.i]) + '+'; });
+        var cap = root.querySelector('[data-caption]'); if (cap) cap.firstChild.textContent = (m === 'rate' ? (ta ? 'ஒரு லட்சம் குழந்தைகளுக்கான விகிதம்' : 'Rate per lakh children') : (ta ? 'போக்சோ வழக்குகள்' : 'POCSO cases')) + ' · ' + y + ' · ';
+      }
+      root.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.dataset.m) { m = b.dataset.m; root.querySelectorAll('[data-m]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }
+        if (b.dataset.y) { y = b.dataset.y; ys.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }
+        paint();
+      });
+    }
+    document.querySelectorAll('[data-sortable]').forEach(function (tbl) {
+      var dir = {}; tbl.querySelector('thead').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return;
+        var k = +b.dataset.k; dir[k] = !dir[k]; var tb = tbl.tBodies[0];
+        [].slice.call(tb.rows).sort(function (a, c) { var x = a.cells[k].dataset.v, y = c.cells[k].dataset.v;
+          var r = isNaN(+x) ? String(x).localeCompare(y) : (+x) - (+y); return dir[k] ? r : -r; })
+          .forEach(function (r) { tb.appendChild(r); }); });
+    });
+  })();
+</script>

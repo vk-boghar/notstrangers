@@ -1,0 +1,9 @@
+# Netlify: static build from /site. (Cloudflare Pages: root = site, build = npm run build, output = dist.)
+[build]
+  base = "site"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  ASTRO_TELEMETRY_DISABLED = "1"

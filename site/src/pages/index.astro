@@ -1,0 +1,24 @@
+---
+// Root: send people to English by default, with Tamil one tap away. No cookies, no geo-detection.
+import { SITE_NAME, SITE_NAME_TA, NOINDEX } from '../config/site';
+---
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{SITE_NAME}</title>
+    {NOINDEX && <meta name="robots" content="noindex,nofollow" />}
+    <meta http-equiv="refresh" content="0; url=/en/" />
+    <link rel="canonical" href="/en/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      // Tamil-first browsers go to /ta/. Nothing is stored.
+      try { if ((navigator.languages || [navigator.language]).some(function (l) { return /^ta\b/i.test(l); })) location.replace('/ta/'); } catch (e) {}
+    </script>
+  </head>
+  <body style="font-family:system-ui,sans-serif;padding:2rem">
+    <p><a href="/en/">{SITE_NAME} — English</a></p>
+    <p><a href="/ta/" lang="ta">{SITE_NAME_TA} — தமிழ்</a></p>
+  </body>
+</html>

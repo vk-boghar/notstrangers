@@ -1,0 +1,39 @@
+---
+// Horizontal bars in plain HTML so labels stay real text at 360px (spec §6), wrap in Tamil,
+// and need zero JS. Each bar is direct-labelled; a <title>-style tooltip comes from `title`.
+export interface Bar {
+  label: string;
+  value: number | null;          // null = no data (renders a labelled gap, never a zero bar)
+  valueLabel: string;
+  color?: string;                // CSS colour or var(--token)
+  note?: string;
+  emphasis?: boolean;
+}
+interface Props { bars: Bar[]; max?: number; ariaLabel: string; gapLabel?: string; marker?: { at: number; label: string } }
+const { bars, ariaLabel, gapLabel = '—', marker } = Astro.props;
+const max = Astro.props.max ?? Math.max(...bars.map((b) => b.value ?? 0), marker?.at ?? 0);
+const w = (v: number) => `${Math.max(0.6, (v / max) * 100).toFixed(2)}%`;
+---
+<div class="chart barlist" role="img" aria-label={ariaLabel}>
+  {bars.map((b) => (
+    <div class:list={['row', { em: b.emphasis, gap: b.value === null }]} title={`${b.label}: ${b.valueLabel}`}>
+      <div class="lab"><span>{b.label}</span><span class="v num">{b.value === null ? gapLabel : b.valueLabel}</span></div>
+      <div class="track">
+        {b.value !== null && <div class="fill" style={`width:${w(b.value)};background:${b.color ?? 'var(--c-seq)'}`}></div>}
+        {marker && <div class="mk" style={`left:${w(marker.at)}`} aria-hidden="true"></div>}
+      </div>
+      {b.note && <div class="note small muted">{b.note}</div>}
+    </div>
+  ))}
+</div>
+<style>
+  .barlist { display: grid; gap: 0.9rem; }
+  .row .lab { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9375rem; line-height: 1.35; margin-bottom: 0.3rem; }
+  .row .lab .v { font-weight: 700; white-space: nowrap; }
+  .row.em .lab span:first-child { font-weight: 600; }
+  .track { position: relative; height: 14px; background: var(--c-track); border-radius: 4px; }
+  .fill { height: 100%; border-radius: 4px; }
+  .gap .track { background: repeating-linear-gradient(135deg, var(--c-track) 0 6px, transparent 6px 10px); }
+  .mk { position: absolute; top: -5px; bottom: -5px; width: 0; border-left: 2px dashed var(--ink); }
+  .note { margin-top: 0.25rem; }
+</style>

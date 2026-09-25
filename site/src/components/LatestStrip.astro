@@ -1,0 +1,52 @@
+---
+// "Latest data" strip (spec §3.8): the freshest Tier 1/2 figure per topic, with its date, so the
+// site never looks stale even though NCRB lags ~18 months. Tier 3 is never used here.
+import { where, fmtInt, pct, lakh, periodLabel, type Row } from '../lib/data';
+import { useT } from '../i18n';
+import type { Lang } from '../config/site';
+import TierTag from './TierTag.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+
+const freshest = (rows: Row[]) => rows.filter((r) => r.tier <= 2).sort((a, b) => b.as_of_date.localeCompare(a.as_of_date))[0];
+
+type Item = { key: string; value: string; row: Row };
+const items: Item[] = [];
+const relTotal = freshest(where({ dataset: 'pocso_relationship', geo: 'IN', dim: 'total' }));
+if (relTotal) {
+  const known = where({ dataset: 'pocso_relationship', geo: 'IN', dim: 'known_total', year: relTotal.year })[0];
+  if (known) items.push({ key: 'who', value: `${pct(known.value, relTotal.value)}%`, row: known });
+}
+const add = (key: string, rows: Row[], f: (r: Row) => string = (r) => fmtInt(r.value)) => { const r = freshest(rows); if (r) items.push({ key, value: f(r), row: r }); };
+add('scale', where({ dataset: 'pocso_total', geo: 'IN', metric: 'cases' }));
+add('tn', where({ dataset: 'tn_pocso_registered', geo: 'TN' }));
+add('tn_courts', where({ dataset: 'court_pendency', geo: 'TN', dim: 'pending_trial' }));
+add('ftsc', where({ dataset: 'ftsc_flow', geo: 'IN', dim: 'pending_end_year' }));
+add('online', where({ dataset: 'ncmec_reports', geo: 'IN' }), (r) => (lang === 'ta' ? lakh(r.value).replace('lakh', 'லட்சம்') : lakh(r.value)));
+---
+<section class="strip" aria-labelledby="strip-h">
+  <div class="wrap-wide">
+    <h2 id="strip-h" class="h">{t('strip.title')}</h2>
+    <p class="small muted sub">{t('strip.sub')}</p>
+    <ul>
+      {items.map((it) => (
+        <li>
+          <span class="v num">{it.value}</span>
+          <span class="k">{t(`strip.${it.key}`)}</span>
+          <span class="d small muted"><a href={it.row.source_url} rel="noopener external" target="_blank">{periodLabel(it.row, lang)}</a> <TierTag tier={it.row.tier} lang={lang} /></span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .strip { background: var(--surface); border-block: 1px solid var(--line); padding: 1.5rem 0; }
+  .h { font-size: 1rem; margin: 0; }
+  .sub { margin: 0.2rem 0 1rem; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem 1.25rem; }
+  li { min-width: 0; display: grid; gap: 0.15rem; align-content: start; justify-items: start; border-left: 2px solid var(--line); padding-left: 0.75rem; }
+  .v { font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
+  .k { font-size: 0.875rem; line-height: 1.35; }
+  .d a { color: var(--muted); }
+</style>

@@ -1,0 +1,70 @@
+---
+// Build-time SVG choropleth (d3-geo + TopoJSON). No map tiles, no API keys, no client JS.
+// If no values are supplied the map renders neutral — it never implies data we don't have.
+import { geoMercator, geoPath } from 'd3-geo';
+import { feature } from 'topojson-client';
+
+interface Props {
+  topo: any;
+  object: string;
+  values?: Record<string, number | null>;   // keyed by feature `name`
+  format?: (v: number) => string;
+  ariaLabel: string;
+  width?: number;
+  height?: number;
+  highlight?: string;                        // feature name to outline (e.g. Tamil Nadu)
+  hrefFor?: (name: string) => string | undefined;
+  /** Optional id so a page script can recolour the map (data-name on each shape, data-i on legend). */
+  id?: string;
+}
+const { topo, object, values = {}, format = (v: number) => String(v), ariaLabel, width = 600, height = 680, highlight, hrefFor, id } = Astro.props;
+const fc: any = feature(topo, topo.objects[object]);
+const proj = geoMercator().fitSize([width, height], fc);
+const path = geoPath(proj);
+const nums = Object.values(values).filter((v): v is number => typeof v === 'number');
+const hasData = nums.length > 0;
+const min = hasData ? Math.min(...nums) : 0, max = hasData ? Math.max(...nums) : 1;
+const STEPS = 5;
+// Quintile classes: outliers (small UTs with very high rates) don't wash out every other state.
+const sorted = [...nums].sort((a, b) => a - b);
+const breaks = Array.from({ length: STEPS }, (_, i) => (sorted.length ? sorted[Math.floor((i * sorted.length) / STEPS)] : 0));
+const step = (v: number) => { let k = 0; for (let i = 0; i < STEPS; i++) if (v >= breaks[i]) k = i; return k; };
+const opac = [0.16, 0.34, 0.52, 0.74, 1];
+---
+<figure class="chart map" id={id}>
+  <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={ariaLabel}>
+    {fc.features.map((f: any) => {
+      const name = f.properties.name;
+      const v = values[name];
+      const has = typeof v === 'number';
+      const d = path(f) ?? '';
+      const shape = (
+        <path d={d} data-name={name} class:list={['geo', { nodata: !has, hl: name === highlight }]}
+          style={has ? `fill:var(--c-seq);fill-opacity:${opac[step(v as number)]}` : undefined}>
+          <title>{name}{has ? `: ${format(v as number)}` : ''}</title>
+        </path>
+      );
+      const href = hrefFor?.(name);
+      return href ? <a href={href}>{shape}</a> : shape;
+    })}
+    {highlight && fc.features.filter((f: any) => f.properties.name === highlight).map((f: any) => (
+      <path d={path(f) ?? ''} class="hl-outline" />
+    ))}
+  </svg>
+  {hasData && (
+    <div class="legend small" aria-hidden="true">
+      {breaks.map((b, i) => (<span><i style={`background:var(--c-seq);opacity:${opac[i]}`}></i><b data-i={i}>{format(b)}+</b></span>))}
+    </div>
+  )}
+  <slot />
+</figure>
+<style>
+  .map svg { max-height: 78vh; margin: 0 auto; }
+  .geo { fill: var(--c-track); stroke: var(--bg); stroke-width: 0.8; stroke-linejoin: round; }
+  .geo.nodata { fill: var(--c-track); }
+  a:hover .geo, a:focus .geo { stroke: var(--ink); stroke-width: 1.5; }
+  .hl-outline { fill: none; stroke: var(--ink); stroke-width: 1.6; pointer-events: none; }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; margin-top: 0.5rem; }
+  .legend b { font-weight: 400; }
+  .legend i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 0.3rem; }
+</style>

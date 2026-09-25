@@ -1,0 +1,30 @@
+---
+// Every number on screen links to its source table and data year (spec §4.7, §10).
+import type { Row } from '../lib/data';
+import { ORG_LABEL, periodLabel } from '../lib/data';
+import { useT } from '../i18n';
+import type { Lang } from '../config/site';
+import TierTag from './TierTag.astro';
+
+interface Props { rows: Row | Row[]; lang: Lang; csv?: string }
+const { lang, csv } = Astro.props;
+const list = Array.isArray(Astro.props.rows) ? Astro.props.rows : [Astro.props.rows];
+const { t } = useT(lang);
+const seen = new Map<string, { r: Row; periods: Set<string> }>();
+for (const r of list) {
+  const k = `${r.source_url}|${r.source_table}|${r.source_edition}`;
+  if (!seen.has(k)) seen.set(k, { r, periods: new Set() });
+  seen.get(k)!.periods.add(periodLabel(r, lang));
+}
+---
+<p class="cite">
+  {[...seen.values()].map(({ r, periods }, i) => (
+    <span>
+      {i > 0 && <br />}
+      {t('common.source')}: <a href={r.source_url} rel="noopener external" target="_blank">{ORG_LABEL[r.source_org] ?? r.source_org} — {r.source_edition}</a>, {r.source_table}.
+      {' '}{t('common.data_year')}: <span class="num">{[...periods].join(', ')}</span>.
+      {' '}<TierTag tier={r.tier} lang={lang} />
+    </span>
+  ))}
+  {csv && <> · <a href={`/data/${csv}.csv`} download>{t('common.download_csv')}</a></>}
+</p>

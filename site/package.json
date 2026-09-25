@@ -1,0 +1,30 @@
+{
+  "name": "not-a-stranger-site",
+  "version": "1.0.0",
+  "description": "Child safety data dashboard — Tamil Nadu + India",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build && node scripts/check-dist.mjs",
+    "preview": "astro preview",
+    "data": "cd .. && python3 -m pipeline.run",
+    "cards": "node scripts/share-cards.mjs",
+    "check": "node scripts/check-dist.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@fontsource/noto-sans": "^5.3.0",
+    "@fontsource/noto-sans-tamil": "^5.3.0",
+    "astro": "^7.3.5",
+    "typescript": "^7.0.2"
+  },
+  "devDependencies": {
+    "d3-geo": "^3.1.1",
+    "mapshaper": "^0.7.67",
+    "playwright-core": "^1.63.0",
+    "topojson-client": "^3.1.0"
+  },
+  "private": true,
+  "type": "module"
+}

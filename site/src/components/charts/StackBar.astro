@@ -1,0 +1,40 @@
+---
+// One 100% stacked bar + a legend that doubles as direct labels (identity never colour-alone).
+export interface Seg { key: string; label: string; value: number; color: string }
+interface Props { segs: Seg[]; ariaLabel: string; bracket?: { from: number; to: number; label: string } }
+const { segs, ariaLabel, bracket } = Astro.props;
+const total = segs.reduce((s, x) => s + x.value, 0);
+const p = (v: number) => (v / total) * 100;
+let acc = 0;
+const starts = segs.map((s) => { const a = acc; acc += p(s.value); return a; });
+---
+<div class="chart stack" role="img" aria-label={ariaLabel}>
+  {bracket && (
+    <div class="bracket" style={`margin-left:${starts[bracket.from]}%;width:${starts[bracket.to] + p(segs[bracket.to].value) - starts[bracket.from]}%`}>
+      <span>{bracket.label}</span>
+    </div>
+  )}
+  <div class="bar">
+    {segs.map((s) => <div class="seg" style={`width:${p(s.value)}%;background:${s.color}`} title={`${s.label}: ${p(s.value).toFixed(1)}%`}></div>)}
+  </div>
+  <ul class="legend">
+    {segs.map((s) => (
+      <li>
+        <span class="sw" style={`background:${s.color}`}></span>
+        <span class="l">{s.label}</span>
+        <span class="n num"><strong>{p(s.value).toFixed(1)}%</strong> · {new Intl.NumberFormat('en-IN').format(s.value)}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+<style>
+  .bar { display: flex; gap: 2px; height: 44px; border-radius: 6px; overflow: hidden; }
+  .seg { height: 100%; min-width: 3px; }
+  .bracket { border: 2px solid var(--ink); border-bottom: 0; height: 12px; margin-bottom: 6px; position: relative; border-radius: 4px 4px 0 0; }
+  .bracket span { position: absolute; bottom: 14px; left: 0; font-size: 0.8125rem; font-weight: 700; white-space: nowrap; }
+  .stack { padding-top: 1.6rem; }
+  .legend { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: 0.6rem; }
+  .legend li { display: grid; grid-template-columns: 14px 1fr; column-gap: 0.6rem; align-items: start; font-size: 0.9375rem; line-height: 1.35; }
+  .sw { width: 14px; height: 14px; border-radius: 3px; margin-top: 3px; }
+  .n { grid-column: 2; color: var(--ink-2); font-size: 0.875rem; }
+</style>

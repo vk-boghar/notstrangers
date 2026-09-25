@@ -1,0 +1,20 @@
+---
+// Pre-generated share cards (scripts/share-cards.mjs). Stats only — never people or case details.
+import { useT } from '../i18n';
+import { SITE_URL, type Lang } from '../config/site';
+interface Props { lang: Lang; card: 'hook' | 'scale' | 'wait'; text: string }
+const { lang, card, text } = Astro.props;
+const { t } = useT(lang);
+const base = `/share/${lang}/${card}`;
+const wa = `https://wa.me/?text=${encodeURIComponent(`${text} ${SITE_URL}/${lang}/`)}`;
+---
+<div class="share">
+  <span class="small muted">{t('common.share')}:</span>
+  <a class="btn" href={`${base}-1080x1350.png`} download>{t('common.share_download')} 4:5</a>
+  <a class="btn" href={`${base}-1200x630.png`} download>{t('common.share_download')} 1.91:1</a>
+  <a class="btn" href={wa} rel="noopener external" target="_blank">{t('common.share_whatsapp')}</a>
+</div>
+<style>
+  .share { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 1.25rem; }
+  .share .btn { min-height: 34px; padding: 0.3rem 0.75rem; font-size: 0.8125rem; font-weight: 600; }
+</style>

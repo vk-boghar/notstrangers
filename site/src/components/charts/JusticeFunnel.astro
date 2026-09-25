@@ -1,0 +1,75 @@
+---
+// POCSO cases from police to court (NCRB Tables 4A.3 & 4A.5, national, one year).
+// Rule 4.8: the conviction rate is always shown next to the backlog it says nothing about.
+import { one, fmtInt, fmt, pct } from '../../lib/data';
+import { useT } from '../../i18n';
+import type { Lang } from '../../config/site';
+import BarList from './BarList.astro';
+import StackBar from './StackBar.astro';
+import DataTable from '../DataTable.astro';
+import Cite from '../Cite.astro';
+
+interface Props { lang: Lang; year: number }
+const { lang, year } = Astro.props;
+const { t } = useT(lang);
+const P = (dim: string) => one({ dataset: 'pocso_police', geo: 'IN', year, dim });
+const C = (dim: string) => one({ dataset: 'pocso_court', geo: 'IN', year, dim });
+const inv = P('total_for_investigation'), cs = P('chargesheeted'), pendInv = P('pending_investigation_end_year');
+const trial = C('total_for_trial'), prev = C('pending_trial_prev_year'), sent = C('sent_for_trial');
+const done = C('trials_completed'), conv = C('convicted'), acq = C('acquitted'), dis = C('discharged');
+const pendTrial = C('pending_trial_end_year');
+const convRate = one({ dataset: 'pocso_court', geo: 'IN', year, metric: 'conviction_rate_pct' });
+const pendPct = one({ dataset: 'pocso_court', geo: 'IN', year, metric: 'pendency_pct' });
+const ta = lang === 'ta';
+const L = {
+  inv: ta ? 'காவல் விசாரணையில் இருந்த வழக்குகள்' : 'Cases police had to investigate',
+  cs: ta ? 'குற்றப்பத்திரிகை தாக்கல் செய்யப்பட்டவை' : 'Chargesheeted (sent to court)',
+  trial: ta ? 'நீதிமன்றங்களில் விசாரணைக்கு இருந்த மொத்த வழக்குகள் (பழைய நிலுவை உட்பட)' : 'Cases before the courts (incl. backlog from earlier years)',
+  done: ta ? 'இந்த ஆண்டு விசாரணை முடிந்தவை' : 'Trials completed this year',
+  pend: ta ? 'ஆண்டு இறுதியில் இன்னும் காத்திருப்பவை' : 'Still waiting for trial at year end',
+  conv: ta ? 'தண்டனை' : 'Convicted', acq: ta ? 'விடுதலை' : 'Acquitted', dis: ta ? 'விடுவிப்பு (discharged)' : 'Discharged',
+};
+const all = [inv, cs, pendInv, trial, prev, sent, done, conv, acq, dis, pendTrial, convRate, pendPct];
+---
+<div class="funnel">
+  <p class="takeaway">{ta
+    ? `${year}-இல் நீதிமன்றங்கள் முன் இருந்த ${fmtInt(trial.value)} போக்சோ வழக்குகளில், ${fmtInt(done.value)} வழக்குகளில் மட்டுமே விசாரணை முடிந்தது. ${fmt(pendPct.value, 1)}% ஆண்டு இறுதியிலும் காத்திருந்தன.`
+    : `In ${year}, courts had ${fmtInt(trial.value)} POCSO cases before them. Trials finished in ${fmtInt(done.value)}. ${fmt(pendPct.value, 1)}% were still waiting at the end of the year.`}</p>
+  <BarList
+    ariaLabel={`POCSO ${year}: ${L.inv} ${fmtInt(inv.value)}; ${L.cs} ${fmtInt(cs.value)}; ${L.trial} ${fmtInt(trial.value)}; ${L.done} ${fmtInt(done.value)}; ${L.pend} ${fmtInt(pendTrial.value)}`}
+    bars={[
+      { label: L.inv, value: inv.value, valueLabel: fmtInt(inv.value), color: 'var(--c-seq-soft)' },
+      { label: L.cs, value: cs.value, valueLabel: `${fmtInt(cs.value)}`, color: 'var(--c-seq-soft)' },
+      { label: L.trial, value: trial.value, valueLabel: fmtInt(trial.value), color: 'var(--c-seq)' },
+      { label: L.done, value: done.value, valueLabel: fmtInt(done.value), color: 'var(--c-known)', emphasis: true },
+      { label: L.pend, value: pendTrial.value, valueLabel: `${fmtInt(pendTrial.value)} · ${fmt(pendPct.value, 1)}%`, color: 'var(--c-family)', emphasis: true },
+    ]}
+  />
+  <h4 class="sub">{ta ? `விசாரணை முடிந்த ${fmtInt(done.value)} வழக்குகளில்` : `Of the ${fmtInt(done.value)} trials completed`}</h4>
+  <StackBar
+    ariaLabel={`${L.conv} ${fmtInt(conv.value)}, ${L.acq} ${fmtInt(acq.value)}, ${L.dis} ${fmtInt(dis.value)}`}
+    segs={[
+      { key: 'conv', label: L.conv, value: conv.value, color: 'var(--c-known)' },
+      { key: 'acq', label: L.acq, value: acq.value, color: 'var(--c-friends)' },
+      { key: 'dis', label: L.dis, value: dis.value, color: 'var(--c-unknown)' },
+    ]}
+  />
+  <p class="small">{ta
+    ? `NCRB தண்டனை விகிதம் ${fmt(convRate.value, 1)}% (தண்டனை ÷ விசாரணை முடிந்தவை). இது முடிந்த வழக்குகளை மட்டுமே கணக்கிடுகிறது — ${fmt(pendPct.value, 1)}% நிலுவையில் இருக்கும் வழக்குகளைப் பற்றி எதுவும் சொல்லவில்லை.`
+    : `NCRB's conviction rate is ${fmt(convRate.value, 1)}% (convicted ÷ trials completed). It only covers trials that finished — it says nothing about the ${fmt(pendPct.value, 1)}% still waiting.`}</p>
+  <DataTable lang={lang} caption={`POCSO police and court disposal ${year}`} head={[ta ? 'நிலை' : 'Stage', ta ? 'வழக்குகள்' : 'Cases']} numeric={[1]}
+    rows={[
+      [ta ? 'முந்தைய ஆண்டிலிருந்து விசாரணை நிலுவை' : 'Pending investigation from previous year', fmtInt(P('pending_investigation_prev_year').value)],
+      [ta ? 'இந்த ஆண்டு பதிவானவை' : 'Reported this year', fmtInt(P('reported').value)],
+      [L.inv, fmtInt(inv.value)], [L.cs, fmtInt(cs.value)],
+      [ta ? 'ஆண்டு இறுதியில் விசாரணை நிலுவை' : 'Pending investigation at year end', fmtInt(pendInv.value)],
+      [ta ? 'முந்தைய ஆண்டிலிருந்து விசாரணை (நீதிமன்றம்) நிலுவை' : 'Pending trial from previous year', fmtInt(prev.value)],
+      [ta ? 'இந்த ஆண்டு விசாரணைக்கு அனுப்பப்பட்டவை' : 'Sent for trial this year', fmtInt(sent.value)],
+      [L.trial, fmtInt(trial.value)], [L.done, fmtInt(done.value)], [L.conv, fmtInt(conv.value)], [L.acq, fmtInt(acq.value)], [L.dis, fmtInt(dis.value)],
+      [L.pend, fmtInt(pendTrial.value)], [ta ? 'தண்டனை விகிதம்' : 'Conviction rate', `${fmt(convRate.value, 1)}%`], [ta ? 'நீதிமன்ற நிலுவை %' : 'Court pendency', `${fmt(pendPct.value, 1)}%`],
+    ]} />
+  <Cite rows={all} lang={lang} csv="pocso_court" />
+</div>
+<style>
+  .sub { font-size: 0.95rem; margin: 1.5rem 0 0; }
+</style>

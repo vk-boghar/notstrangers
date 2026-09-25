@@ -1,0 +1,56 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.src.outputs.ok }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source present?
+        id: src
+        run: test -f site/package.json && echo ok=1 >> $GITHUB_OUTPUT || echo ok=0 >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        if: steps.src.outputs.ok == '1'
+        with: { python-version: '3.11' }
+      - run: pip install -r pipeline/requirements.txt
+        if: steps.src.outputs.ok == '1'
+      - name: Pipeline (validation must pass before anything is published)
+        if: steps.src.outputs.ok == '1'
+        run: python -m pipeline.run --strict
+      - uses: actions/setup-node@v4
+        if: steps.src.outputs.ok == '1'
+        with: { node-version: '22', cache: npm, cache-dependency-path: site/package-lock.json }
+      - name: Build site + guardrails
+        if: steps.src.outputs.ok == '1'
+        working-directory: site
+        run: |
+          npm ci
+          npm run build
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.src.outputs.ok == '1'
+        with: { path: site/dist }
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.ok == '1'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

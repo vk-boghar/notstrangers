@@ -1,0 +1,113 @@
+---
+// One profile page per State/UT (spec §5.2 "state panel"), generated from whatever NCRB data exists.
+import Base from '../../../../layouts/Base.astro';
+import Cite from '../../../../components/Cite.astro';
+import Caveat from '../../../../components/Caveat.astro';
+import DataTable from '../../../../components/DataTable.astro';
+import BarList from '../../../../components/charts/BarList.astro';
+import RelationshipChart from '../../../../components/charts/RelationshipChart.astro';
+import { LANGS, type Lang } from '../../../../config/site';
+import { useT } from '../../../../i18n';
+import { ALL, one, maybe, where, fmtInt, fmt, pct, type Row } from '../../../../lib/data';
+
+export function getStaticPaths() {
+  const codes = [...new Set(ALL.filter((r) => r.dataset === 'pocso_total' && r.geo_level === 'state').map((r) => r.geo_code))];
+  return LANGS.flatMap((lang) => codes.map((c) => ({ params: { lang, code: c.toLowerCase() } })));
+}
+const lang = Astro.params.lang as Lang;
+const code = Astro.params.code!.toUpperCase();
+const { t } = useT(lang);
+const ta = lang === 'ta';
+
+const series = where({ dataset: 'pocso_total', geo: code, metric: 'cases' }).sort((a, b) => a.year - b.year);
+const name = series[0].geo_name;
+const Y = series[series.length - 1].year;
+const cases = series[series.length - 1];
+const rate = maybe({ dataset: 'pocso_rate', geo: code, year: Y });
+const inRate = maybe({ dataset: 'pocso_rate', geo: 'IN', year: Y });
+const rateSeries = where({ dataset: 'pocso_rate', geo: code }).sort((a, b) => a.year - b.year);
+const cac = where({ dataset: 'cac_total', geo: code }).sort((a, b) => a.year - b.year);
+const ageY = Math.max(...where({ dataset: 'pocso_victims_age', geo: code }).map((r) => r.year));
+const BANDS = ['lt6', '6_12', '12_16', '16_18'];
+const age = BANDS.map((b) => maybe({ dataset: 'pocso_victims_age', geo: code, year: ageY, dim: b })).filter(Boolean) as Row[];
+const ageTot = maybe({ dataset: 'pocso_victims_age', geo: code, year: ageY, dim: 'total' });
+const csRate = maybe({ dataset: 'cac_police', geo: code, year: Y, metric: 'chargesheeting_rate_pct' });
+const conv = maybe({ dataset: 'cac_court', geo: code, year: Y, metric: 'conviction_rate_pct' });
+const pend = maybe({ dataset: 'cac_court', geo: code, year: Y, metric: 'pendency_pct' });
+const pendN = maybe({ dataset: 'cac_court', geo: code, year: Y, dim: 'pending_trial_end_year' });
+const doneN = maybe({ dataset: 'cac_court', geo: code, year: Y, dim: 'trials_completed' });
+const maxCases = Math.max(...series.map((r) => r.value));
+const AGE_LABEL: Record<string, string> = { lt6: t('home.age_band_lt6'), '6_12': t('home.age_band_6_12'), '12_16': t('home.age_band_12_16'), '16_18': t('home.age_band_16_18') };
+---
+<Base lang={lang} title={`${name} — POCSO data`} description={`${name}: POCSO cases, rate per lakh children, who the offenders were, victims' ages and court outcomes, from NCRB Crime in India.`}>
+  <div class="wrap page">
+    <p class="kicker"><a href={`/${lang}/explore/india/`}>← {t('nav.india')}</a></p>
+    <h1>{name}</h1>
+    <div class="stats">
+      <div class="card"><span class="v num">{fmtInt(cases.value)}</span><span>{ta ? `போக்சோ வழக்குகள், ${Y}` : `POCSO cases, ${Y}`}</span></div>
+      {rate && <div class="card"><span class="v num">{fmt(rate.value, 1)}</span><span>{ta ? 'ஒரு லட்சம் குழந்தைகளுக்கு' : 'per lakh children'}{inRate && <> · {ta ? 'இந்தியா' : 'India'} {fmt(inRate.value, 1)}</>}</span></div>}
+      {ageTot && age.length === 4 && <div class="card"><span class="v num">{ageTot.value ? pct(age[2].value + age[3].value, ageTot.value) : '—'}%</span><span>{ta ? 'பாதிக்கப்பட்டோர் 12–18 வயதினர் (பிரிவு 4 & 6)' : 'of victims aged 12–18 (Sec 4 & 6)'}</span></div>}
+    </div>
+    <Caveat lang={lang} />
+
+    <section class="section" aria-labelledby="trend-h">
+      <h2 id="trend-h">{ta ? 'ஆண்டுவாரியாகப் போக்சோ வழக்குகள்' : 'POCSO cases by year'}</h2>
+      <BarList ariaLabel={series.map((r) => `${r.year}: ${fmtInt(r.value)}`).join('; ')} max={maxCases}
+        bars={series.map((r) => {
+          const rr = rateSeries.find((x) => x.year === r.year);
+          return { label: String(r.year), value: r.value, valueLabel: `${fmtInt(r.value)}${rr ? ` · ${fmt(rr.value, 1)} / ${ta ? 'லட்சம்' : 'lakh'}` : ''}`, color: 'var(--c-seq)' };
+        })} />
+      <p class="small">{t('home.scale_rising')}</p>
+      <Cite rows={[...series, ...rateSeries]} lang={lang} csv="pocso_total" />
+    </section>
+
+    <section class="section" aria-labelledby="who-h">
+      <h2 id="who-h">{t('home.who_title')}</h2>
+      <RelationshipChart lang={lang} geos={[code]} />
+      <p class="small"><a href={`/${lang}/#who`}>{t('home.who_explainer_title')} →</a></p>
+    </section>
+
+    {age.length === 4 && ageTot && ageTot.value > 0 && (
+      <section class="section" aria-labelledby="age-h">
+        <h2 id="age-h">{ta ? `பாதிக்கப்பட்டோரின் வயது, ${ageY}` : `Victims' ages, ${ageY}`}</h2>
+        <BarList ariaLabel={age.map((r) => `${AGE_LABEL[r.dimension_value]} ${fmtInt(r.value)}`).join('; ')}
+          bars={age.map((r) => ({ label: AGE_LABEL[r.dimension_value], value: r.value, valueLabel: `${fmtInt(r.value)} · ${pct(r.value, ageTot.value)}%`, color: 'var(--c-seq)' }))} />
+        <p class="small muted">{t('home.age_note')}</p>
+        <Cite rows={[...age, ageTot]} lang={lang} csv="pocso_victims_age" />
+      </section>
+    )}
+
+    {(conv || pend || csRate) && (
+      <section class="section" aria-labelledby="just-h">
+        <h2 id="just-h">{ta ? `நீதி, ${Y}` : `Justice, ${Y}`}</h2>
+        <p class="small muted">{ta ? 'குழந்தைகளுக்கு எதிரான அனைத்துக் குற்றங்களுக்குமானவை — NCRB போக்சோவுக்குத் தனியாக மாநில வாரியாக வெளியிடுவதில்லை.' : 'For all crimes against children — NCRB does not publish these for POCSO alone by state.'}</p>
+        <DataTable lang={lang} open caption={`${name} justice ${Y}`} head={[ta ? 'அளவீடு' : 'Measure', ta ? 'மதிப்பு' : 'Value']} numeric={[1]}
+          rows={[
+            csRate && [ta ? 'குற்றப்பத்திரிகை விகிதம் (காவல்)' : 'Chargesheeting rate (police)', `${fmt(csRate.value, 1)}%`],
+            doneN && [ta ? 'விசாரணை முடிந்த வழக்குகள்' : 'Trials completed', fmtInt(doneN.value)],
+            conv && [ta ? 'தண்டனை விகிதம்' : 'Conviction rate', `${fmt(conv.value, 1)}%`],
+            pendN && [ta ? 'ஆண்டு இறுதியில் விசாரணை நிலுவை' : 'Cases pending trial at year end', fmtInt(pendN.value)],
+            pend && [ta ? 'நீதிமன்ற நிலுவை %' : 'Court pendency', `${fmt(pend.value, 1)}%`],
+          ].filter(Boolean) as string[][]} />
+        <Cite rows={[csRate, conv, pend, pendN, doneN].filter(Boolean) as Row[]} lang={lang} csv="cac_court" />
+      </section>
+    )}
+
+    {cac.length > 0 && (
+      <section class="section" aria-labelledby="cac-h">
+        <h2 id="cac-h">{ta ? 'குழந்தைகளுக்கு எதிரான அனைத்துக் குற்றங்கள்' : 'All crimes against children'}</h2>
+        <BarList ariaLabel={cac.map((r) => `${r.year}: ${fmtInt(r.value)}`).join('; ')}
+          bars={cac.map((r) => ({ label: String(r.year), value: r.value, valueLabel: fmtInt(r.value), color: 'var(--c-seq-soft)' }))} />
+        <Cite rows={cac} lang={lang} csv="cac_total" />
+      </section>
+    )}
+    {code === 'TN' && <p><a class="btn primary" href={`/${lang}/explore/tamil-nadu/`}>{t('nav.tn')} →</a></p>}
+  </div>
+</Base>
+<style>
+  .page { padding-top: 2rem; }
+  .stats { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 1.25rem 0; }
+  .stats .card { display: grid; gap: 0.2rem; margin: 0; }
+  .stats .v { font-size: 1.6rem; font-weight: 700; }
+  .stats span:not(.v) { font-size: 0.875rem; color: var(--ink-2); }
+</style>

@@ -1,0 +1,8 @@
+---
+import { useT } from '../i18n';
+import type { Lang } from '../config/site';
+interface Props { tier: 1 | 2 | 3; lang: Lang }
+const { tier, lang } = Astro.props;
+const { t } = useT(lang);
+---
+<span class={`tag t${tier}`} title={`Tier ${tier}`}>{t(`common.tier${tier}`)}</span>

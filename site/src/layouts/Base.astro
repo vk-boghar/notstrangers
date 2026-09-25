@@ -1,0 +1,152 @@
+---
+// Only the subsets we use (Latin + Tamil), two weights each. 600 falls back to 700.
+import '@fontsource/noto-sans/latin-400.css';
+import '@fontsource/noto-sans/latin-700.css';
+import '@fontsource/noto-sans-tamil/tamil-400.css';
+import '@fontsource/noto-sans-tamil/tamil-700.css';
+import '../styles/global.css';
+import latin400 from '@fontsource/noto-sans/files/noto-sans-latin-400-normal.woff2?url';
+import latin700 from '@fontsource/noto-sans/files/noto-sans-latin-700-normal.woff2?url';
+import tamil400 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-400-normal.woff2?url';
+import tamil700 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-700-normal.woff2?url';
+import {
+  SITE_NAME, SITE_NAME_TA, SITE_URL, NOINDEX, TAMIL_REVIEWED, CONTACT_EMAIL, type Lang,
+} from '../config/site';
+import { useT, otherLang, swapLangPath } from '../i18n';
+import { META, fmtDate } from '../lib/data';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Page body is English-only for now (e.g. methodology) — show a note on the Tamil version. */
+  englishOnly?: boolean;
+  ogImage?: string;
+}
+const { lang, title, description, englishOnly = false, ogImage } = Astro.props;
+const { t } = useT(lang);
+const name = lang === 'ta' ? SITE_NAME_TA : SITE_NAME;
+const fullTitle = title ? `${title} · ${name}` : name;
+const desc = description ?? t('meta.description');
+const path = Astro.url.pathname;
+const alt = otherLang(lang);
+const altHref = swapLangPath(path, alt);
+const canonical = new URL(path, SITE_URL).href;
+const og = new URL(ogImage ?? `/share/${lang}/hook-1200x630.png`, SITE_URL).href;
+const nav = [
+  ['home', `/${lang}/`],
+  ['india', `/${lang}/explore/india/`],
+  ['tn', `/${lang}/explore/tamil-nadu/`],
+  ['help', `/${lang}/help/`],
+  ['method', `/${lang}/methodology/`],
+  ['data', `/${lang}/data/`],
+  ['about', `/${lang}/about/`],
+] as const;
+// Preload the fonts this language actually needs so they download in parallel with the HTML.
+const preload = lang === 'ta' ? [tamil400, tamil700, latin400] : [latin400, latin700];
+const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path.startsWith(href));
+---
+<!doctype html>
+<html lang={lang === 'ta' ? 'ta-IN' : 'en-IN'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    {NOINDEX && <meta name="robots" content="noindex,nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang === 'en' ? 'en-IN' : 'ta-IN'} href={canonical} />
+    <link rel="alternate" hreflang={alt === 'en' ? 'en-IN' : 'ta-IN'} href={new URL(altHref, SITE_URL).href} />
+    <meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141617" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={lang === 'ta' ? 'ta_IN' : 'en_IN'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {preload.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="referrer" content="no-referrer" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{t('nav.skip')}</a>
+    {NOINDEX && <div class="banner banner-preview" role="note">{t('banner.preview')}</div>}
+    {lang === 'ta' && !TAMIL_REVIEWED && <div class="banner banner-ta" role="note">{t('banner.ta_draft')}</div>}
+
+    <header class="site-header">
+      <div class="wrap-wide bar">
+        <a class="brand" href={`/${lang}/`}>
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><circle cx="6" cy="11" r="4" fill="var(--accent)"/><circle cx="16" cy="11" r="4" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>
+          <span>{name}</span>
+        </a>
+        <a class="lang" href={altHref} hreflang={alt} lang={alt} aria-label={t('lang.switch_label')}>{t('lang.switch')}</a>
+        <details class="menu">
+          <summary>{t('nav.menu')}</summary>
+          <nav aria-label="Main">
+            <ul>
+              {nav.map(([k, href]) => (
+                <li><a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{t(`nav.${k}`)}</a></li>
+              ))}
+            </ul>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <main id="main">
+      {englishOnly && lang === 'ta' && (
+        <div class="wrap"><p class="en-only"><span class="draft">{t('banner.ta_pending')}</span> இந்தப் பக்கம் தற்போது ஆங்கிலத்தில் மட்டும் உள்ளது.</p></div>
+      )}
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap-wide">
+        <p><strong>{name}</strong> — {t('footer.noncommercial')}</p>
+        <p>{t('footer.no_cases')}</p>
+        <p>
+          {t('footer.error')} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          · {t('footer.updated')}: <span class="num">{fmtDate(META.generated_on, lang)}</span>
+        </p>
+        <p class="small muted">
+          {nav.map(([k, href], i) => (<>{i > 0 && ' · '}<a href={href}>{t(`nav.${k}`)}</a></>))}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .banner { font-size: 0.8125rem; text-align: center; padding: 0.45rem 16px; }
+  .banner-preview { background: var(--ink); color: var(--bg); }
+  .banner-ta { background: var(--draft-bg); color: var(--draft-ink); border-bottom: 1px solid var(--draft-line); }
+  .site-header { background: var(--bg); border-bottom: 1px solid var(--line); position: relative; z-index: 5; }
+  .bar { display: flex; align-items: center; gap: 0.75rem; min-height: 56px; flex-wrap: wrap; }
+  .brand { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--ink); text-decoration: none; margin-right: auto; }
+  .lang { font-family: system-ui, sans-serif; font-weight: 600; font-size: 0.9rem; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.8rem; min-height: 36px; display: inline-flex; align-items: center; }
+  .menu summary { list-style: none; cursor: pointer; font-weight: 600; font-size: 0.9rem; padding: 0.3rem 0.8rem; border: 1px solid var(--line); border-radius: 999px; min-height: 36px; display: inline-flex; align-items: center; }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu[open] summary { background: var(--surface-2); }
+  .menu nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: 0 8px 20px rgb(0 0 0 / 0.06); }
+  .menu ul { list-style: none; margin: 0 auto; padding: 0.5rem 16px 1rem; max-width: var(--maxw-wide); }
+  .menu li a { display: block; padding: 0.65rem 0; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .menu li a[aria-current='page'] { color: var(--accent); font-weight: 700; }
+  @media (min-width: 900px) {
+    .menu summary { display: none; }
+    .menu { display: contents; }
+    .menu nav { position: static; border: 0; box-shadow: none; background: none; order: 2; width: auto; }
+    .menu ul { display: flex; gap: 1.1rem; padding: 0; }
+    .menu li a { border: 0; padding: 0; font-size: 0.9rem; }
+    .lang { order: 3; }
+  }
+  .site-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2rem 0 3rem; font-size: 0.875rem; color: var(--ink-2); }
+  .en-only { margin-top: 1.25rem; font-size: 0.9rem; }
+</style>
+<script is:inline>
+  // Desktop: <details> nav must be open so links show; mobile keeps it collapsed. ~150 bytes.
+  (function () { var d = document.querySelector('.menu'); if (!d) return; var m = matchMedia('(min-width: 900px)');
+    function s() { if (m.matches) d.setAttribute('open', ''); else d.removeAttribute('open'); } s(); m.addEventListener && m.addEventListener('change', s); })();
+</script>

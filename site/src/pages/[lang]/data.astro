@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import TierTag from '../../components/TierTag.astro';
+import { LANGS, type Lang } from '../../config/site';
+import { useT } from '../../i18n';
+import { ALL, META, ORG_LABEL, fmtDate } from '../../lib/data';
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const { t } = useT(lang);
+const byDs = META.datasets.map((ds) => {
+  const rows = ALL.filter((r) => r.dataset === ds);
+  return { ds, n: rows.length, orgs: [...new Set(rows.map((r) => ORG_LABEL[r.source_org] ?? r.source_org))], tiers: [...new Set(rows.map((r) => r.tier))].sort() as (1 | 2 | 3)[],
+    years: [...new Set(rows.map((r) => r.year))].sort().join(', ') };
+});
+const SCHEMA = ['year', 'period_start', 'period_end', 'geo_level', 'geo_code', 'geo_name', 'dataset', 'metric', 'dimension', 'dimension_value', 'value', 'unit', 'source_org', 'tier', 'as_of_date', 'retrieved_on', 'source_table', 'source_edition', 'source_url', 'notes'];
+---
+<Base lang={lang} title={t('pages.data_title')}>
+  <div class="wrap-wide page">
+    <p class="kicker">{t('nav.data')}</p>
+    <h1>{t('pages.data_title')}</h1>
+    <p class="lead">{t('pages.data_lead')}</p>
+    <p><a class="btn primary" href="/data/all_data.csv" download>{t('pages.data_all')} (CSV)</a></p>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th scope="col">{t('pages.data_dataset')}</th><th scope="col">{t('common.year')}</th><th scope="col">{t('pages.data_sources')}</th><th scope="col" class="n">{t('pages.data_rows')}</th><th scope="col">CSV</th></tr></thead>
+        <tbody>
+          {byDs.map((d) => (
+            <tr>
+              <th scope="row"><code>{d.ds}</code></th>
+              <td class="num">{d.years}</td>
+              <td>{d.orgs.join(', ')} {d.tiers.map((x) => <TierTag tier={x} lang={lang} />)}</td>
+              <td class="n">{d.n}</td>
+              <td><a href={`/data/${d.ds}.csv`} download>{d.ds}.csv</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">{t('footer.updated')}: {fmtDate(META.generated_on, lang)}</p>
+    <h2>{t('pages.data_schema')}</h2>
+    <p class="small"><code>{SCHEMA.join(', ')}</code></p>
+    <p class="small">{t('pages.data_licence')}</p>
+  </div>
+</Base>
+<style>.page { padding-top: 2rem; } h2 { margin-top: 2rem; } code { font-size: 0.85em; }</style>

@@ -1,0 +1,40 @@
+state_ut,trials_completed,disposed_by_courts,pending_trial_end_year,conviction_rate,pendency_pct_court
+Andhra Pradesh,1751,1948,10154,6.5,83.9
+Arunachal Pradesh,21,21,819,52.4,97.5
+Assam,3007,3482,23385,22.3,87.0
+Bihar,1350,1350,42419,52.7,96.9
+Chhattisgarh,3094,3135,22225,23.9,87.6
+Goa,75,78,1004,8.0,92.8
+Gujarat,2574,2602,32586,19.2,92.6
+Haryana,2049,2079,10701,28.7,83.7
+Himachal Pradesh,379,419,2096,27.7,83.3
+Jharkhand,924,931,6364,39.8,87.2
+Karnataka,4094,4148,21436,20.8,83.8
+Kerala,4063,4251,26501,34.0,86.2
+Madhya Pradesh,7192,7583,68566,39.3,90.0
+Maharashtra,3718,3838,85879,17.6,95.7
+Manipur,21,25,575,19.0,95.8
+Meghalaya,279,293,2226,41.9,88.4
+Mizoram,63,66,767,87.3,92.1
+Nagaland,14,14,220,71.4,94.0
+Odisha,1992,2003,23516,11.0,92.2
+Punjab,1098,1111,6091,26.2,84.6
+Rajasthan,2619,2662,28148,45.9,91.4
+Sikkim,124,124,359,22.6,74.3
+Tamil Nadu,4467,4593,22701,35.5,83.2
+Telangana,2878,3063,16935,38.1,84.7
+Tripura,99,138,1474,24.2,91.4
+Uttar Pradesh,8625,8630,97162,66.5,91.8
+Uttarakhand,451,452,6216,48.1,93.2
+West Bengal,2397,2453,57169,5.6,95.9
+TOTAL STATE(S),59418,61492,617694,34.1,90.9
+A&N Islands,89,100,847,9.0,89.4
+Chandigarh,57,61,305,35.1,83.3
+D&N Haveli and Daman & Diu,23,23,180,13.0,88.7
+Delhi,712,808,22516,33.0,96.5
+Jammu & Kashmir,128,144,2517,9.4,94.6
+Ladakh,0,0,24,-,100.0
+Lakshadweep,1,1,66,0.0,98.5
+Puducherry,7,7,738,28.6,99.1
+TOTAL UT(S),1017,1144,27193,27.5,96.0
+TOTAL ALL INDIA,60435,62636,644887,33.9,91.1

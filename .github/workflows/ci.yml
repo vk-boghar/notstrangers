@@ -1,0 +1,41 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  data-and-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source present?
+        id: src
+        run: test -f site/package.json && echo ok=1 >> $GITHUB_OUTPUT || echo ok=0 >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-python@v5
+        if: steps.src.outputs.ok == '1'
+        with: { python-version: '3.11' }
+      - name: Install pipeline deps
+        if: steps.src.outputs.ok == '1'
+        run: pip install -r pipeline/requirements.txt
+      - name: Pipeline tests
+        if: steps.src.outputs.ok == '1'
+        run: python -m pytest pipeline/tests -q
+      - name: Run pipeline (anchor checksums, sum rules, provenance)
+        if: steps.src.outputs.ok == '1'
+        run: python -m pipeline.run --strict
+      - name: Committed data is up to date
+        if: steps.src.outputs.ok == '1'
+        run: |
+          git diff --exit-code -- site/src/data site/public/data data/processed \
+            || (echo "::error::Pipeline output differs from committed files. Run 'python -m pipeline.run' and commit." && exit 1)
+
+      - uses: actions/setup-node@v4
+        if: steps.src.outputs.ok == '1'
+        with: { node-version: '22', cache: npm, cache-dependency-path: site/package-lock.json }
+      - name: Build site + guardrail checks
+        if: steps.src.outputs.ok == '1'
+        working-directory: site
+        run: |
+          npm ci
+          npm run build

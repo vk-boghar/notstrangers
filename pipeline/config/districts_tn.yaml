@@ -1,0 +1,67 @@
+# Tamil Nadu district normalisation + boundary mapping (spec rule 4.6).
+#
+# The boundary file shipped with the site (site/src/geo/tn-districts-2011.topo.json) is DataMeet's
+# Census-2011 district layer (MIT licence) — 32 districts. Tamil Nadu has 38 districts today.
+# Six districts were carved out in 2019–2020. Until an openly licensed 38-district boundary file is
+# added, each new district is shown MERGED into its 2011 parent, and the site says so on the map.
+#
+# When a 38-district TopoJSON is added, set `boundary_set: current38` below and the
+# `new_districts` mapping becomes a no-op.
+boundary_set: census2011
+
+# canonical name -> aliases seen in NCRB / SCRB tables (case/space-insensitive match)
+districts:
+  Ariyalur: []
+  Chengalpattu: [Chengalpet]
+  Chennai: [Chennai City, Greater Chennai]
+  Coimbatore: [Coimbatore Rural, Coimbatore City]   # NCRB/SCRB may split police-city vs rural — sum both
+  Cuddalore: []
+  Dharmapuri: []
+  Dindigul: []
+  Erode: []
+  Kallakurichi: []
+  Kancheepuram: [Kanchipuram, Kancheepuram]
+  Kanniyakumari: [Kanyakumari]
+  Karur: []
+  Krishnagiri: []
+  Madurai: [Madurai Rural, Madurai City]
+  Mayiladuthurai: []
+  Nagappattinam: [Nagapattinam]
+  Namakkal: []
+  Perambalur: []
+  Pudukkottai: [Pudukottai]
+  Ramanathapuram: []
+  Ranipet: []
+  Salem: [Salem Rural, Salem City]
+  Sivaganga: [Sivagangai]
+  Tenkasi: []
+  Thanjavur: []
+  The Nilgiris: [Nilgiris]
+  Theni: []
+  Thiruvallur: [Tiruvallur]
+  Thiruvarur: [Tiruvarur]
+  Thoothukkudi: [Tuticorin, Thoothukudi]
+  Tiruchirappalli: [Trichy, Tiruchirapalli, Tiruchirappalli Rural, Tiruchirappalli City]
+  Tirunelveli: [Tirunelveli Rural, Tirunelveli City]
+  Tirupathur: [Tirupattur]
+  Tiruppur: [Tirupur, Tiruppur Rural, Tiruppur City]
+  Tiruvannamalai: []
+  Vellore: []
+  Viluppuram: [Villupuram]
+  Virudhunagar: [Virudunagar]
+
+# Police units that are not districts (railway police, etc.). Kept in data, excluded from the map.
+non_district_units: [Railway Chennai, Railway Trichy, CB-CID, Railways, GRP]
+
+# New district -> 2011 parent (for census2011 boundary set). Year = year of formation.
+new_districts:
+  Kallakurichi: {parent: Viluppuram, formed: 2019}
+  Tenkasi: {parent: Tirunelveli, formed: 2019}
+  Chengalpattu: {parent: Kancheepuram, formed: 2019}
+  Tirupathur: {parent: Vellore, formed: 2019}
+  Ranipet: {parent: Vellore, formed: 2019}
+  Mayiladuthurai: {parent: Nagappattinam, formed: 2020}
+
+# The DataMeet 2011 file spells two names differently from the canonical list above.
+boundary_file_names:
+  Virudhunagar: Virudunagar

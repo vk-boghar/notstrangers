@@ -1,0 +1,140 @@
+---
+import Base from '../../layouts/Base.astro';
+import { LANGS, CONTACT_EMAIL, type Lang } from '../../config/site';
+import { useT } from '../../i18n';
+import { ALL, META, ORG_LABEL, fmtDate, periodLabel } from '../../lib/data';
+
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const { t } = useT(lang);
+
+// Source register — one row per distinct source table, straight from the data.
+const reg = new Map<string, { org: string; edition: string; table: string; url: string; tier: number; periods: Set<string>; retrieved: string; datasets: Set<string> }>();
+for (const r of ALL) {
+  const k = `${r.source_url}|${r.source_table}|${r.source_edition}`;
+  if (!reg.has(k)) reg.set(k, { org: r.source_org, edition: r.source_edition, table: r.source_table, url: r.source_url, tier: r.tier, periods: new Set(), retrieved: r.retrieved_on, datasets: new Set() });
+  reg.get(k)!.periods.add(periodLabel(r));
+  reg.get(k)!.datasets.add(r.dataset);
+}
+const sources = [...reg.values()].sort((a, b) => a.tier - b.tier || a.org.localeCompare(b.org));
+const NEW_DISTRICTS = [
+  ['Kallakurichi', 'Viluppuram', 2019], ['Tenkasi', 'Tirunelveli', 2019], ['Chengalpattu', 'Kancheepuram', 2019],
+  ['Tirupathur', 'Vellore', 2019], ['Ranipet', 'Vellore', 2019], ['Mayiladuthurai', 'Nagappattinam', 2020],
+];
+---
+<Base lang={lang} title={t('nav.method')} englishOnly>
+  <article class="wrap prose" lang="en">
+    <p class="kicker">Methodology &amp; sources</p>
+    <h1>How we count</h1>
+    <p class="lead">Accuracy is the whole point of this site. Every number traces to a specific published table, carries its data year and a link, and can be downloaded. This page explains where the numbers come from and — just as important — what they cannot tell you.</p>
+
+    <nav class="toc" aria-label="On this page">
+      <a href="#rules">Reading the numbers</a> · <a href="#relationship">The relationship categories</a> · <a href="#tiers">Data tiers</a> ·
+      <a href="#sources">Source register</a> · <a href="#pipeline">How the data is built</a> · <a href="#geo">Maps &amp; boundaries</a> ·
+      <a href="#open">Open questions</a> · <a href="#changelog">Changelog</a>
+    </nav>
+
+    <h2 id="rules">Reading the numbers</h2>
+    <ol>
+      <li><strong>Registered is not the same as occurred.</strong> NCRB and state police count cases reported to police. Most child sexual abuse is never reported, so the real number is much higher. The Ministry of Women &amp; Child Development's <em>Study on Child Abuse: India 2007</em> found self-reported experiences of sexual abuse far above registered case numbers; it is old and its survey method differs from police data, so we cite it only to make this point, not for a figure.</li>
+      <li><strong>Rising numbers can mean better reporting.</strong> Tamil Nadu's sharp rise is widely attributed by officials and child-rights groups to more cases being reported. We never describe an increase as “abuse exploding” without that caveat.</li>
+      <li><strong>Rates, not counts, for comparing places.</strong> States with more children will have more cases. For comparisons we use NCRB's own “crime rate per lakh children”. We do not compute our own denominators; if we ever must, the population source will be documented here.</li>
+      <li><strong>Conviction rate says nothing about the backlog.</strong> NCRB's conviction rate is convictions ÷ cases in which trials were <em>completed</em> (convicted + discharged + acquitted), as printed in Tables 4A.5/4A.6. It ignores the much larger pile still waiting. Wherever a conviction rate appears, pendency appears beside it.</li>
+      <li><strong>State and national sources are never mixed in one series.</strong> NCRB applies a “principal offence rule” (one FIR is counted once, under its most serious offence). Tamil Nadu's State Crime Records Bureau and Police Policy Note may not. They are labelled separately and never joined into one line without a visible break.</li>
+      <li><strong>Averages are labelled as averages.</strong> “About 190 a day” and “one every ~8 minutes” are the annual total divided by days in the year — not a live count. There is no real-time ticker on this site.</li>
+      <li><strong>No case-level data, ever.</strong> We publish aggregate statistics only. No names, photos, locations or details of any child or accused person — including high-profile cases in the news. Section 23 of the POCSO Act prohibits disclosing a child's identity, and in small communities naming an accused can identify the child. Accused people may also be acquitted or wrongly accused.</li>
+    </ol>
+
+    <h2 id="relationship">The relationship categories</h2>
+    <p>NCRB publishes “offenders' relation to victims” for POCSO Sections 4 &amp; 6 (penetrative and aggravated penetrative sexual assault) in four groups. We show them exactly as published:</p>
+    <ul>
+      <li><strong>Family members.</strong></li>
+      <li><strong>Family friends, neighbours, employers or other known persons.</strong> Teachers are counted here. <em>NCRB has no school or teacher category</em>, so we do not invent one.</li>
+      <li><strong>Friends, online friends, or live-in partners “on the pretext of marriage”.</strong> POCSO treats all sexual activity with under-18s as an offence regardless of consent, so this group mixes grooming, online exploitation and relationships between adolescents. The 16–18 age band dominates victims. The data cannot separate these situations, so we explain the group rather than presenting it as “predator friends”.</li>
+      <li><strong>Unknown or unidentified persons.</strong></li>
+    </ul>
+    <p>“Known to the child” on this site = the first three groups added together, which is how NCRB's own total of known offenders is built. The headline “97 of every 100” is that share rounded to a whole number; the exact figure is always shown beside it.</p>
+
+    <h2 id="tiers">Data tiers</h2>
+    <table class="data">
+      <thead><tr><th>Tier</th><th>Meaning</th><th>Examples</th><th>How it's shown</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1</th><td>Official statistical publication (audited annual release)</td><td>NCRB Crime in India, TN SCRB Crime Review, TN Police Policy Note</td><td>Normal display</td></tr>
+        <tr><th scope="row">2</th><td>Official figure, non-statistical release</td><td>Parliament answers, court filings, police press releases, NCMEC</td><td>“Official, provisional” tag</td></tr>
+        <tr><th scope="row">3</th><td>Official figure reported by the press</td><td>TN Jan–Jul 2026 figures quoted to newspapers</td><td>“Reported” tag, link to the article, excluded from headline numbers and the Latest-data strip</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="sources">Source register</h2>
+    <p>Generated from the data itself on {fmtDate(META.generated_on)} — if a source is here, a number on the site depends on it.</p>
+    <div class="table-scroll">
+      <table class="data small">
+        <thead><tr><th>Source</th><th>Table / document</th><th>Data period</th><th>Tier</th><th>Retrieved</th></tr></thead>
+        <tbody>
+          {sources.map((s) => (
+            <tr>
+              <th scope="row"><a href={s.url} rel="noopener external" target="_blank">{ORG_LABEL[s.org] ?? s.org}</a><br /><span class="muted">{s.edition}</span></th>
+              <td>{s.table}<br /><span class="muted">{[...s.datasets].join(', ')}</span></td>
+              <td class="num">{[...s.periods].join(', ')}</td>
+              <td>{s.tier}</td>
+              <td class="num">{s.retrieved}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h3>Context sources (text only)</h3>
+    <ul>
+      <li>Vidhi Centre for Legal Policy &amp; World Bank DE JURE, <a href="https://vidhilegalpolicy.in/wp-content/uploads/2022/11/221117_Final-POCSO-Draft_JALDI.pdf" rel="noopener external">A Decade of POCSO</a> (2022) — average 509.78 days to dispose a POCSO case; ~4 lakh cases filed Nov 2012–Feb 2021. Historical, not current.</li>
+      <li>Ministry of Women &amp; Child Development, <em>Study on Child Abuse: India 2007</em> — used only for the under-reporting point above.</li>
+    </ul>
+
+    <h2 id="pipeline">How the data is built</h2>
+    <p>A small Python pipeline (in the project repository under <code>pipeline/</code>) turns source files into one tidy table:</p>
+    <ol>
+      <li><strong>Raw files are committed, never scraped.</strong> NCRB PDFs/Excel files go into <code>data/raw/ncrb/&lt;year&gt;/</code>; TN SCRB and Policy Note PDFs are downloaded by hand in a browser (their site disallows automated access, and we respect that). Hand-entered figures from Parliament answers, court reports and press releases live in <code>data/raw/manual/</code> with a source link and retrieval date on every row.</li>
+      <li><strong>Table IDs are configured per year</strong> (<code>pipeline/config/tables.yaml</code>), because NCRB renumbers tables between editions.</li>
+      <li><strong>Validation fails the build</strong> if: any published anchor figure is not reproduced exactly; relationship groups don't add up to their total; age bands don't add up; or any row lacks a source table and link. State totals are checked against All-India totals and NCRB's own inconsistencies are logged. Mirrors (data.gov.in, Dataful, OpenCity) are used only to cross-check — NCRB is the source of record.</li>
+    </ol>
+    <p>Current status: <strong>{META.row_count} data rows</strong>, {META.checks_passed} validation checks passed,
+      {META.parsed_ncrb_rows === 0 ? ' NCRB figures currently hand-entered from the published edition (raw-table parsing pending).' : ` ${META.parsed_ncrb_rows} rows parsed directly from NCRB tables.`}</p>
+    {META.outstanding_tables.length > 0 && (
+      <details><summary>NCRB tables still to be added ({META.outstanding_tables.length})</summary><ul class="small">{META.outstanding_tables.map((x) => <li>{x}</li>)}</ul></details>
+    )}
+
+    <h2 id="geo">Maps &amp; boundaries</h2>
+    <ul>
+      <li>State and district outlines come from the <a href="https://github.com/datameet/maps" rel="noopener external">DataMeet maps</a> project (MIT licence), simplified for fast loading. External boundaries are indicative and follow the source layer.</li>
+      <li>The Tamil Nadu map uses Census 2011 district boundaries (32 districts). Tamil Nadu has 38 districts today. Until an openly licensed 38-district boundary file is added, each newer district is drawn inside its parent and its numbers are added to the parent's:</li>
+    </ul>
+    <table class="data small">
+      <thead><tr><th>District</th><th>Formed</th><th>Shown merged into</th></tr></thead>
+      <tbody>{NEW_DISTRICTS.map(([d, p, y]) => <tr><th scope="row">{d}</th><td class="num">{y}</td><td>{p}</td></tr>)}</tbody>
+    </table>
+    <p class="small">Spelling variants in NCRB/SCRB tables (e.g. Tuticorin / Thoothukkudi, Kanyakumari / Kanniyakumari) and police-city vs rural splits (Coimbatore, Madurai, Salem, Tiruchirappalli, Tirunelveli, Tiruppur) are normalised in <code>pipeline/config/districts_tn.yaml</code>.</p>
+
+    <h2 id="open">Open questions</h2>
+    <p>Things we found while building that we are flagging rather than guessing:</p>
+    <ul>{META.known_discrepancies.map((d) => <li>{d}</li>)}</ul>
+    <ul>
+      <li>Tamil Nadu's rise is partly linked to mandatory reporting of teenage pregnancies and child marriages (hospital-detected cases become POCSO FIRs). If the SCRB data separates these, we will show it — it changes the story from “more offenders” to “more detection”. We have not assumed it.</li>
+      <li>Exact NCRB table IDs for every year, the Tamil Nadu state-level relationship table, and NCRB district-wise POCSO columns are confirmed only once the raw files are in.</li>
+    </ul>
+
+    <h2 id="changelog">Changelog</h2>
+    <ul>
+      <li><strong>25 Sep 2026</strong> — NCRB Crime in India 2022, 2023 and 2024 tables parsed for all 36 States/UTs (Tables 4A.1, 4A.2(ii), 4A.9, 4A.10; 2024 also 4A.3–4A.6 and 4B.1). State totals reproduce NCRB's All-India rows exactly. Hand-entered national figures are now superseded by the parsed tables. Resolved: the 69,191 POCSO total and the TN 3,407/5,320 (Sec 4 & 6) vs 4,581/6,969 (all POCSO) question.</li>
+      <li><strong>24 Sep 2026</strong> — First build. NCRB 2024 national figures and 2023 age figures (hand-entered, validated against published totals); TN Police Policy Note 2020–2024; Madras High Court pendency (30 Jul 2026); FTSC flow 2024–2025; NCMEC 2025; Greater Chennai Police 2025 convictions; TN Jan–Jul press figures (tier 3).</li>
+    </ul>
+
+    <h2>Found an error?</h2>
+    <p>Please tell us: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Include the page, the number, and the source you are comparing against. Corrections are logged in the changelog above.</p>
+  </article>
+</Base>
+<style>
+  .prose { padding-top: 2rem; }
+  .prose h2 { margin-top: 2.5rem; }
+  .prose li { margin-bottom: 0.5rem; }
+  .toc { font-size: 0.875rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem; line-height: 1.9; }
+  code { font-size: 0.85em; background: var(--surface-2); padding: 0.1em 0.3em; border-radius: 4px; }
+</style>

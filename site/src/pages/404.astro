@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { useT } from '../i18n';
+const { t } = useT('en');
+---
+<Base lang="en" title={t('pages.not_found')}>
+  <div class="wrap" style="padding:3rem 16px">
+    <h1>{t('pages.not_found')}</h1>
+    <p>{t('pages.not_found_body')}</p>
+    <p><a class="btn primary" href="/en/">English</a> <a class="btn" href="/ta/" lang="ta">தமிழ்</a></p>
+  </div>
+</Base>

@@ -1,0 +1,50 @@
+# State / UT normalisation.
+# code  = ISO 3166-2:IN suffix (stable key used everywhere in the site)
+# name  = display name (matches the DataMeet boundary file `name` field in site/src/geo/india-states.topo.json)
+# aliases = every spelling seen (or expected) in NCRB / SCRB / Parliament tables. Matching is case- and
+#           whitespace-insensitive, and ignores '&' vs 'and' and trailing asterisks/footnote marks.
+# kind = state | ut
+states:
+  - {code: AP, name: Andhra Pradesh, kind: state, aliases: []}
+  - {code: AR, name: Arunachal Pradesh, kind: state, aliases: []}
+  - {code: AS, name: Assam, kind: state, aliases: []}
+  - {code: BR, name: Bihar, kind: state, aliases: []}
+  - {code: CT, name: Chhattisgarh, kind: state, aliases: [Chattisgarh]}
+  - {code: GA, name: Goa, kind: state, aliases: []}
+  - {code: GJ, name: Gujarat, kind: state, aliases: []}
+  - {code: HR, name: Haryana, kind: state, aliases: []}
+  - {code: HP, name: Himachal Pradesh, kind: state, aliases: []}
+  - {code: JH, name: Jharkhand, kind: state, aliases: []}
+  - {code: KA, name: Karnataka, kind: state, aliases: []}
+  - {code: KL, name: Kerala, kind: state, aliases: []}
+  - {code: MP, name: Madhya Pradesh, kind: state, aliases: []}
+  - {code: MH, name: Maharashtra, kind: state, aliases: []}
+  - {code: MN, name: Manipur, kind: state, aliases: []}
+  - {code: ML, name: Meghalaya, kind: state, aliases: []}
+  - {code: MZ, name: Mizoram, kind: state, aliases: []}
+  - {code: NL, name: Nagaland, kind: state, aliases: []}
+  - {code: OR, name: Odisha, kind: state, aliases: [Orissa]}
+  - {code: PB, name: Punjab, kind: state, aliases: []}
+  - {code: RJ, name: Rajasthan, kind: state, aliases: []}
+  - {code: SK, name: Sikkim, kind: state, aliases: []}
+  - {code: TN, name: Tamil Nadu, kind: state, aliases: [Tamilnadu]}
+  - {code: TG, name: Telangana, kind: state, aliases: []}
+  - {code: TR, name: Tripura, kind: state, aliases: []}
+  - {code: UP, name: Uttar Pradesh, kind: state, aliases: []}
+  - {code: UT, name: Uttarakhand, kind: state, aliases: [Uttaranchal]}
+  - {code: WB, name: West Bengal, kind: state, aliases: []}
+  - {code: AN, name: Andaman & Nicobar, kind: ut, aliases: [A & N Islands, A&N Islands, Andaman and Nicobar Islands]}
+  - {code: CH, name: Chandigarh, kind: ut, aliases: []}
+  - {code: DH, name: Dadra and Nagar Haveli and Daman and Diu, kind: ut, aliases: [D&N Haveli and Daman & Diu, DNH and DD, "D & N Haveli and Daman & Diu"]}
+  - {code: DL, name: Delhi, kind: ut, aliases: [Delhi UT, NCT of Delhi, Delhi (UT)]}
+  - {code: JK, name: Jammu & Kashmir, kind: ut, aliases: [Jammu and Kashmir, Jammu & Kashmir (UT)]}
+  - {code: LA, name: Ladakh, kind: ut, aliases: []}
+  - {code: LD, name: Lakshadweep, kind: ut, aliases: []}
+  - {code: PY, name: Puducherry, kind: ut, aliases: [Pondicherry]}
+
+# Rows in NCRB tables that are aggregates, not places. They are captured separately so we can
+# check "state totals sum to national totals" (validate/checks.py).
+aggregates:
+  IN: [Total (All India), Total All India, All India, Total (All-India), "TOTAL (ALL INDIA)"]
+  IN-STATES: [Total (States), Total States, TOTAL STATE(S), Total State(s)]
+  IN-UTS: [Total (UTs), Total UTs, Total (UT), TOTAL UT(S), Total UT(s)]

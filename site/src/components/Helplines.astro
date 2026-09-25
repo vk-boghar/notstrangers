@@ -1,0 +1,39 @@
+---
+// Helplines & reporting (spec §7.3). Link out only — never embed forms. Show "last verified".
+import { useT } from '../i18n';
+import { HELPLINES_VERIFIED_ON, type Lang } from '../config/site';
+import { fmtDate } from '../lib/data';
+interface Props { lang: Lang; compact?: boolean }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const lines = [
+  { k: 'childline', big: '1098', href: 'tel:1098' },
+  { k: 'erss', big: '112', href: 'tel:112' },
+  { k: 'cyber', big: 'cybercrime.gov.in', href: 'https://cybercrime.gov.in/', extra: { big: '1930', href: 'tel:1930', label: 'help.cyber_phone_desc' } },
+  { k: 'ncpcr', big: 'ncpcr.gov.in/pocso', href: 'https://ncpcr.gov.in/pocso/' },
+  { k: 'tncpcr', big: 'tncpcr.tn.gov.in', href: 'https://www.tncpcr.tn.gov.in/contact.html', unverified: true },
+  { k: 'cwc', big: '1098', href: 'tel:1098' },
+];
+---
+<div class="help">
+  <ul>
+    {lines.map((l) => (
+      <li class="card">
+        <a class="big num" href={l.href} rel={l.href.startsWith('http') ? 'noopener external' : undefined} target={l.href.startsWith('http') ? '_blank' : undefined}>{l.big}</a>
+        <strong class="name">{t(`help.${l.k}_name`)}</strong>
+        <span class="desc">{t(`help.${l.k}_desc`)}</span>
+        {l.extra && <span class="desc"><a class="num" href={l.extra.href}><strong>{l.extra.big}</strong></a> — {t(l.extra.label)}</span>}
+        {l.unverified && <span class="small muted">{t('help.unverified_contact')}</span>}
+      </li>
+    ))}
+  </ul>
+  <p class="small muted">{t('help.verified', { date: fmtDate(HELPLINES_VERIFIED_ON, lang) })}. {t('help.link_only')}</p>
+</div>
+<style>
+  ul { list-style: none; margin: 1rem 0; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  li.card { display: grid; gap: 0.25rem; align-content: start; margin: 0; }
+  .big { font-size: 1.6rem; font-weight: 700; text-decoration: none; line-height: 1.2; word-break: break-word; }
+  li:nth-child(n+3) .big { font-size: 1.05rem; }
+  .name { font-size: 1rem; }
+  .desc { font-size: 0.9rem; color: var(--ink-2); }
+</style>

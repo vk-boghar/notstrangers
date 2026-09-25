@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import { LANGS, CONTACT_EMAIL, CONTENT_PARTNER, SITE_NAME, type Lang } from '../../config/site';
+import { useT } from '../../i18n';
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const { t } = useT(lang);
+const ta = lang === 'ta';
+---
+<Base lang={lang} title={t('nav.about')}>
+  <article class="wrap prose">
+    <p class="kicker">{t('nav.about')}</p>
+    <h1>{ta ? 'இந்தத் தளம் ஏன்' : 'Why this site exists'}</h1>
+    {ta ? (
+      <>
+        <p class="lead">பெற்றோர் அந்நியர்களைப் பற்றியே கவலைப்படுகிறார்கள். ஆனால் தரவு, குழந்தையைச் சுற்றியுள்ள நம்பிக்கைக்குரிய வட்டத்தைக் கவனிக்கச் சொல்கிறது.</p>
+        <p>இந்தியா மற்றும் தமிழ்நாட்டில் குழந்தைகள் மீதான பாலியல் வன்கொடுமை எவ்வளவு நடக்கிறது, குற்றம் செய்பவர்கள் பெரும்பாலும் யார், நீதி எவ்வளவு மெதுவாக நகர்கிறது என்பதை எளிய மொழியில், தெளிவான படங்களுடன் காட்டுவதே இதன் நோக்கம் — பிறகு பெற்றோர் என்ன செய்யலாம் என்பதைச் சொல்வது.</p>
+        <p>நோக்கம் பயமுறுத்துவது அல்ல; விழிப்புணர்வின் மூலம் தடுப்பது. ஒவ்வொரு புள்ளிவிவரத்துக்கும் அருகில் ஒரு நடைமுறைச் செயல் இருக்கும்.</p>
+      </>
+    ) : (
+      <>
+        <p class="lead">Parents brace for strangers. The data says to watch the trusted circle.</p>
+        <p>{SITE_NAME} shows, in plain language and clear visuals, how common child sexual abuse is in India and Tamil Nadu, who the offenders usually are, and how slowly the justice system moves — and then what parents can do about it.</p>
+        <p>The goal is prevention through awareness, not fear. Every statistic sits next to a practical action. We want to move parents from “it won't happen to my child” to “I should talk to my child this week.”</p>
+      </>
+    )}
+
+    <h2>{ta ? 'எங்கள் விதிகள்' : 'Our rules'}</h2>
+    <ul>
+      <li>{ta ? 'மொத்தப் புள்ளிவிவரங்கள் மட்டுமே. எந்தக் குழந்தையின் அல்லது குற்றம் சாட்டப்பட்டவரின் பெயர், புகைப்படம், விவரம் எதுவும் இல்லை — செய்திகளில் வரும் வழக்குகள் உட்பட.' : 'Aggregate statistics only. No names, photos or details of any child or accused person — including cases in the news.'}</li>
+      <li>{ta ? 'யாரையும் பெயர் குறிப்பிட்டு அவமானப்படுத்துவதில்லை; குற்றச்சாட்டுகளைப் பெறுவதில்லை; புகார்களைச் சேகரிப்பதில்லை. அதிகாரப்பூர்வ வழிகளுக்கு மட்டுமே இணைப்பு தருகிறோம்.' : 'No “name and shame”, no user-submitted allegations, and no report intake. We point to official channels only.'}</li>
+      <li>{ta ? 'இலவசம், வணிக நோக்கமற்றது: விளம்பரம், நிதி திரட்டல், இணைப்பு வருமானம் எதுவும் இல்லை.' : 'Free and non-commercial: no ads, fundraising or affiliate links.'}</li>
+      <li>{ta ? 'கண்காணிப்பு இல்லை: குக்கீகள் இல்லை, மூன்றாம் தரப்பு ஸ்கிரிப்டுகள் இல்லை, எழுத்துருக்களும் இதே தளத்திலிருந்தே வருகின்றன.' : 'No tracking: no cookies, no third-party scripts; even the fonts are served from this site.'}</li>
+      <li>{ta ? 'ஒவ்வொரு எண்ணும் அதன் ஆதார அட்டவணைக்கு இணைக்கப்பட்டுள்ளது, பதிவிறக்கம் செய்யலாம்.' : 'Every number links to its source table and can be downloaded.'}</li>
+    </ul>
+
+    <h2>{ta ? 'யார் உருவாக்கினார்கள்' : 'Who built it'}</h2>
+    <p>{ta ? 'தமிழ்நாட்டில் வேர்களைக் கொண்ட ஒரு தனிப்பட்ட தன்னார்வத் திட்டம்.' : 'An independent volunteer project by people with roots in Tamil Nadu.'} <span class="draft">OWNER: add your name/bio here</span></p>
+
+    <h2>{ta ? 'உள்ளடக்கக் கூட்டாளர்' : 'Content partner'}</h2>
+    {CONTENT_PARTNER
+      ? <p>{ta ? 'தடுப்பு உள்ளடக்கத்தைச் சரிபார்த்தவர்கள்:' : 'Prevention content reviewed by'} <a href={CONTENT_PARTNER.url}>{CONTENT_PARTNER.name}</a>.</p>
+      : <p>{ta ? '“நீங்கள் என்ன செய்யலாம்” பகுதி, ஒரு குழந்தைப் பாதுகாப்பு அமைப்பின் நிபுணர் சரிபார்ப்புக்காகக் காத்திருக்கிறது. அதுவரை அது “வரைவு” எனக் குறிக்கப்பட்டுள்ளது.' : 'The “What you can do” content is awaiting review by a child-protection organisation. Until then it is marked DRAFT.'}</p>}
+    <p>{ta ? 'எந்த அமைப்பும் இந்தத் தளத்தின் வரைபடங்களையும் பகிர்வு அட்டைகளையும் இலவசமாகப் பயன்படுத்தலாம்.' : 'Any organisation may use the charts and share cards freely.'}</p>
+
+    <h2>{ta ? 'தொடர்பு' : 'Contact'}</h2>
+    <p>{t('footer.error')} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
+  </article>
+</Base>
+<style>.prose { padding-top: 2rem; } .prose h2 { margin-top: 2rem; } .prose li { margin-bottom: 0.5rem; }</style>

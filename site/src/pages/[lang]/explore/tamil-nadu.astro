@@ -1,0 +1,178 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Cite from '../../../components/Cite.astro';
+import Caveat from '../../../components/Caveat.astro';
+import TierTag from '../../../components/TierTag.astro';
+import DataTable from '../../../components/DataTable.astro';
+import BarList from '../../../components/charts/BarList.astro';
+import StackBar from '../../../components/charts/StackBar.astro';
+import ChoroplethMap from '../../../components/charts/ChoroplethMap.astro';
+import RelationshipChart from '../../../components/charts/RelationshipChart.astro';
+import { LANGS, type Lang } from '../../../config/site';
+import { useT } from '../../../i18n';
+import { one, maybe, where, fmtInt, fmt, type Row } from '../../../lib/data';
+import topo from '../../../geo/tn-districts-2011.topo.json';
+
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const { t } = useT(lang);
+
+// Registered POCSO cases — TN Police Policy Note (state series; never mixed with NCRB)
+const pn = where({ dataset: 'tn_pocso_registered', geo: 'TN' }).sort((a, b) => a.year - b.year);
+const pnYears = pn.length ? Array.from({ length: pn[pn.length - 1].year - pn[0].year + 1 }, (_, i) => pn[0].year + i) : [];
+const pnMax = Math.max(...pn.map((r) => r.value));
+
+// Tier 3 — press-reported YTD. Shown only here, clearly labelled, never in headline stats.
+const ytd = where({ dataset: 'tn_pocso_ytd', geo: 'TN', dim: 'total' }).sort((a, b) => a.year - b.year);
+
+// Courts
+const hcPending = one({ dataset: 'court_pendency', geo: 'TN', dim: 'pending_trial' });
+const hcOver = one({ dataset: 'court_pendency', geo: 'TN', dim: 'pending_over_1yr' });
+
+// Districts — NCRB or TN SCRB district tables, once parsed
+const distRows = where({ dataset: 'pocso_total', metric: 'cases' }).filter((r) => r.geo_level === 'district' && r.geo_code.startsWith('TN-') && !r.geo_code.startsWith('TN-X-'));
+const distYear = distRows.length ? Math.max(...distRows.map((r) => r.year)) : undefined;
+const districtValues: Record<string, number> = {};
+// (merge new districts into their 2011 parent polygon — see pipeline/config/districts_tn.yaml)
+const PARENT: Record<string, string> = { Kallakurichi: 'Viluppuram', Tenkasi: 'Tirunelveli', Chengalpattu: 'Kancheepuram', Tirupathur: 'Vellore', Ranipet: 'Vellore', Mayiladuthurai: 'Nagappattinam', Virudhunagar: 'Virudunagar' };
+for (const r of distRows.filter((r) => r.year === distYear)) {
+  const poly = PARENT[r.geo_name] ?? r.geo_name;
+  districtValues[poly] = (districtValues[poly] ?? 0) + r.value;
+}
+
+// NCRB: Tamil Nadu vs India, rate per lakh children (same source, comparable)
+const rateYears = [...new Set(where({ dataset: 'pocso_rate', geo: 'TN' }).map((r) => r.year))].sort();
+const rTN = (y: number) => maybe({ dataset: 'pocso_rate', geo: 'TN', year: y });
+const rIN = (y: number) => maybe({ dataset: 'pocso_rate', geo: 'IN', year: y });
+const rateMax = Math.max(...where({ dataset: 'pocso_rate' }).filter((r) => r.geo_code === 'TN' || r.geo_code === 'IN').map((r) => r.value));
+// Cities
+const chennai = maybe({ dataset: 'city_convictions', geo: 'CHN' });
+const cityRows = where({ dataset: 'cac_total', metric: 'cases' }).filter((r) => r.geo_level === 'city' && ['Chennai', 'Coimbatore'].includes(r.geo_name)).sort((a, b) => a.geo_name.localeCompare(b.geo_name) || a.year - b.year);
+const cityYear = cityRows.length ? Math.max(...cityRows.map((r) => r.year)) : undefined;
+---
+<Base lang={lang} title={t('explore.tn_title')}>
+  <div class="wrap-wide page">
+    <p class="kicker">{t('nav.tn')}</p>
+    <h1>{t('explore.tn_title')}</h1>
+    <p class="lead">{t('explore.tn_lead')}</p>
+
+    <section class="section first" aria-labelledby="trend-h">
+      <h2 id="trend-h">{t('explore.tn_trend_title')}</h2>
+      <p class="takeaway">{t('explore.tn_trend_takeaway')}</p>
+      <div class="narrow">
+        <BarList
+          ariaLabel={pn.map((r) => `${r.year}: ${fmtInt(r.value)}`).join('; ')}
+          max={pnMax}
+          gapLabel={t('common.not_available')}
+          bars={pnYears.map((y) => {
+            const r = pn.find((x) => x.year === y);
+            return r
+              ? { label: String(y), value: r.value, valueLabel: fmtInt(r.value), color: 'var(--c-seq)' }
+              : { label: String(y), value: null, valueLabel: '', note: t('explore.tn_trend_gap', { year: y }) };
+          })}
+        />
+        <DataTable lang={lang} caption={t('explore.tn_trend_title')} head={[t('common.year'), t('common.cases')]} numeric={[1]}
+          rows={pnYears.map((y) => [String(y), pn.find((x) => x.year === y) ? fmtInt(pn.find((x) => x.year === y)!.value) : '—'])} />
+        <Cite rows={pn} lang={lang} csv="tn_pocso_registered" />
+        <Caveat lang={lang} />
+        <p class="small muted">{lang === 'ta' ? 'தமிழ்நாடு காவல்துறைக் கொள்கைக் குறிப்பிலிருந்து. 2022–2024 எண்கள் NCRB எண்களுடன் சரியாகப் பொருந்துகின்றன.' : 'From the TN Police Policy Note. For 2022–2024 these match NCRB’s figures exactly.'}</p>
+      </div>
+
+      {ytd.length === 2 && (
+        <div class="card tier3">
+          <h3>{t('explore.tn_ytd_title')} <TierTag tier={3} lang={lang} /></h3>
+          <p>{t('explore.tn_ytd_body', { y1: ytd[0].year, v1: fmtInt(ytd[0].value), y2: ytd[1].year, v2: fmtInt(ytd[1].value) })}</p>
+          <p class="small muted">{lang === 'ta'
+            ? 'குறிப்பு: ஜனவரி–ஜூலை 2025-க்கான எண் (9,813), முழு 2024 ஆண்டின் கொள்கைக் குறிப்பு எண்ணை (6,969) விட அதிகம். இது உறுதிசெய்யப்பட்டால் 2025-இல் பெரும் உயர்வைக் குறிக்கும்; எனவே 2026-27 கொள்கைக் குறிப்பு அல்லது SCRB வெளியீடு வரும் வரை இதை உண்மையாகக் காட்டுவதில்லை.'
+            : 'Note: the January–July 2025 figure (9,813) is already higher than the full-year 2024 Policy Note figure (6,969). If confirmed, 2025 was a very large jump — which is exactly why we do not present it as fact until the 2026-27 Policy Note or SCRB publication confirms it.'}</p>
+          <Cite rows={ytd} lang={lang} csv="tn_pocso_ytd" />
+        </div>
+      )}
+    </section>
+
+    <section class="section" aria-labelledby="who-h">
+      <h2 id="who-h">{t('home.who_title')}</h2>
+      <div class="narrow">
+        <RelationshipChart lang={lang} geos={['TN']} />
+        <p class="small">{lang === 'ta'
+          ? 'தமிழ்நாட்டில் “நண்பர்கள் / இணைய நண்பர்கள் / துணைவர்கள்” பிரிவு மிகப் பெரியது. இதில் பதின்வயதினரின் உறவுகளும் அடங்கும் — போக்சோ 18 வயதுக்குட்பட்ட அனைத்துப் பாலியல் செயல்களையும் குற்றமாகக் கருதுகிறது.'
+          : 'In Tamil Nadu the “friends / online friends / partners” group is by far the largest. It includes relationships between adolescents — POCSO treats all sexual activity under 18 as an offence.'} <a href={`/${lang}/#who`}>{t('common.methodology_link')} →</a></p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="courts-h">
+      <h2 id="courts-h">{t('explore.tn_courts_title')}</h2>
+      <div class="narrow">
+        <p class="takeaway">{t('home.justice_tn_callout', { pending: fmtInt(hcPending.value), over: fmtInt(hcOver.value) })}</p>
+        <StackBar
+          ariaLabel={`${fmtInt(hcOver.value)} of ${fmtInt(hcPending.value)} pending more than one year`}
+          segs={[
+            { key: 'over', label: lang === 'ta' ? 'ஓராண்டுக்கு மேல் காத்திருப்பவை' : 'Waiting more than 1 year', value: hcOver.value, color: 'var(--c-family)' },
+            { key: 'under', label: lang === 'ta' ? 'ஓராண்டுக்குள்' : 'Waiting up to 1 year', value: hcPending.value - hcOver.value, color: 'var(--c-unknown)' },
+          ]}
+        />
+        <Cite rows={[hcPending, hcOver]} lang={lang} csv="court_pendency" />
+        {chennai && (
+          <p>{t('explore.chennai_convictions', { n: fmtInt(chennai.value), year: chennai.year })}</p>
+        )}
+        {chennai && <Cite rows={chennai} lang={lang} csv="city_convictions" />}
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="dist-h">
+      <h2 id="dist-h">{t('explore.tn_district_title')}</h2>
+      <div class="map-grid">
+        <ChoroplethMap topo={topo} object="districts" values={districtValues} format={fmtInt}
+          ariaLabel={distYear ? `Tamil Nadu districts, POCSO cases ${distYear}` : 'Map of Tamil Nadu districts — no data shown yet'}>
+          <figcaption class="small muted">{t('explore.tn_district_boundaries')}</figcaption>
+        </ChoroplethMap>
+        <div>
+          {!distYear && <div class="pending"><p>{t('explore.tn_district_pending')}</p></div>}
+          <h3 class="cities-h">{t('explore.tn_cities_title')}</h3>
+          {cityRows.length > 0 && cityYear && (
+            <>
+              <p class="small muted">{lang === 'ta' ? 'குழந்தைகளுக்கு எதிரான அனைத்துக் குற்றங்கள் (போக்சோ மட்டுமல்ல) — NCRB பெருநகர அட்டவணை.' : 'All crimes against children (not POCSO alone) — NCRB metropolitan-cities table.'}</p>
+              <BarList ariaLabel={cityRows.map((r) => `${r.geo_name} ${r.year}: ${fmtInt(r.value)}`).join('; ')}
+                bars={cityRows.map((r) => ({ label: `${r.geo_name} · ${r.year}`, value: r.value, valueLabel: fmtInt(r.value), color: r.year === cityYear ? 'var(--c-seq)' : 'var(--c-seq-soft)' }))} />
+              <Cite rows={cityRows} lang={lang} csv="cac_total" />
+            </>
+          )}
+          {cityRows.length === 0 && <p class="pending small">{lang === 'ta' ? 'சென்னை, கோயம்புத்தூர், மதுரை பெருநகர எண்கள்: NCRB பெருநகர அட்டவணை சேர்க்கப்பட்டதும் இங்கே தோன்றும்.' : 'Chennai, Coimbatore and Madurai metro figures appear once the NCRB metropolitan-cities table is parsed.'}</p>}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="vs-h">
+      <h2 id="vs-h">{lang === 'ta' ? 'தமிழ்நாடு vs இந்தியா' : 'Tamil Nadu vs India'}</h2>
+      {rateYears.length > 0 ? (
+        <div class="narrow">
+          <p class="takeaway">{lang === 'ta' ? 'ஒரு லட்சம் குழந்தைகளுக்குப் பதிவான போக்சோ வழக்குகள் — தமிழ்நாடு தேசிய சராசரியைவிட அதிகம். இது அதிகப் புகார்களையும் குறிக்கலாம்.' : 'POCSO cases registered per lakh children — Tamil Nadu is above the national rate. That can also reflect more reporting.'}</p>
+          {rateYears.map((y) => (
+            <div class="yr-block">
+              <p class="yr num">{y}</p>
+              <BarList ariaLabel={`${y}`} max={rateMax} bars={[
+                rTN(y) && { label: lang === 'ta' ? 'தமிழ்நாடு' : 'Tamil Nadu', value: rTN(y)!.value, valueLabel: fmt(rTN(y)!.value, 1), color: 'var(--c-family)', emphasis: true },
+                rIN(y) && { label: lang === 'ta' ? 'இந்தியா' : 'India', value: rIN(y)!.value, valueLabel: fmt(rIN(y)!.value, 1), color: 'var(--c-unknown)' },
+              ].filter(Boolean) as any} />
+            </div>
+          ))}
+          <Cite rows={rateYears.flatMap((y) => [rTN(y), rIN(y)]).filter(Boolean) as Row[]} lang={lang} csv="pocso_rate" />
+        </div>
+      ) : (
+        <p class="pending small">{lang === 'ta' ? 'NCRB மாநில வாரியான தொடர் சேர்க்கப்பட்டதும் இங்கே தோன்றும்.' : 'Appears once NCRB’s state-wise series is parsed.'}</p>
+      )}
+      <p class="small">{t('explore.compare_soon')}</p>
+    </section>
+  </div>
+</Base>
+<style>
+  .page { padding-top: 2rem; }
+  .section.first { border-top: 0; padding-top: 1.5rem; }
+  .narrow { max-width: var(--maxw); }
+  .tier3 { margin-top: 2rem; max-width: var(--maxw); border-color: var(--tier3-bg); border-width: 2px; }
+  .tier3 h3 { font-size: 1.05rem; }
+  .map-grid { display: grid; gap: 1.5rem; }
+  @media (min-width: 900px) { .map-grid { grid-template-columns: 3fr 2fr; align-items: start; } }
+  .cities-h { margin-top: 1.5rem; }
+  .yr { font-weight: 700; margin: 1rem 0 -0.5rem; }
+</style>

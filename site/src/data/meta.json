@@ -1,0 +1,37 @@
+{
+  "parsed_ncrb_rows": 2434,
+  "outstanding_tables": [],
+  "warnings": [
+    "2024/court_state: blank/non-numeric value for Ladakh col 4 ('-')"
+  ],
+  "known_discrepancies": [
+    "RESOLVED — NCRB 2024 POCSO total: Table 4A.2(ii) col. 228 prints 69,191 cases (70,132 victims). Dataful's article cites 67,809; that figure does not appear in the NCRB table and is not used.",
+    "RESOLVED — Tamil Nadu POCSO 2023/2024: the Policy Note totals (4,581 / 6,969) match NCRB exactly. The smaller pair reported by DT Next (3,407 / 5,319) is the Section 4 & 6 subset (NCRB: 3,407 / 5,320).",
+    "FTSC pendency: spec lists ~2,02,175 pending as of 30 Apr 2026; the Rajya Sabha reply reported 2,45,579 pending at 31 Dec 2025. The Apr-2026 figure is held in data/raw/manual/_held.csv until confirmed.",
+    "NCRB's conviction rate is convicted ÷ cases in which trials were completed (convicted + discharged + acquitted), per the column formula printed in Tables 4A.5/4A.6 — not convicted ÷ (convicted + acquitted)."
+  ],
+  "checks_passed": 414,
+  "generated_on": "2026-09-25",
+  "row_count": 2458,
+  "datasets": [
+    "cac_court",
+    "cac_police",
+    "cac_rate",
+    "cac_total",
+    "city_convictions",
+    "court_pendency",
+    "ftsc_capacity",
+    "ftsc_flow",
+    "ncmec_reports",
+    "pocso_court",
+    "pocso_police",
+    "pocso_rate",
+    "pocso_relationship",
+    "pocso_s4_6",
+    "pocso_total",
+    "pocso_victims_age",
+    "tn_pocso_registered",
+    "tn_pocso_ytd",
+    "trial_duration"
+  ]
+}

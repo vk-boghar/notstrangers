@@ -1,0 +1,109 @@
+---
+// "Who" — offender relationship under POCSO Sec 4 & 6. India / Tamil Nadu toggle and a year
+// picker, driven entirely by what exists in the data (spec §5.1 Section 3). Anything missing is
+// shown as missing — never interpolated.
+import { where, years, fmtInt, pct, type Row } from '../../lib/data';
+import { useT } from '../../i18n';
+import type { Lang } from '../../config/site';
+import StackBar from './StackBar.astro';
+import DataTable from '../DataTable.astro';
+import Cite from '../Cite.astro';
+
+interface Props { lang: Lang; geos?: string[] }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const CATS = [
+  ['family_members', 'var(--c-family)'],
+  ['family_friends_neighbours_known', 'var(--c-known)'],
+  ['friends_online_partners', 'var(--c-friends)'],
+  ['unknown', 'var(--c-unknown)'],
+] as const;
+const NAMES: Record<string, string> = { IN: lang === 'ta' ? 'இந்தியா' : 'India', TN: lang === 'ta' ? 'தமிழ்நாடு' : 'Tamil Nadu' };
+const GEOS = (Astro.props.geos ?? ['IN', 'TN']).map((g) => [g, NAMES[g] ?? (where({ dataset: 'pocso_relationship', geo: g })[0]?.geo_name ?? g)] as const);
+const firstGeo = GEOS[0][0];
+const allYears = years('pocso_relationship', firstGeo);
+const latest = allYears[allYears.length - 1];
+
+const panels = GEOS.flatMap(([geo, gname]) =>
+  years('pocso_relationship', geo).map((year) => {
+    const rows = where({ dataset: 'pocso_relationship', geo, year, metric: 'cases' });
+    const v = (k: string) => rows.find((r) => r.dimension_value === k)?.value;
+    const complete = CATS.every(([k]) => v(k) !== undefined) && v('total') !== undefined;
+    return { geo, gname, year, rows, v, complete };
+  }).filter((p) => p.complete),
+);
+const geoHas = (g: string) => panels.some((p) => p.geo === g);
+---
+<div class="rel" data-rel data-first={firstGeo}>
+  <div class="controls" role="group" aria-label="Place and year">
+    <div class="seg-ctl" role="radiogroup" aria-label="Place" hidden={GEOS.length < 2}>
+      {GEOS.map(([g, name], i) => (
+        <button type="button" class="pill" data-geo={g} aria-pressed={i === 0 ? 'true' : 'false'} disabled={!geoHas(g)}>{name}</button>
+      ))}
+    </div>
+    <div class="seg-ctl" role="radiogroup" aria-label="Year">
+      {allYears.map((y) => (
+        <button type="button" class="pill" data-year={y} aria-pressed={y === latest ? 'true' : 'false'}>{y}</button>
+      ))}
+    </div>
+  </div>
+  {GEOS.some(([g]) => g === 'TN') && !geoHas('TN') && <p class="small muted tn-note">{t('home.who_tn_pending', { year: latest })}</p>}
+
+  {panels.map((p) => {
+    const segs = CATS.map(([k, color]) => ({ key: k, label: t(`home.who_cat_${k}`), value: p.v(k)!, color }));
+    const known = p.v('family_members')! + p.v('family_friends_neighbours_known')! + p.v('friends_online_partners')!;
+    const total = p.v('total')!;
+    return (
+      <div class="panel" data-panel-geo={p.geo} data-panel-year={p.year} hidden={!(p.geo === firstGeo && p.year === latest)}>
+        <p class="lead">{t('home.who_lead', { total: fmtInt(total), known: fmtInt(known), pct: pct(known, total), year: p.year })}</p>
+        <StackBar
+          segs={segs}
+          ariaLabel={`${p.gname} ${p.year}: ${segs.map((s) => `${s.label} ${pct(s.value, total)}%`).join('; ')}`}
+          bracket={{ from: 0, to: 2, label: `${t('home.who_known_label')} · ${pct(known, total)}%` }}
+        />
+        <DataTable
+          lang={lang}
+          caption={`${p.gname} ${p.year}`}
+          head={[t('common.category'), t('common.cases'), t('common.share_pct')]}
+          numeric={[1, 2]}
+          rows={[...segs.map((s) => [s.label, fmtInt(s.value), `${pct(s.value, total)}%`]), [t('home.who_known_label'), fmtInt(known), `${pct(known, total)}%`], ['Total (Sec 4 & 6)', fmtInt(total), '100%']]}
+        />
+        <Cite rows={p.rows as Row[]} lang={lang} csv="pocso_relationship" />
+      </div>
+    );
+  })}
+</div>
+
+<style>
+  .controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; margin: 1rem 0 0.5rem; }
+  .seg-ctl { display: inline-flex; gap: 0.35rem; flex-wrap: wrap; }
+  .pill { font: inherit; font-size: 0.875rem; font-weight: 600; min-height: 36px; padding: 0.3rem 0.85rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .pill[aria-pressed='true'] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pill:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: line-through; }
+  .tn-note { margin: 0 0 0.5rem; }
+</style>
+<script is:inline>
+  (function () {
+    document.querySelectorAll('[data-rel]').forEach(function (root) {
+      var geo = root.dataset.first, year = (root.querySelector('[data-year][aria-pressed="true"]') || {}).dataset;
+      year = year ? year.year : null;
+      function show() {
+        var any = false;
+        root.querySelectorAll('[data-panel-geo]').forEach(function (p) {
+          var on = p.dataset.panelGeo === geo && p.dataset.panelYear === year; p.hidden = !on; any = any || on; });
+        root.querySelectorAll('[data-geo]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.geo === geo)); });
+        root.querySelectorAll('[data-year]').forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.dataset.year === year));
+          b.disabled = !root.querySelector('[data-panel-geo="' + geo + '"][data-panel-year="' + b.dataset.year + '"]'); });
+      }
+      root.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b || b.disabled) return;
+        if (b.dataset.geo) { geo = b.dataset.geo; if (!root.querySelector('[data-panel-geo="' + geo + '"][data-panel-year="' + year + '"]')) {
+          var ps = root.querySelectorAll('[data-panel-geo="' + geo + '"]'); if (ps.length) year = ps[ps.length - 1].dataset.panelYear; } }
+        if (b.dataset.year) year = b.dataset.year;
+        show();
+      });
+      show();
+    });
+  })();
+</script>

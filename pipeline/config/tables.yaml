@@ -1,0 +1,520 @@
+# Per-year mapping: dataset -> NCRB raw file + table ID + how to read it.
+#
+# NCRB renumbers tables between editions, so each year is configured explicitly.
+# Only `status: ready` entries are parsed. 2022-2024 are ready: the tables were extracted from the
+# NCRB Vol. I PDFs (text layer, pdf.js) into data/raw/ncrb/<year>/extracted/*.csv, one CSV per
+# printed table, with page numbers and the PDF's SHA-256 recorded in data/raw/ncrb/<year>/PROVENANCE.md.
+# Every extracted table was checked: States+UTs sum exactly to NCRB's All-India row.
+#
+# Column spec: {col_index: "dimension_value"} or {col_index: {dim, dataset, metric, unit, year, dimension}}
+# format: csv | xlsx | pdf | long_csv (one value per row, national crime-head rows)
+editions:
+  2024:
+    title: Crime in India 2024
+    released: 2026-05
+    url: https://ncrb.gov.in/en/crime-india
+    notes: Extracted from NCRB Crime in India 2024, Vol. I (PDF, SHA-256 75b827bdcfcd5e64…, copy retrieved via https://data.opencity.in/dataset/crime-in-india-2024) — see data/raw/ncrb/2024/PROVENANCE.md.
+  2023:
+    title: Crime in India 2023
+    released: 2025-09
+    url: https://ncrb.gov.in/en/crime-india
+    notes: Extracted from NCRB Crime in India 2023, Vol. I (PDF, SHA-256 553ac8b2eadfe9e2…, copy retrieved via https://data.opencity.in/dataset/crime-in-india-2023) — see data/raw/ncrb/2023/PROVENANCE.md.
+  2022:
+    title: Crime in India 2022
+    released: 2023-12
+    url: https://ncrb.gov.in/en/crime-india
+    notes: Extracted from NCRB Crime in India 2022, Vol. I (PDF, SHA-256 7c5ee3128b0b6bc7…, copy retrieved via https://data.opencity.in/dataset/crime-in-india-2022) — see data/raw/ncrb/2022/PROVENANCE.md.
+  2017:
+    title: Crime in India 2017
+    released: ''
+    url: https://ncrb.gov.in/en/crime-india
+  2018:
+    title: Crime in India 2018
+    released: ''
+    url: https://ncrb.gov.in/en/crime-india
+  2019:
+    title: Crime in India 2019
+    released: ''
+    url: https://ncrb.gov.in/en/crime-india
+  2020:
+    title: Crime in India 2020
+    released: ''
+    url: https://ncrb.gov.in/en/crime-india
+  2021:
+    title: Crime in India 2021
+    released: ''
+    url: https://ncrb.gov.in/en/crime-india
+tables:
+  2024:
+    cac_state:
+      status: ready
+      file: extracted/table_4A.1_cac_state.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.1 (PDF p. 461)
+      dataset: cac_total
+      metric: cases
+      columns:
+        3:
+          dim: ''
+        5:
+          dataset: cac_rate
+          metric: rate_per_lakh_children
+          unit: rate_per_lakh_children
+        6:
+          dataset: cac_police
+          metric: chargesheeting_rate_pct
+          unit: percent
+    pocso_state:
+      status: ready
+      file: extracted/table_4A.2_pocso_state.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.2 (ii) (PDF p. 483)
+      dataset: pocso_total
+      metric: cases
+      columns:
+        1:
+          dim: ''
+        2:
+          metric: victims
+          unit: victims
+        3:
+          dataset: pocso_rate
+          metric: rate_per_lakh_children
+          unit: rate_per_lakh_children
+        4:
+          dataset: pocso_s4_6
+          metric: cases
+    pocso_age_1:
+      status: ready
+      file: extracted/table_4A.9_age_p1.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: age_band
+      unit: victims
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.9 (PDF p. 525-526)
+      dataset: pocso_victims_age
+      metric: victims
+      columns:
+        4: lt6
+        8: '6_12'
+        12: '12_16'
+    pocso_age_2:
+      status: ready
+      file: extracted/table_4A.9_age_p2.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: age_band
+      unit: victims
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.9 (PDF p. 525-526)
+      dataset: pocso_victims_age
+      metric: victims
+      columns:
+        4: '16_18'
+        8: total
+    pocso_relationship:
+      status: ready
+      file: extracted/table_4A.10_relationship.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: relationship
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.10 (PDF p. 527)
+      dataset: pocso_relationship
+      metric: cases
+      columns:
+        1: known_total
+        2: family_members
+        3: family_friends_neighbours_known
+        4: friends_online_partners
+        5: unknown
+        6: total
+    police_rates_state:
+      status: ready
+      file: extracted/table_4A.4_police_disposal_rates.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: percent
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.4 (PDF p. 504)
+      dataset: cac_police
+      metric: chargesheeting_rate_pct
+      columns:
+        2:
+          metric: pendency_pct
+    court_state:
+      status: ready
+      file: extracted/table_4A.6_court_disposal_p4.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.6 (PDF p. 516)
+      dataset: cac_court
+      metric: cases
+      columns:
+        1:
+          dim: trials_completed
+          dimension: stage
+        3:
+          dim: pending_trial_end_year
+          dimension: stage
+        4:
+          metric: conviction_rate_pct
+          unit: percent
+        5:
+          metric: pendency_pct
+          unit: percent
+    metro_cities:
+      status: ready
+      file: extracted/table_4B.1_metro_cac.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: city
+      dataset: cac_total
+      metric: cases
+      unit: cases
+      dimension: none
+      retrieved_on: '2026-09-25'
+      source_table: Table 4B.1 (NCRB Excel table, via OpenCity)
+      columns:
+        3:
+          dim: ''
+        4:
+          dataset: cac_police
+          metric: chargesheeting_rate_pct
+          unit: percent
+    pocso_disposal_national:
+      status: ready
+      file: extracted/table_4A.3_4A.5_pocso_national.csv
+      format: long_csv
+      label_col: column_label
+      value_col: value
+      retrieved_on: '2026-09-25'
+      source_table: Tables 4A.3 & 4A.5
+      map:
+        Cases pending investigation from previous year:
+          dataset: pocso_police
+          metric: cases
+          dim: pending_investigation_prev_year
+          unit: cases
+        Cases reported during the year:
+          dataset: pocso_police
+          metric: cases
+          dim: reported
+          unit: cases
+        Total cases for investigation:
+          dataset: pocso_police
+          metric: cases
+          dim: total_for_investigation
+          unit: cases
+        Cases chargesheeted (total):
+          dataset: pocso_police
+          metric: cases
+          dim: chargesheeted
+          unit: cases
+        Cases pending investigation at end of year:
+          dataset: pocso_police
+          metric: cases
+          dim: pending_investigation_end_year
+          unit: cases
+        Chargesheeting rate (%):
+          dataset: pocso_police
+          metric: chargesheeting_rate_pct
+          unit: percent
+        Pendency % (police):
+          dataset: pocso_police
+          metric: pendency_pct
+          unit: percent
+        Cases pending trial from previous year:
+          dataset: pocso_court
+          metric: cases
+          dim: pending_trial_prev_year
+          unit: cases
+        Cases sent for trial during the year:
+          dataset: pocso_court
+          metric: cases
+          dim: sent_for_trial
+          unit: cases
+        Total cases for trial:
+          dataset: pocso_court
+          metric: cases
+          dim: total_for_trial
+          unit: cases
+        Cases convicted:
+          dataset: pocso_court
+          metric: cases
+          dim: convicted
+          unit: cases
+        Cases discharged:
+          dataset: pocso_court
+          metric: cases
+          dim: discharged
+          unit: cases
+        Cases acquitted:
+          dataset: pocso_court
+          metric: cases
+          dim: acquitted
+          unit: cases
+        Cases in which trials were completed:
+          dataset: pocso_court
+          metric: cases
+          dim: trials_completed
+          unit: cases
+        Cases disposed off by courts:
+          dataset: pocso_court
+          metric: cases
+          dim: disposed
+          unit: cases
+        Cases pending trial at end of year:
+          dataset: pocso_court
+          metric: cases
+          dim: pending_trial_end_year
+          unit: cases
+        Conviction rate (%):
+          dataset: pocso_court
+          metric: conviction_rate_pct
+          unit: percent
+        Pendency % (court):
+          dataset: pocso_court
+          metric: pendency_pct
+          unit: percent
+  2023:
+    cac_state:
+      status: ready
+      file: extracted/table_4A.1_cac_state.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.1 (PDF p. 369)
+      dataset: cac_total
+      metric: cases
+      columns:
+        3:
+          dim: ''
+        5:
+          dataset: cac_rate
+          metric: rate_per_lakh_children
+          unit: rate_per_lakh_children
+        6:
+          dataset: cac_police
+          metric: chargesheeting_rate_pct
+          unit: percent
+    pocso_state:
+      status: ready
+      file: extracted/table_4A.2_pocso_state.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.2 (ii) (PDF p. 379)
+      dataset: pocso_total
+      metric: cases
+      columns:
+        1:
+          dim: ''
+        2:
+          metric: victims
+          unit: victims
+        3:
+          dataset: pocso_rate
+          metric: rate_per_lakh_children
+          unit: rate_per_lakh_children
+        4:
+          dataset: pocso_s4_6
+          metric: cases
+    pocso_age_1:
+      status: ready
+      file: extracted/table_4A.9_age_p1.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: age_band
+      unit: victims
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.9 (PDF p. 422-423)
+      dataset: pocso_victims_age
+      metric: victims
+      columns:
+        4: lt6
+        8: '6_12'
+        12: '12_16'
+    pocso_age_2:
+      status: ready
+      file: extracted/table_4A.9_age_p2.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: age_band
+      unit: victims
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.9 (PDF p. 422-423)
+      dataset: pocso_victims_age
+      metric: victims
+      columns:
+        4: '16_18'
+        8: total
+    pocso_relationship:
+      status: ready
+      file: extracted/table_4A.10_relationship.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: relationship
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.10 (PDF p. 424)
+      dataset: pocso_relationship
+      metric: cases
+      columns:
+        1: known_total
+        2: family_members
+        3: family_friends_neighbours_known
+        4: friends_online_partners
+        5: unknown
+        6: total
+  2022:
+    cac_state:
+      status: ready
+      file: extracted/table_4A.1_cac_state.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.1 (PDF p. 369)
+      dataset: cac_total
+      metric: cases
+      columns:
+        3:
+          dim: ''
+        5:
+          dataset: cac_rate
+          metric: rate_per_lakh_children
+          unit: rate_per_lakh_children
+        6:
+          dataset: cac_police
+          metric: chargesheeting_rate_pct
+          unit: percent
+        1:
+          year: 2020
+        2:
+          year: 2021
+    pocso_state:
+      status: ready
+      file: extracted/table_4A.2_pocso_state.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: none
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.2 (ii) (PDF p. 379)
+      dataset: pocso_total
+      metric: cases
+      columns:
+        1:
+          dim: ''
+        2:
+          metric: victims
+          unit: victims
+        3:
+          dataset: pocso_rate
+          metric: rate_per_lakh_children
+          unit: rate_per_lakh_children
+        4:
+          dataset: pocso_s4_6
+          metric: cases
+    pocso_age_1:
+      status: ready
+      file: extracted/table_4A.9_age_p1.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: age_band
+      unit: victims
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.9 (PDF p. 422-423)
+      dataset: pocso_victims_age
+      metric: victims
+      columns:
+        4: lt6
+        8: '6_12'
+        12: '12_16'
+    pocso_age_2:
+      status: ready
+      file: extracted/table_4A.9_age_p2.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: age_band
+      unit: victims
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.9 (PDF p. 422-423)
+      dataset: pocso_victims_age
+      metric: victims
+      columns:
+        4: '16_18'
+        8: total
+    pocso_relationship:
+      status: ready
+      file: extracted/table_4A.10_relationship.csv
+      format: csv
+      header_rows: 1
+      geo_col: 0
+      geo_level: state
+      dimension: relationship
+      unit: cases
+      retrieved_on: '2026-09-25'
+      source_table: Table 4A.10 (PDF p. 424)
+      dataset: pocso_relationship
+      metric: cases
+      columns:
+        1: known_total
+        2: family_members
+        3: family_friends_neighbours_known
+        4: friends_online_partners
+        5: unknown
+        6: total

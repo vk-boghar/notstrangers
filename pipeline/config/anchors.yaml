@@ -1,0 +1,28 @@
+# Validation checksums (spec §3.1). If the pipeline output does not reproduce these EXACTLY,
+# the build fails. Keys: dataset / metric / geo_code / year / dimension_value.
+anchors:
+  - {dataset: cac_total, metric: cases, geo: IN, year: 2024, value: 187702}
+  - {dataset: cac_rate, metric: rate_per_lakh_children, geo: IN, year: 2024, value: 42.3}
+  - {dataset: pocso_total, metric: cases, geo: IN, year: 2024, value: 69191}
+  - {dataset: pocso_relationship, metric: cases, geo: IN, year: 2024, dim: total, value: 44126}
+  - {dataset: pocso_relationship, metric: cases, geo: IN, year: 2024, dim: known_total, value: 42634}
+  - {dataset: pocso_relationship, metric: cases, geo: IN, year: 2024, dim: friends_online_partners, value: 22308}
+  - {dataset: pocso_relationship, metric: cases, geo: IN, year: 2024, dim: family_friends_neighbours_known, value: 16668}
+  - {dataset: pocso_relationship, metric: cases, geo: IN, year: 2024, dim: family_members, value: 3658}
+  - {dataset: pocso_relationship, metric: cases, geo: IN, year: 2024, dim: unknown, value: 1492}
+  - {dataset: pocso_victims_age, metric: victims, geo: IN, year: 2023, dim: lt6, value: 762}
+  - {dataset: pocso_victims_age, metric: victims, geo: IN, year: 2023, dim: "6_12", value: 3229}
+  - {dataset: pocso_victims_age, metric: victims, geo: IN, year: 2023, dim: "12_16", value: 15444}
+  - {dataset: pocso_victims_age, metric: victims, geo: IN, year: 2023, dim: "16_18", value: 21411}
+
+# Internal-consistency rules checked for every geo/year present (validate/checks.py).
+sum_rules:
+  - dataset: pocso_relationship
+    total: total
+    parts: [friends_online_partners, family_friends_neighbours_known, family_members, unknown]
+  - dataset: pocso_relationship
+    total: known_total
+    parts: [friends_online_partners, family_friends_neighbours_known, family_members]
+  - dataset: pocso_victims_age
+    total: total
+    parts: [lt6, "6_12", "12_16", "16_18"]
