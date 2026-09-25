@@ -42,7 +42,7 @@ const all = [inv, cs, pendInv, trial, prev, sent, done, conv, acq, dis, pendTria
       { label: L.cs, value: cs.value, valueLabel: `${fmtInt(cs.value)}`, color: 'var(--c-seq-soft)' },
       { label: L.trial, value: trial.value, valueLabel: fmtInt(trial.value), color: 'var(--c-seq)' },
       { label: L.done, value: done.value, valueLabel: fmtInt(done.value), color: 'var(--c-known)', emphasis: true },
-      { label: L.pend, value: pendTrial.value, valueLabel: `${fmtInt(pendTrial.value)} · ${fmt(pendPct.value, 1)}%`, color: 'var(--c-family)', emphasis: true },
+      { label: L.pend, value: pendTrial.value, valueLabel: `${fmtInt(pendTrial.value)} · ${fmt(pendPct.value, 1)}%`, color: 'var(--c-warn)', emphasis: true },
     ]}
   />
   <h4 class="sub">{ta ? `விசாரணை முடிந்த ${fmtInt(done.value)} வழக்குகளில்` : `Of the ${fmtInt(done.value)} trials completed`}</h4>

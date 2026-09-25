@@ -71,10 +71,11 @@ const CARDS = {
 // ── template ────────────────────────────────────────────────────────────────
 const font = (pkg, file) => pathToFileURL(join(root, 'node_modules/@fontsource', pkg, 'files', file)).href;
 const fontCss = `
-@font-face{font-family:NS;font-weight:400;src:url(${font('noto-sans', 'noto-sans-latin-400-normal.woff2')})}
-@font-face{font-family:NS;font-weight:700;src:url(${font('noto-sans', 'noto-sans-latin-700-normal.woff2')})}
+@font-face{font-family:NS;font-weight:400;src:url(${font('public-sans', 'public-sans-latin-400-normal.woff2')})}
+@font-face{font-family:NS;font-weight:700;src:url(${font('public-sans', 'public-sans-latin-600-normal.woff2')})}
+@font-face{font-family:MONO;font-weight:400;src:url(${font('ibm-plex-mono', 'ibm-plex-mono-latin-400-normal.woff2')})}
 @font-face{font-family:NST;font-weight:400;src:url(${font('noto-sans-tamil', 'noto-sans-tamil-tamil-400-normal.woff2')})}
-@font-face{font-family:NST;font-weight:700;src:url(${font('noto-sans-tamil', 'noto-sans-tamil-tamil-700-normal.woff2')})}`;
+@font-face{font-family:NST;font-weight:700;src:url(${font('noto-sans-tamil', 'noto-sans-tamil-tamil-600-normal.woff2')})}`;
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 function html(lang, c, W, H) {
@@ -84,20 +85,21 @@ function html(lang, c, W, H) {
   const waffle = c.waffle !== undefined
     ? `<svg viewBox="0 0 200 200" width="${tall ? 260 : 200}" height="${tall ? 260 : 200}" style="flex:none">${Array.from({ length: 100 }, (_, i) => {
         const x = (i % 10) * 20 + 10, y = Math.floor(i / 10) * 20 + 10;
-        return i < c.waffle ? `<circle cx="${x}" cy="${y}" r="7" fill="#0e5a53"/>` : `<circle cx="${x}" cy="${y}" r="6" fill="none" stroke="#62676d" stroke-width="2"/>`;
+        return i < c.waffle ? `<circle cx="${x}" cy="${y}" r="7" fill="oklch(0.45 0.085 195)"/>` : `<circle cx="${x}" cy="${y}" r="6" fill="none" stroke="oklch(0.62 0.02 60)" stroke-width="2"/>`;
       }).join('')}</svg>` : '';
   return `<!doctype html><html lang="${ta ? 'ta' : 'en'}"><head><meta charset="utf-8"><style>${fontCss}
   *{box-sizing:border-box;margin:0}
-  body{width:${W}px;height:${H}px;background:#f7f3ec;color:#1e2124;font-family:NS,NST;padding:${tall ? 80 : 56}px;display:flex;flex-direction:column;gap:${tall ? 36 : 22}px;overflow:hidden}
-  .brand{display:flex;align-items:center;gap:14px;font-weight:700;font-size:${tall ? 30 : 24}px;color:#0e5a53}
+  body{width:${W}px;height:${H}px;background:oklch(0.985 0.005 85);color:oklch(0.24 0.015 60);font-family:NS,NST;padding:${tall ? 80 : 56}px;display:flex;flex-direction:column;gap:${tall ? 36 : 22}px;overflow:hidden}
+  .brand{display:flex;align-items:center;gap:14px;font-weight:700;font-size:${tall ? 30 : 24}px;color:oklch(0.24 0.015 60)}
+  .logo{width:22px;height:22px;border-radius:50%;background:oklch(0.45 0.085 195);box-shadow:28px 0 0 -5px oklch(0.8 0.08 75);margin-right:26px}
   .main{display:flex;gap:40px;align-items:center;flex-direction:${tall ? 'column' : 'row'};align-items:${tall ? 'flex-start' : 'center'}}
-  h1{font-size:${statSize}px;line-height:${ta ? 1.4 : 1.12};font-weight:700;letter-spacing:${ta ? 0 : -1}px}
-  .sub{font-size:${tall ? 34 : 24}px;line-height:1.45;color:#454a50}
-  .act{background:#e2efec;border-radius:18px;padding:${tall ? '28px 32px' : '18px 24px'};font-size:${tall ? 32 : 22}px;line-height:1.45;font-weight:700;color:#0b4a44}
-  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;font-size:${tall ? 22 : 16}px;color:#62676d;line-height:1.4}
-  .url{font-weight:700;color:#1e2124;white-space:nowrap}
+  h1{font-size:${statSize}px;line-height:${ta ? 1.4 : 1.12};font-weight:700;letter-spacing:${ta ? 0 : -2}px}
+  .sub{font-size:${tall ? 34 : 24}px;line-height:1.45;color:oklch(0.4 0.015 60)}
+  .act{background:oklch(0.45 0.085 195);border-radius:20px;padding:${tall ? '28px 32px' : '18px 24px'};font-size:${tall ? 32 : 22}px;line-height:1.4;font-weight:600;color:oklch(0.99 0.005 85)}
+  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;font-size:${tall ? 20 : 15}px;color:oklch(0.48 0.015 60);line-height:1.5;font-family:MONO,NST}
+  .url{font-weight:700;color:oklch(0.24 0.015 60);white-space:nowrap;font-family:NS}
   </style></head><body>
-  <div class="brand"><svg width="34" height="34" viewBox="0 0 22 22"><circle cx="6" cy="11" r="4" fill="#0e5a53"/><circle cx="16" cy="11" r="4" fill="none" stroke="#0e5a53" stroke-width="2"/></svg>${esc(SITE_NAME[lang])}</div>
+  <div class="brand"><span class="logo"></span>${esc(SITE_NAME[lang])}</div>
   <div class="main">${waffle}<div style="display:flex;flex-direction:column;gap:${tall ? 28 : 16}px"><h1>${esc(c.stat)}</h1>${c.sub ? `<p class="sub">${esc(c.sub)}</p>` : ''}</div></div>
   <div class="act">${esc(c.action)}</div>
   <div class="foot"><span>${esc(c.source)}</span><span class="url">${esc(SITE_URL.replace(/^https?:\/\//, ''))}</span></div>

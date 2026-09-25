@@ -27,12 +27,12 @@ const w = (v: number) => `${Math.max(0.6, (v / max) * 100).toFixed(2)}%`;
   ))}
 </div>
 <style>
-  .barlist { display: grid; gap: 0.9rem; }
-  .row .lab { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9375rem; line-height: 1.35; margin-bottom: 0.3rem; }
-  .row .lab .v { font-weight: 700; white-space: nowrap; }
-  .row.em .lab span:first-child { font-weight: 600; }
-  .track { position: relative; height: 14px; background: var(--c-track); border-radius: 4px; }
-  .fill { height: 100%; border-radius: 4px; }
+  .barlist { display: grid; gap: 18px; }
+  .row .lab { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9375rem; line-height: 1.35; margin-bottom: 8px; }
+  .row .lab .v { font-weight: 500; white-space: nowrap; color: var(--ink-2); }
+  .row .lab span:first-child { font-weight: 600; }
+  .track { position: relative; height: 22px; background: var(--c-track); border-radius: 6px; }
+  .fill { height: 100%; border-radius: 6px; }
   .gap .track { background: repeating-linear-gradient(135deg, var(--c-track) 0 6px, transparent 6px 10px); }
   .mk { position: absolute; top: -5px; bottom: -5px; width: 0; border-left: 2px dashed var(--ink); }
   .note { margin-top: 0.25rem; }

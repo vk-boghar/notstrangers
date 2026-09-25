@@ -53,6 +53,11 @@ for (const f of html) {
     const tables = (s.match(/class="table-alt"/g) || []).length;
     if (tables < 3) fail(f, `only ${tables} accessible table alternatives`);
   }
+  // 6b. parent guide must stay marked DRAFT until reviewed, and must show helplines
+  if (/^(en|ta)\/guide\/index\.html$/.test(name)) {
+    if (!PREVENTION_REVIEWED && !/class="draft"/.test(s)) fail(f, 'parent guide must be marked DRAFT');
+    if (!/tel:1098/.test(s)) fail(f, 'parent guide must link Childline 1098');
+  }
 }
 
 // 7. robots.txt matches NOINDEX

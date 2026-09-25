@@ -150,20 +150,22 @@ const tableCite = [states('pocso_total', 'cases', mapYear)[0], states('pocso_rat
 </Base>
 
 <style>
-  .page { padding-top: 2rem; }
-  .stats { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 1.5rem; }
+  
+  .stats { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top: 1.75rem; }
   .stats .card { display: grid; gap: 0.2rem; margin: 0; }
-  .stats .v { font-size: 1.6rem; font-weight: 700; }
+  .stats .v { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
   .stats span:not(.v) { font-size: 0.875rem; color: var(--ink-2); line-height: 1.35; }
   .map-grid { display: grid; gap: 1.5rem; }
   @media (min-width: 900px) { .map-grid { grid-template-columns: 3fr 2fr; align-items: start; } }
   .ctl { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 0.5rem; }
-  .seg-ctl { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .pill { font: inherit; font-size: 0.875rem; font-weight: 600; min-height: 36px; padding: 0.3rem 0.85rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-  .pill[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
   .sortable th button { font: inherit; font-weight: 600; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
   tr.tn th, tr.tn td { background: var(--accent-soft); }
-  .side h3 { font-size: 1.05rem; }
+  .map-grid > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(16px, 3vw, 28px); min-width: 0; }
+  .ctl { margin-bottom: 1rem !important; }
+  .side h3 { font-size: 1.5rem; letter-spacing: -0.02em; }
+  .side .tn-facts li { border-top: 1px solid var(--line-soft); padding-top: 0.6rem; }
+  .table-scroll { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .table-scroll table.data { margin: 0; }
   .tn-facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
 </style>
 <script is:inline>

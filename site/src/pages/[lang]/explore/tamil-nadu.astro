@@ -107,8 +107,8 @@ const cityYear = cityRows.length ? Math.max(...cityRows.map((r) => r.year)) : un
         <StackBar
           ariaLabel={`${fmtInt(hcOver.value)} of ${fmtInt(hcPending.value)} pending more than one year`}
           segs={[
-            { key: 'over', label: lang === 'ta' ? 'ஓராண்டுக்கு மேல் காத்திருப்பவை' : 'Waiting more than 1 year', value: hcOver.value, color: 'var(--c-family)' },
-            { key: 'under', label: lang === 'ta' ? 'ஓராண்டுக்குள்' : 'Waiting up to 1 year', value: hcPending.value - hcOver.value, color: 'var(--c-unknown)' },
+            { key: 'over', label: lang === 'ta' ? 'ஓராண்டுக்கு மேல் காத்திருப்பவை' : 'Waiting more than 1 year', value: hcOver.value, color: 'var(--c-warn)' },
+            { key: 'under', label: lang === 'ta' ? 'ஓராண்டுக்குள்' : 'Waiting up to 1 year', value: hcPending.value - hcOver.value, color: 'var(--c-warn-soft)' },
           ]}
         />
         <Cite rows={[hcPending, hcOver]} lang={lang} csv="court_pendency" />
@@ -152,7 +152,7 @@ const cityYear = cityRows.length ? Math.max(...cityRows.map((r) => r.year)) : un
               <p class="yr num">{y}</p>
               <BarList ariaLabel={`${y}`} max={rateMax} bars={[
                 rTN(y) && { label: lang === 'ta' ? 'தமிழ்நாடு' : 'Tamil Nadu', value: rTN(y)!.value, valueLabel: fmt(rTN(y)!.value, 1), color: 'var(--c-family)', emphasis: true },
-                rIN(y) && { label: lang === 'ta' ? 'இந்தியா' : 'India', value: rIN(y)!.value, valueLabel: fmt(rIN(y)!.value, 1), color: 'var(--c-unknown)' },
+                rIN(y) && { label: lang === 'ta' ? 'இந்தியா' : 'India', value: rIN(y)!.value, valueLabel: fmt(rIN(y)!.value, 1), color: 'var(--c-seq-soft)' },
               ].filter(Boolean) as any} />
             </div>
           ))}
@@ -166,13 +166,14 @@ const cityYear = cityRows.length ? Math.max(...cityRows.map((r) => r.year)) : un
   </div>
 </Base>
 <style>
-  .page { padding-top: 2rem; }
-  .section.first { border-top: 0; padding-top: 1.5rem; }
-  .narrow { max-width: var(--maxw); }
-  .tier3 { margin-top: 2rem; max-width: var(--maxw); border-color: var(--tier3-bg); border-width: 2px; }
+  
+  .section.first { padding-top: 1.5rem; }
+  .narrow { max-width: 820px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(18px, 3vw, 28px); }
+  .tier3 { margin-top: 16px; max-width: 820px; background: var(--warm-bg); border: 1px dashed var(--draft-line); }
   .tier3 h3 { font-size: 1.05rem; }
   .map-grid { display: grid; gap: 1.5rem; }
   @media (min-width: 900px) { .map-grid { grid-template-columns: 3fr 2fr; align-items: start; } }
   .cities-h { margin-top: 1.5rem; }
-  .yr { font-weight: 700; margin: 1rem 0 -0.5rem; }
+  .yr { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin: 1rem 0 -0.4rem; }
+  .map-grid > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(16px, 3vw, 28px); min-width: 0; }
 </style>

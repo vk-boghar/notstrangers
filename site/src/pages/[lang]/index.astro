@@ -60,178 +60,210 @@ const courtYear = latestYear('pocso_court', 'IN');
 const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
 ---
 <Base lang={lang}>
-  <!-- 1 · Hook -->
-  <section class="hook" aria-labelledby="hook-h">
-    <div class="wrap">
+  <!-- Hook -->
+  <section class="hook wrap-wide" aria-labelledby="hook-h">
+    <div class="hook-text">
       <p class="kicker">{t('home.hook_kicker')}</p>
       <h1 id="hook-h">{t('home.hook_title', { n: knownPer100 })}</h1>
-      <p class="lead">{t('home.hook_sub')}</p>
-      <figure class="waffle" aria-hidden="true">
-        <svg viewBox="0 0 200 200" width="180" height="180">
-          {Array.from({ length: 100 }, (_, i) => {
-            const x = (i % 10) * 20 + 10, y = Math.floor(i / 10) * 20 + 10;
-            return i < knownPer100
-              ? <circle cx={x} cy={y} r="7" fill="var(--accent)" />
-              : <circle cx={x} cy={y} r="6" fill="none" stroke="var(--muted)" stroke-width="2" />;
-          })}
-        </svg>
-      </figure>
+      <p class="hook-sub">{t('home.hook_sub')}</p>
+      <p class="ctas">
+        <a class="btn primary" href="#who">{t('home.hook_scroll')} ↓</a>
+        <a class="btn" href={`/${lang}/guide/`}>{t('nav.guide')}</a>
+      </p>
       <Cite rows={[relTotal, relKnown]} lang={lang} />
-      <p class="small muted">{fmtInt(relKnown.value)} / {fmtInt(relTotal.value)} = {pct(relKnown.value, relTotal.value)}%, {lang === 'ta' ? 'அருகிலுள்ள முழு எண்ணுக்கு' : 'rounded to'} {knownPer100}.</p>
+      <p class="calc num">{fmtInt(relKnown.value)} / {fmtInt(relTotal.value)} = {pct(relKnown.value, relTotal.value)}% → {knownPer100} {lang === 'ta' ? '/ 100' : 'of 100'}</p>
       <Share lang={lang} card="hook" text={t('home.hook_title', { n: knownPer100 })} />
-      <p><a class="btn" href="#scale">{t('home.hook_scroll')} ↓</a></p>
     </div>
+    <figure class="waffle">
+      <svg viewBox="0 0 220 220" role="img" aria-label={`${knownPer100} / 100: ${t('home.who_known_label')}`}>
+        {Array.from({ length: 100 }, (_, i) => {
+          const x = (i % 10) * 22 + 11, y = Math.floor(i / 10) * 22 + 11;
+          return i < knownPer100
+            ? <circle cx={x} cy={y} r="8.6" fill="var(--accent)" />
+            : <circle cx={x} cy={y} r="7.6" fill="none" stroke="var(--muted)" stroke-width="2" />;
+        })}
+      </svg>
+      <figcaption class="legend-row">
+        <span><i class="dot on"></i>{t('home.who_known_label')}</span>
+        <span><i class="dot off"></i>{t('home.who_cat_short_unknown')}</span>
+      </figcaption>
+    </figure>
   </section>
 
   <LatestStrip lang={lang} />
 
-  <!-- 2 · Scale -->
-  <section class="section" id="scale" aria-labelledby="scale-h">
-    <div class="wrap">
-      <p class="kicker">{t('home.scale_kicker')}</p>
-      <h2 id="scale-h">{t('home.scale_title', { year: sYear, total: fmtInt(pocso.value) })}</h2>
-      <p class="lead">{t('home.scale_perday', { perday: perDay, mins: `~${everyMins}` })}</p>
-      <Caveat lang={lang} />
+  <!-- 01 · Scale -->
+  <section class="section band" id="scale" aria-labelledby="scale-h">
+    <div class="wrap-wide grid-2">
+      <div>
+        <p class="kicker">01 · {t('home.scale_kicker')}</p>
+        <h2 id="scale-h">{t('home.scale_title', { year: sYear, total: fmtInt(pocso.value) })}</h2>
+        <p class="lead">{t('home.scale_perday', { perday: perDay, mins: `~${everyMins}` })}</p>
+        <div class="mini-stats">
+          <div class="card mini"><span class="mv num">{fmtInt(pocso.value)}</span><span class="ml">{lang === 'ta' ? 'இந்தியா' : 'India'} · {sYear}</span></div>
+          {tn && <div class="card mini"><span class="mv num">{fmtInt(tn.value)}</span><span class="ml">{lang === 'ta' ? 'தமிழ்நாடு' : 'Tamil Nadu'} · {tn.year}</span></div>}
+        </div>
+        <Caveat lang={lang} />
+        {tn && <p class="small muted">{t('home.scale_tn', { tn: fmtInt(tn.value), year: tn.year, perday: Math.round(tn.value / days) })} {t('home.scale_tn_note')}</p>}
+        <p class="small">{t('home.scale_rising')}</p>
+        <Cite rows={tn ? [pocso, tn] : pocso} lang={lang} csv="pocso_total" />
+        <Share lang={lang} card="scale" text={t('cards.scale_stat', { perday: perDay, year: sYear })} />
+      </div>
       <DotGrid total={pocso.value} per={PER_DOT} ariaLabel={t('home.scale_dot_caption', { per: PER_DOT, dots: Math.round(pocso.value / PER_DOT) })}>
         {t('home.scale_dot_caption', { per: PER_DOT, dots: fmtInt(Math.round(pocso.value / PER_DOT)) })}
       </DotGrid>
-      <Cite rows={pocso} lang={lang} csv="pocso_total" />
-      {tn && (
-        <div class="card tn">
-          <p><strong>{t('home.scale_tn', { tn: fmtInt(tn.value), year: tn.year, perday: Math.round(tn.value / days) })}</strong></p>
-          <p class="small muted">{t('home.scale_tn_note')}</p>
-          <Cite rows={tn} lang={lang} csv="pocso_total" />
-        </div>
-      )}
-      <p class="small">{t('home.scale_rising')}</p>
-      <Share lang={lang} card="scale" text={t('cards.scale_stat', { perday: perDay, year: sYear })} />
     </div>
   </section>
 
-  <!-- 3 · Who -->
+  <!-- 02 · Who -->
   <section class="section" id="who" aria-labelledby="who-h">
-    <div class="wrap">
-      <p class="kicker">{t('home.who_kicker')}</p>
-      <h2 id="who-h">{t('home.who_title')}</h2>
-      <RelationshipChart lang={lang} />
-      <Caveat lang={lang} />
-      <div class="card explainer">
-        <h3>{t('home.who_explainer_title')}</h3>
-        <p>{t('home.who_explainer')}</p>
-        <p>{t('home.who_explainer_2', { n: fmtInt(relFam.value + relAdults.value), year: relYear })}</p>
-        <p class="small"><a href={`/${lang}/methodology/#relationship`}>{t('common.methodology_link')} →</a></p>
+    <div class="wrap-wide">
+      <p class="kicker">02 · {t('home.who_kicker')}</p>
+      <h2 id="who-h" class="h-narrow">{t('home.who_title')}</h2>
+      <div class="grid-2 top-gap">
+        <div class="card"><RelationshipChart lang={lang} /></div>
+        <div class="stack-16">
+          <div class="card warm explainer">
+            <h3>{t('home.who_explainer_title')}</h3>
+            <p>{t('home.who_explainer')}</p>
+            <p>{t('home.who_explainer_2', { n: fmtInt(relFam.value + relAdults.value), year: relYear })}</p>
+            <p class="small"><a href={`/${lang}/methodology/#relationship`}>{t('common.methodology_link')} →</a></p>
+          </div>
+          <ActionCard lang={lang} text={t('home.who_action')} />
+          <Caveat lang={lang} />
+        </div>
       </div>
-      <ActionCard lang={lang} text={t('home.who_action')} />
     </div>
   </section>
 
-  <!-- 4 · Age -->
-  <section class="section" id="age" aria-labelledby="age-h">
-    <div class="wrap">
-      <p class="kicker">{t('home.age_kicker')}</p>
-      <h2 id="age-h">{t('home.age_title')}</h2>
+  <!-- 03 · Age -->
+  <section class="section band" id="age" aria-labelledby="age-h">
+    <div class="wrap-wide">
+      <p class="kicker">03 · {t('home.age_kicker')}</p>
+      <h2 id="age-h" class="h-narrow">{t('home.age_title')}</h2>
       <p class="lead">{t('home.age_lead', { year: aYear, share: pct(teen, ageTotal) })}</p>
-      <BarList
-        ariaLabel={`${aYear}: ${ageRows.map((r) => `${t(`home.age_band_${r.dimension_value}`)} ${fmtInt(r.value)}`).join('; ')}`}
-        bars={ageRows.map((r) => ({
-          label: t(`home.age_band_${r.dimension_value}`),
-          value: r.value,
-          valueLabel: `${fmtInt(r.value)} · ${pct(r.value, ageTotal)}%`,
-          color: 'var(--c-seq)',
-        }))}
-      />
-      <DataTable lang={lang} caption={`POCSO victims by age, ${aYear}`} head={[t('common.category'), t('common.victims'), t('common.share_pct')]} numeric={[1, 2]}
-        rows={ageRows.map((r) => [t(`home.age_band_${r.dimension_value}`), fmtInt(r.value), `${pct(r.value, ageTotal)}%`])} />
-      <Cite rows={ageRows} lang={lang} csv="pocso_victims_age" />
-      <Caveat lang={lang} text={t('home.age_note')} />
-      <ActionCard lang={lang} text={t('home.age_action')} />
+      <div class="grid-2 top-gap">
+        <div class="card">
+          <BarList
+            ariaLabel={`${aYear}: ${ageRows.map((r) => `${t(`home.age_band_${r.dimension_value}`)} ${fmtInt(r.value)}`).join('; ')}`}
+            bars={ageRows.map((r, i) => ({
+              label: t(`home.age_band_${r.dimension_value}`),
+              value: r.value,
+              valueLabel: `${fmtInt(r.value)} · ${pct(r.value, ageTotal)}%`,
+              color: i < 2 ? 'var(--c-family)' : 'var(--c-known)',
+            }))}
+          />
+          <DataTable lang={lang} caption={`POCSO victims by age, ${aYear}`} head={[t('common.category'), t('common.victims'), t('common.share_pct')]} numeric={[1, 2]}
+            rows={ageRows.map((r) => [t(`home.age_band_${r.dimension_value}`), fmtInt(r.value), `${pct(r.value, ageTotal)}%`])} />
+          <Cite rows={ageRows} lang={lang} csv="pocso_victims_age" />
+        </div>
+        <div class="stack-16">
+          <Caveat lang={lang} text={t('home.age_note')} />
+          <ActionCard lang={lang} text={t('home.age_action')} />
+          <p><a class="btn" href={`/${lang}/guide/#by-age`}>{t('nav.guide')} →</a></p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 5 · Justice -->
+  <!-- 04 · Justice -->
   <section class="section" id="justice" aria-labelledby="justice-h">
-    <div class="wrap">
-      <p class="kicker">{t('home.justice_kicker')}</p>
-      <h2 id="justice-h">{t('home.justice_title')}</h2>
+    <div class="wrap-wide">
+      <p class="kicker">04 · {t('home.justice_kicker')}</p>
+      <h2 id="justice-h" class="h-narrow">{t('home.justice_title')}</h2>
       <p class="lead">{t('home.justice_lead')}</p>
 
-      <div class="card">
-        <p class="takeaway">{t('home.justice_tn_callout', { pending: fmtInt(hcPending.value), over: fmtInt(hcOver.value) })}</p>
-        <StackBar
-          ariaLabel={`${fmtInt(hcOver.value)} of ${fmtInt(hcPending.value)} pending more than one year`}
-          segs={[
-            { key: 'over', label: lang === 'ta' ? 'ஓராண்டுக்கு மேல் காத்திருப்பவை' : 'Waiting more than 1 year', value: hcOver.value, color: 'var(--c-family)' },
-            { key: 'under', label: lang === 'ta' ? 'ஓராண்டுக்குள்' : 'Waiting up to 1 year', value: hcPending.value - hcOver.value, color: 'var(--c-unknown)' },
+      <div class="card top-gap">
+        <h3 class="card-title">{t('home.justice_clock_title')}</h3>
+        <BarList
+          ariaLabel={`${t('home.justice_clock_limit')}: 12 months. ${t('home.justice_clock_actual')}: ${vidhiMonths.toFixed(1)} months.`}
+          max={18}
+          marker={{ at: 12, label: t('home.justice_clock_limit_val') }}
+          bars={[
+            { label: t('home.justice_clock_limit'), value: 12, valueLabel: t('home.justice_clock_limit_val'), color: 'var(--c-known)' },
+            { label: t('home.justice_clock_actual'), value: vidhiMonths, valueLabel: t('home.justice_clock_actual_val', { months: Math.round(vidhiMonths) }), color: 'var(--c-warn)', emphasis: true },
           ]}
         />
-        <Cite rows={[hcPending, hcOver]} lang={lang} csv="court_pendency" />
-        <Share lang={lang} card="wait" text={t('cards.wait_stat', { pending: fmtInt(hcPending.value) })} />
+        <p class="small muted">{t('home.justice_clock_note')} ({fmtInt(Math.round(vidhi.value))} {lang === 'ta' ? 'நாட்கள்' : 'days'})</p>
+        <Cite rows={vidhi} lang={lang} csv="trial_duration" />
       </div>
 
-      <h3 class="sub-h">{t('home.justice_clock_title')}</h3>
-      <BarList
-        ariaLabel={`${t('home.justice_clock_limit')}: 12 months. ${t('home.justice_clock_actual')}: ${vidhiMonths.toFixed(1)} months.`}
-        max={18}
-        marker={{ at: 12, label: t('home.justice_clock_limit_val') }}
-        bars={[
-          { label: t('home.justice_clock_limit'), value: 12, valueLabel: t('home.justice_clock_limit_val'), color: 'var(--c-seq-soft)' },
-          { label: t('home.justice_clock_actual'), value: vidhiMonths, valueLabel: t('home.justice_clock_actual_val', { months: Math.round(vidhiMonths) }), color: 'var(--c-family)', emphasis: true },
-        ]}
-      />
-      <p class="small muted">{t('home.justice_clock_note')} ({fmtInt(Math.round(vidhi.value))} {lang === 'ta' ? 'நாட்கள்' : 'days'})</p>
-      <Cite rows={vidhi} lang={lang} csv="trial_duration" />
-
-      <h3 class="sub-h">{t('home.justice_ftsc_title')}</h3>
-      <p>{t('home.justice_ftsc_lead', { year: fYear, registered: fmtInt(ftsc(fYear, 'registered').value), disposed: fmtInt(ftsc(fYear, 'disposed').value), pending: fmtInt(ftsc(fYear, 'pending_end_year').value) })}</p>
-      {ftscYears.map((y) => (
-        <div class="ftsc-year">
-          <p class="yr num">{y}</p>
-          <BarList
-            ariaLabel={`${y}`}
-            max={Math.max(...where({ dataset: 'ftsc_flow', geo: 'IN' }).map((r) => r.value))}
-            bars={[
-              { label: t('home.justice_ftsc_registered'), value: ftsc(y, 'registered').value, valueLabel: fmtInt(ftsc(y, 'registered').value), color: 'var(--c-known)' },
-              { label: t('home.justice_ftsc_disposed'), value: ftsc(y, 'disposed').value, valueLabel: fmtInt(ftsc(y, 'disposed').value), color: 'var(--c-unknown)' },
-              { label: t('home.justice_ftsc_pending'), value: ftsc(y, 'pending_end_year').value, valueLabel: fmtInt(ftsc(y, 'pending_end_year').value), color: 'var(--c-family)', emphasis: true },
-            ]}
-          />
+      <div class="grid-2 top-gap">
+        <div class="card">
+          <h3 class="card-title">{t('home.justice_ftsc_title')}</h3>
+          <p class="small">{t('home.justice_ftsc_lead', { year: fYear, registered: fmtInt(ftsc(fYear, 'registered').value), disposed: fmtInt(ftsc(fYear, 'disposed').value), pending: fmtInt(ftsc(fYear, 'pending_end_year').value) })}</p>
+          {ftscYears.map((y) => (
+            <div class="ftsc-year">
+              <p class="yr num">{y}</p>
+              <BarList
+                ariaLabel={`${y}`}
+                max={Math.max(...where({ dataset: 'ftsc_flow', geo: 'IN' }).map((r) => r.value))}
+                bars={[
+                  { label: t('home.justice_ftsc_registered'), value: ftsc(y, 'registered').value, valueLabel: fmtInt(ftsc(y, 'registered').value), color: 'var(--c-known)' },
+                  { label: t('home.justice_ftsc_disposed'), value: ftsc(y, 'disposed').value, valueLabel: fmtInt(ftsc(y, 'disposed').value), color: 'var(--c-family)' },
+                  { label: t('home.justice_ftsc_pending'), value: ftsc(y, 'pending_end_year').value, valueLabel: fmtInt(ftsc(y, 'pending_end_year').value), color: 'var(--c-warn)', emphasis: true },
+                ]}
+              />
+            </div>
+          ))}
+          <DataTable lang={lang} caption="Fast-track special courts" head={[t('common.year'), t('home.justice_ftsc_registered'), t('home.justice_ftsc_disposed'), t('home.justice_ftsc_pending')]} numeric={[1, 2, 3]}
+            rows={ftscYears.map((y) => [String(y), fmtInt(ftsc(y, 'registered').value), fmtInt(ftsc(y, 'disposed').value), fmtInt(ftsc(y, 'pending_end_year').value)])} />
+          <p class="small muted">{t('home.justice_ftsc_note', { courts: fmtInt(ftscCourts.value), pocso: fmtInt(ftscPocso.value), date: fmtDate(ftscCourts.as_of_date, lang) })}</p>
+          <Cite rows={[...where({ dataset: 'ftsc_flow', geo: 'IN' }), ftscCourts]} lang={lang} csv="ftsc_flow" />
         </div>
-      ))}
-      <DataTable lang={lang} caption="Fast-track special courts" head={[t('common.year'), t('home.justice_ftsc_registered'), t('home.justice_ftsc_disposed'), t('home.justice_ftsc_pending')]} numeric={[1, 2, 3]}
-        rows={ftscYears.map((y) => [String(y), fmtInt(ftsc(y, 'registered').value), fmtInt(ftsc(y, 'disposed').value), fmtInt(ftsc(y, 'pending_end_year').value)])} />
-      <p class="small muted">{t('home.justice_ftsc_note', { courts: fmtInt(ftscCourts.value), pocso: fmtInt(ftscPocso.value), date: fmtDate(ftscCourts.as_of_date, lang) })}</p>
-      <Cite rows={[...where({ dataset: 'ftsc_flow', geo: 'IN' }), ftscCourts]} lang={lang} csv="ftsc_flow" />
+        <div class="stack-16">
+          <div class="card warm">
+            <p class="kicker warm-k">{lang === 'ta' ? 'தமிழ்நாடு' : 'Tamil Nadu'}</p>
+            <div class="big-num">{fmtInt(hcPending.value)}</div>
+            <p class="takeaway tn-call">{t('home.justice_tn_callout', { pending: fmtInt(hcPending.value), over: fmtInt(hcOver.value) })}</p>
+            <StackBar
+              ariaLabel={`${fmtInt(hcOver.value)} of ${fmtInt(hcPending.value)} pending more than one year`}
+              segs={[
+                { key: 'over', label: lang === 'ta' ? 'ஓராண்டுக்கு மேல் காத்திருப்பவை' : 'Waiting more than 1 year', value: hcOver.value, color: 'var(--c-warn)' },
+                { key: 'under', label: lang === 'ta' ? 'ஓராண்டுக்குள்' : 'Waiting up to 1 year', value: hcPending.value - hcOver.value, color: 'var(--c-warn-soft)' },
+              ]}
+            />
+            <Cite rows={[hcPending, hcOver]} lang={lang} csv="court_pendency" />
+            <Share lang={lang} card="wait" text={t('cards.wait_stat', { pending: fmtInt(hcPending.value) })} />
+          </div>
+          <ActionCard lang={lang} text={t('home.justice_action')} />
+        </div>
+      </div>
 
       {courtYear === undefined
-        ? <p class="pending small">{t('home.justice_funnel_pending', { year: sYear })}</p>
-        : <><h3 class="sub-h">{lang === 'ta' ? 'காவல் நிலையத்திலிருந்து தீர்ப்பு வரை' : 'From police station to verdict'}</h3><JusticeFunnel lang={lang} year={courtYear} /></>}
-      <ActionCard lang={lang} text={t('home.justice_action')} />
+        ? <p class="pending small top-gap">{t('home.justice_funnel_pending', { year: sYear })}</p>
+        : <div class="card top-gap"><h3 class="card-title">{lang === 'ta' ? 'காவல் நிலையத்திலிருந்து தீர்ப்பு வரை' : 'From police station to verdict'}</h3><JusticeFunnel lang={lang} year={courtYear} /></div>}
     </div>
   </section>
 
-  <!-- 6 · What you can do -->
-  <section class="section" id="act" aria-labelledby="act-h">
-    <div class="wrap">
-      <p class="kicker">{t('home.act_kicker')}</p>
-      <h2 id="act-h">{t('home.act_title')}</h2>
-      {!PREVENTION_CONTENT_REVIEWED && <p><span class="draft">{t('common.draft')}</span></p>}
+  <!-- 05 · What you can do -->
+  <section class="section band" id="act" aria-labelledby="act-h">
+    <div class="wrap-wide">
+      <div class="act-head">
+        <div>
+          <p class="kicker">05 · {t('home.act_kicker')}</p>
+          <h2 id="act-h" class="h-narrow">{t('home.act_title')}</h2>
+        </div>
+        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{t('common.draft')}</span>}
+      </div>
       <p class="lead">{t('home.act_lead')}</p>
       <ol class="actions">
         {ACTIONS.map((i) => (
           <li>
-            <h3>{t(`home.act_${i}_t`)}</h3>
-            <p>{t(`home.act_${i}_b`)}</p>
+            <span class="an">{String(i).padStart(2, '0')}</span>
+            <span><strong>{t(`home.act_${i}_t`)}</strong><span class="ab">{t(`home.act_${i}_b`)}</span></span>
           </li>
         ))}
       </ol>
+      <p><a class="btn primary" href={`/${lang}/guide/`}>{t('nav.guide')} →</a></p>
 
       <h2 class="help-h" id="help">{t('home.help_title')}</h2>
-      <p>{t('home.help_lead')}</p>
+      <p class="muted">{t('home.help_lead')}</p>
       <Helplines lang={lang} />
 
-      <div class="card explore">
-        <h2>{t('home.explore_title')}</h2>
-        <p>{t('home.explore_lead')}</p>
+      <div class="explore">
+        <h3>{t('home.explore_title')}</h3>
+        <p class="muted">{t('home.explore_lead')}</p>
         <p class="links">
           <a class="btn primary" href={`/${lang}/explore/india/`}>{t('nav.india')} →</a>
           <a class="btn" href={`/${lang}/explore/tamil-nadu/`}>{t('nav.tn')} →</a>
@@ -243,23 +275,46 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
 </Base>
 
 <style>
-  .hook { padding: 3rem 0 2.5rem; }
-  .hook h1 { max-width: 20ch; }
-  :global(:lang(ta)) .hook h1 { max-width: none; }
-  .waffle { margin: 1.5rem 0 0.5rem; }
-  .waffle svg { display: block; width: 160px; height: 160px; }
-  .tn { margin-top: 1.5rem; }
-  .explainer { margin-top: 1.5rem; }
+  .hook {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(32px, 6vw, 72px); align-items: center;
+    padding-top: clamp(48px, 9vw, 112px); padding-bottom: clamp(40px, 6vw, 72px);
+  }
+  .hook h1 { font-size: clamp(2.4rem, 6.4vw, 4.75rem); line-height: 1.04; letter-spacing: -0.035em; margin-bottom: 24px; max-width: 14ch; }
+  :global(:lang(ta)) .hook h1 { font-size: clamp(1.9rem, 4.6vw, 3.3rem); line-height: 1.35; letter-spacing: 0; max-width: none; }
+  .hook-sub { font-size: clamp(1.15rem, 2vw, 1.375rem); line-height: 1.5; color: var(--ink-2); max-width: 34ch; margin-bottom: 28px; }
+  :global(:lang(ta)) .hook-sub { font-size: clamp(1.05rem, 1.9vw, 1.25rem); line-height: 1.75; max-width: 40ch; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 24px; }
+  .calc { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin: 0.25rem 0 0; }
+  .waffle { margin: 0; justify-self: center; width: 100%; max-width: 440px; }
+  .waffle svg { display: block; width: 100%; height: auto; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 0.8125rem; color: var(--ink-2); }
+  .legend-row span { display: inline-flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot.on { background: var(--accent); }
+  .dot.off { border: 2px solid var(--muted); }
+  .mini-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0 0 8px; }
+  .card.mini { padding: 16px; border-radius: 12px; display: grid; gap: 4px; }
+  .card.mini + .card.mini { margin-top: 0; }
+  .mv { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .ml { font-size: 0.8125rem; color: var(--muted); }
+  .h-narrow { max-width: 24ch; }
+  :global(:lang(ta)) .h-narrow { max-width: none; }
+  .top-gap { margin-top: 28px; }
   .explainer h3 { font-size: 1rem; }
-  .sub-h { margin-top: 2.25rem; }
+  .explainer p { font-size: 0.9375rem; color: var(--ink-2); }
+  .explainer p:last-child { margin-bottom: 0; }
   .ftsc-year { margin-top: 1rem; }
-  .yr { font-weight: 700; margin: 0 0 -0.5rem; }
-  .actions { padding-left: 1.4rem; margin: 1.5rem 0; }
-  .actions li { margin-bottom: 1.1rem; padding-left: 0.3rem; }
-  .actions li::marker { font-weight: 700; color: var(--accent); }
-  .actions h3 { font-size: 1.05rem; margin-bottom: 0.25rem; }
-  .actions p { margin: 0; color: var(--ink-2); }
-  .help-h { margin-top: 2.5rem; }
-  .explore { margin-top: 2.5rem; }
-  .explore .links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; }
+  .yr { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin: 0 0 -0.4rem; }
+  .warm-k { color: var(--warm-ink); margin-bottom: 10px; }
+  .tn-call { font-size: 1rem; font-weight: 500; margin-top: 10px; }
+  .act-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .actions { list-style: none; margin: 28px 0 28px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+  .actions li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; grid-template-columns: 32px 1fr; gap: 12px; }
+  .an { font-family: var(--mono); font-size: 0.8125rem; color: var(--link); padding-top: 2px; }
+  .actions strong { display: block; font-size: 1rem; line-height: 1.4; margin-bottom: 4px; }
+  .ab { display: block; font-size: 0.875rem; line-height: 1.55; color: var(--ink-2); }
+  .help-h { margin-top: 56px; font-size: clamp(1.3rem, 2.4vw, 1.6rem); }
+  .explore { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .explore .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
 </style>

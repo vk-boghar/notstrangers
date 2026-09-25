@@ -22,19 +22,21 @@ const starts = segs.map((s) => { const a = acc; acc += p(s.value); return a; });
       <li>
         <span class="sw" style={`background:${s.color}`}></span>
         <span class="l">{s.label}</span>
-        <span class="n num"><strong>{p(s.value).toFixed(1)}%</strong> · {new Intl.NumberFormat('en-IN').format(s.value)}</span>
+        <span class="n num"><strong>{p(s.value).toFixed(1)}%</strong><span>{new Intl.NumberFormat('en-IN').format(s.value)}</span></span>
       </li>
     ))}
   </ul>
 </div>
 <style>
-  .bar { display: flex; gap: 2px; height: 44px; border-radius: 6px; overflow: hidden; }
+  .bar { display: flex; gap: 2px; height: 44px; border-radius: 8px; overflow: hidden; }
   .seg { height: 100%; min-width: 3px; }
   .bracket { border: 2px solid var(--ink); border-bottom: 0; height: 12px; margin-bottom: 6px; position: relative; border-radius: 4px 4px 0 0; }
   .bracket span { position: absolute; bottom: 14px; left: 0; font-size: 0.8125rem; font-weight: 700; white-space: nowrap; }
   .stack { padding-top: 1.6rem; }
-  .legend { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: 0.6rem; }
-  .legend li { display: grid; grid-template-columns: 14px 1fr; column-gap: 0.6rem; align-items: start; font-size: 0.9375rem; line-height: 1.35; }
-  .sw { width: 14px; height: 14px; border-radius: 3px; margin-top: 3px; }
-  .n { grid-column: 2; color: var(--ink-2); font-size: 0.875rem; }
+  .legend { list-style: none; padding: 0; margin: 1.25rem 0 0; display: grid; }
+  .legend li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; column-gap: 12px; align-items: start; font-size: 0.9375rem; line-height: 1.4; padding: 12px 0; border-top: 1px solid var(--line-soft); }
+  .sw { width: 12px; height: 12px; border-radius: 3px; margin-top: 5px; }
+  .n { text-align: right; white-space: nowrap; }
+  .n strong { display: block; font-size: 0.9375rem; }
+  .n span { display: block; font-size: 0.75rem; color: var(--muted); }
 </style>

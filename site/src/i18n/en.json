@@ -3,15 +3,16 @@
     "description": "Plain-language data on child sexual abuse in India and Tamil Nadu: how common it is, who the offenders usually are, how slowly justice moves, and what parents can do this week."
   },
   "nav": {
-    "home": "The story",
-    "india": "India data",
-    "tn": "Tamil Nadu data",
+    "home": "Story",
+    "india": "India",
+    "tn": "Tamil Nadu",
     "help": "Get help",
     "method": "Methodology",
     "about": "About",
-    "data": "Downloads",
+    "data": "Data",
     "skip": "Skip to content",
-    "menu": "Menu"
+    "menu": "Menu",
+    "guide": "What you can do"
   },
   "lang": {
     "switch": "தமிழ்",

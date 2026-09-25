@@ -27,26 +27,32 @@ add('online', where({ dataset: 'ncmec_reports', geo: 'IN' }), (r) => (lang === '
 ---
 <section class="strip" aria-labelledby="strip-h">
   <div class="wrap-wide">
-    <h2 id="strip-h" class="h">{t('strip.title')}</h2>
-    <p class="small muted sub">{t('strip.sub')}</p>
+    <div class="head">
+      <h2 id="strip-h" class="h">{t('strip.title')}</h2>
+      <p class="small muted sub">{t('strip.sub')}</p>
+    </div>
     <ul>
       {items.map((it) => (
         <li>
           <span class="v num">{it.value}</span>
           <span class="k">{t(`strip.${it.key}`)}</span>
-          <span class="d small muted"><a href={it.row.source_url} rel="noopener external" target="_blank">{periodLabel(it.row, lang)}</a> <TierTag tier={it.row.tier} lang={lang} /></span>
+          <span class="d muted"><a href={it.row.source_url} rel="noopener external" target="_blank">{periodLabel(it.row, lang)}</a> <TierTag tier={it.row.tier} lang={lang} /></span>
         </li>
       ))}
     </ul>
   </div>
 </section>
 <style>
-  .strip { background: var(--surface); border-block: 1px solid var(--line); padding: 1.5rem 0; }
-  .h { font-size: 1rem; margin: 0; }
-  .sub { margin: 0.2rem 0 1rem; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem 1.25rem; }
-  li { min-width: 0; display: grid; gap: 0.15rem; align-content: start; justify-items: start; border-left: 2px solid var(--line); padding-left: 0.75rem; }
-  .v { font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
-  .k { font-size: 0.875rem; line-height: 1.35; }
+  .strip { padding: 0 0 clamp(48px, 8vw, 96px); }
+  .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .h { font-family: var(--mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  :global(:lang(ta)) .h { font-family: var(--font); letter-spacing: 0; text-transform: none; font-size: 0.875rem; }
+  .sub { margin: 0; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  li { min-width: 0; display: flex; flex-direction: column; gap: 6px; background: var(--surface); padding: 18px 18px 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 -1px -1px 0; }
+  .v { font-size: 1.65rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .k { font-size: 0.875rem; line-height: 1.4; color: var(--ink-2); }
+  .d { margin-top: auto; padding-top: 8px; font-family: var(--mono); font-size: 0.6875rem; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  :global(:lang(ta)) .d { font-family: var(--font); font-size: 0.75rem; }
   .d a { color: var(--muted); }
 </style>

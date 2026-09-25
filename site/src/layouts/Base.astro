@@ -1,14 +1,19 @@
 ---
-// Only the subsets we use (Latin + Tamil), two weights each. 600 falls back to 700.
-import '@fontsource/noto-sans/latin-400.css';
-import '@fontsource/noto-sans/latin-700.css';
+// Self-hosted fonts only (no third-party requests): Public Sans for text, IBM Plex Mono for
+// source lines and labels, Noto Sans Tamil for Tamil. Latin + Tamil subsets only.
+import '@fontsource/public-sans/latin-400.css';
+import '@fontsource/public-sans/latin-500.css';
+import '@fontsource/public-sans/latin-600.css';
+import '@fontsource/public-sans/latin-700.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
 import '@fontsource/noto-sans-tamil/tamil-400.css';
-import '@fontsource/noto-sans-tamil/tamil-700.css';
+import '@fontsource/noto-sans-tamil/tamil-600.css';
 import '../styles/global.css';
-import latin400 from '@fontsource/noto-sans/files/noto-sans-latin-400-normal.woff2?url';
-import latin700 from '@fontsource/noto-sans/files/noto-sans-latin-700-normal.woff2?url';
+import ps400 from '@fontsource/public-sans/files/public-sans-latin-400-normal.woff2?url';
+import ps600 from '@fontsource/public-sans/files/public-sans-latin-600-normal.woff2?url';
 import tamil400 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-400-normal.woff2?url';
-import tamil700 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-700-normal.woff2?url';
+import tamil600 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-600-normal.woff2?url';
 import {
   SITE_NAME, SITE_NAME_TA, SITE_URL, NOINDEX, TAMIL_REVIEWED, CONTACT_EMAIL, type Lang,
 } from '../config/site';
@@ -31,19 +36,21 @@ const desc = description ?? t('meta.description');
 const path = Astro.url.pathname;
 const alt = otherLang(lang);
 const altHref = swapLangPath(path, alt);
+const enHref = swapLangPath(path, 'en');
+const taHref = swapLangPath(path, 'ta');
 const canonical = new URL(path, SITE_URL).href;
 const og = new URL(ogImage ?? `/share/${lang}/hook-1200x630.png`, SITE_URL).href;
 const nav = [
   ['home', `/${lang}/`],
   ['india', `/${lang}/explore/india/`],
   ['tn', `/${lang}/explore/tamil-nadu/`],
+  ['guide', `/${lang}/guide/`],
   ['help', `/${lang}/help/`],
   ['method', `/${lang}/methodology/`],
   ['data', `/${lang}/data/`],
   ['about', `/${lang}/about/`],
 ] as const;
-// Preload the fonts this language actually needs so they download in parallel with the HTML.
-const preload = lang === 'ta' ? [tamil400, tamil700, latin400] : [latin400, latin700];
+const preload = lang === 'ta' ? [tamil400, tamil600, ps400] : [ps400, ps600];
 const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path.startsWith(href));
 ---
 <!doctype html>
@@ -57,8 +64,8 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang={lang === 'en' ? 'en-IN' : 'ta-IN'} href={canonical} />
     <link rel="alternate" hreflang={alt === 'en' ? 'en-IN' : 'ta-IN'} href={new URL(altHref, SITE_URL).href} />
-    <meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#141617" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1f1b18" media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
@@ -74,26 +81,26 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
   <body>
     <a class="skip" href="#main">{t('nav.skip')}</a>
     {NOINDEX && <div class="banner banner-preview" role="note">{t('banner.preview')}</div>}
-    {lang === 'ta' && !TAMIL_REVIEWED && <div class="banner banner-ta" role="note">{t('banner.ta_draft')}</div>}
 
     <header class="site-header">
       <div class="wrap-wide bar">
         <a class="brand" href={`/${lang}/`}>
-          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><circle cx="6" cy="11" r="4" fill="var(--accent)"/><circle cx="16" cy="11" r="4" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>
+          <span class="logo" aria-hidden="true"></span>
           <span>{name}</span>
         </a>
-        <a class="lang" href={altHref} hreflang={alt} lang={alt} aria-label={t('lang.switch_label')}>{t('lang.switch')}</a>
-        <details class="menu">
-          <summary>{t('nav.menu')}</summary>
-          <nav aria-label="Main">
-            <ul>
-              {nav.map(([k, href]) => (
-                <li><a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{t(`nav.${k}`)}</a></li>
-              ))}
-            </ul>
-          </nav>
-        </details>
+        <div class="lang" role="group" aria-label={t('lang.switch_label')}>
+          <a href={enHref} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined} aria-label="English">EN</a>
+          <a href={taHref} hreflang="ta" lang="ta" aria-current={lang === 'ta' ? 'true' : undefined} aria-label="தமிழ் (Tamil)">த</a>
+        </div>
+        <nav aria-label="Main">
+          <ul>
+            {nav.map(([k, href]) => (
+              <li><a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>{t(`nav.${k}`)}</a></li>
+            ))}
+          </ul>
+        </nav>
       </div>
+      {lang === 'ta' && !TAMIL_REVIEWED && <div class="banner banner-ta" role="note">{t('banner.ta_draft')}</div>}
     </header>
 
     <main id="main">
@@ -104,49 +111,63 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
     </main>
 
     <footer class="site-footer">
-      <div class="wrap-wide">
-        <p><strong>{name}</strong> — {t('footer.noncommercial')}</p>
-        <p>{t('footer.no_cases')}</p>
-        <p>
-          {t('footer.error')} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-          · {t('footer.updated')}: <span class="num">{fmtDate(META.generated_on, lang)}</span>
-        </p>
-        <p class="small muted">
-          {nav.map(([k, href], i) => (<>{i > 0 && ' · '}<a href={href}>{t(`nav.${k}`)}</a></>))}
-        </p>
+      <div class="wrap-wide foot">
+        <div class="foot-main">
+          <p class="brand-f"><span class="logo" aria-hidden="true"></span><strong>{name}</strong></p>
+          <p>{t('footer.noncommercial')} {t('footer.no_cases')}</p>
+          <p>{lang === 'ta' ? 'அவசரம்:' : 'In an emergency call'} <a href="tel:112" class="num">112</a>{lang === 'ta' ? '; குழந்தைகள் உதவி எண்' : '; for a child in need of care,'} <a href="tel:1098" class="num">1098</a>.</p>
+          <p class="mono-line">
+            {t('footer.error')} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+            · {t('footer.updated')}: <span class="num">{fmtDate(META.generated_on, lang)}</span>
+          </p>
+        </div>
+        <ul class="foot-links">
+          {nav.map(([k, href]) => <li><a href={href}>{t(`nav.${k}`)}</a></li>)}
+        </ul>
       </div>
     </footer>
   </body>
 </html>
 
 <style>
-  .banner { font-size: 0.8125rem; text-align: center; padding: 0.45rem 16px; }
+  .banner { font-size: 0.8125rem; text-align: center; padding: 8px var(--gutter); }
   .banner-preview { background: var(--ink); color: var(--bg); }
-  .banner-ta { background: var(--draft-bg); color: var(--draft-ink); border-bottom: 1px solid var(--draft-line); }
-  .site-header { background: var(--bg); border-bottom: 1px solid var(--line); position: relative; z-index: 5; }
-  .bar { display: flex; align-items: center; gap: 0.75rem; min-height: 56px; flex-wrap: wrap; }
-  .brand { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--ink); text-decoration: none; margin-right: auto; }
-  .lang { font-family: system-ui, sans-serif; font-weight: 600; font-size: 0.9rem; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.8rem; min-height: 36px; display: inline-flex; align-items: center; }
-  .menu summary { list-style: none; cursor: pointer; font-weight: 600; font-size: 0.9rem; padding: 0.3rem 0.8rem; border: 1px solid var(--line); border-radius: 999px; min-height: 36px; display: inline-flex; align-items: center; }
-  .menu summary::-webkit-details-marker { display: none; }
-  .menu[open] summary { background: var(--surface-2); }
-  .menu nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: 0 8px 20px rgb(0 0 0 / 0.06); }
-  .menu ul { list-style: none; margin: 0 auto; padding: 0.5rem 16px 1rem; max-width: var(--maxw-wide); }
-  .menu li a { display: block; padding: 0.65rem 0; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
-  .menu li a[aria-current='page'] { color: var(--accent); font-weight: 700; }
-  @media (min-width: 900px) {
-    .menu summary { display: none; }
-    .menu { display: contents; }
-    .menu nav { position: static; border: 0; box-shadow: none; background: none; order: 2; width: auto; }
-    .menu ul { display: flex; gap: 1.1rem; padding: 0; }
-    .menu li a { border: 0; padding: 0; font-size: 0.9rem; }
-    .lang { order: 3; }
+  .banner-ta { background: var(--warm-bg); color: var(--ink); border-top: 1px solid var(--warm-line); }
+  .site-header {
+    position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--line);
+    background: color-mix(in oklch, var(--bg) 92%, transparent);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   }
-  .site-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2rem 0 3rem; font-size: 0.875rem; color: var(--ink-2); }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; padding-top: 10px; padding-bottom: 6px; }
+  .brand { display: inline-flex; align-items: center; gap: 0; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; padding: 6px 0; }
+  .logo { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 18px 0 0 -3px var(--c-friends); margin-right: 20px; flex: none; }
+  .lang { margin-left: auto; display: flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .lang a {
+    min-width: 40px; min-height: 32px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px; padding: 4px 12px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); text-decoration: none;
+  }
+  .lang a[aria-current='true'] { background: var(--ink); color: var(--bg); }
+  nav { order: 3; flex: 1 1 100%; margin: 0 -4px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
+  nav::-webkit-scrollbar { display: none; }
+  nav ul { list-style: none; display: flex; gap: 4px; margin: 0; padding: 2px 4px 4px; }
+  nav li { flex: none; }
+  nav a {
+    display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border-radius: 999px;
+    font-size: 0.875rem; font-weight: 500; color: var(--muted); text-decoration: none; white-space: nowrap;
+  }
+  nav a:hover { background: var(--track); color: var(--ink); }
+  nav a[aria-current='page'] { background: var(--accent-soft); color: var(--accent-soft-ink); }
+  @media (min-width: 1100px) {
+    nav { mask-image: none; -webkit-mask-image: none; }
+  }
+  .site-footer { border-top: 1px solid var(--line); background: var(--band); font-size: 0.875rem; line-height: 1.6; color: var(--ink-2); }
+  .foot { display: flex; flex-wrap: wrap; gap: 16px 48px; justify-content: space-between; padding-top: 32px; padding-bottom: 40px; }
+  .foot-main { max-width: 60ch; }
+  .foot-main p { margin: 0 0 0.6rem; }
+  .brand-f { display: flex; align-items: center; color: var(--ink); }
+  .mono-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+  :global(:lang(ta)) .mono-line { font-family: var(--font); }
+  .foot-links { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, auto); gap: 4px 24px; align-content: start; }
+  .foot-links a { color: var(--link); }
   .en-only { margin-top: 1.25rem; font-size: 0.9rem; }
 </style>
-<script is:inline>
-  // Desktop: <details> nav must be open so links show; mobile keeps it collapsed. ~150 bytes.
-  (function () { var d = document.querySelector('.menu'); if (!d) return; var m = matchMedia('(min-width: 900px)');
-    function s() { if (m.matches) d.setAttribute('open', ''); else d.removeAttribute('open'); } s(); m.addEventListener && m.addEventListener('change', s); })();
-</script>

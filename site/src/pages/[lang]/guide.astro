@@ -1,0 +1,336 @@
+---
+// "What you can do": a one-page map for parents and children. English source text only; the Tamil
+// route shows it with a notice, because safety text must never ship machine-translated.
+import Base from '../../layouts/Base.astro';
+import Helplines from '../../components/Helplines.astro';
+import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
+import { useT } from '../../i18n';
+import { guide as g } from '../../lib/guide';
+import { one, latestYear, fmtInt } from '../../lib/data';
+
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const { t } = useT(lang);
+const relYear = latestYear('pocso_relationship', 'IN')!;
+const relTotal = one({ dataset: 'pocso_relationship', geo: 'IN', year: relYear, dim: 'total' });
+const relKnown = one({ dataset: 'pocso_relationship', geo: 'IN', year: relYear, dim: 'known_total' });
+const knownPer100 = Math.round((relKnown.value / relTotal.value) * 100);
+
+const MAP = [
+  ['mindset', '01', 'Start here', 'The mindset'],
+  ['by-age', '02', 'Talk by age', '2–5 · 6–9 · 10–12 · teens'],
+  ['rules', '03', 'Five rules', 'P · A · N · T · S'],
+  ['precautions', '04', 'Precautions', 'What adults control'],
+  ['signs', '05', 'Warning signs', 'Change, pattern, cluster'],
+  ['grooming', '06', 'Grooming', 'How it works'],
+  ['tells', '07', 'If a child tells you', 'Calm → care → report'],
+  ['kids', '08', 'For kids & teens', 'Read together'],
+] as const;
+---
+<Base lang={lang} title={g.title} description={g.lead}>
+  <div class="wrap-wide page" lang={lang === 'ta' ? 'en' : undefined}>
+    {lang === 'ta' && (
+      <p class="pending ta-note" lang="ta"><strong>தமிழ் பதிப்பு தயாராகிறது.</strong> பாதுகாப்பு வழிகாட்டியை இயந்திர மொழிபெயர்ப்பில் வெளியிடுவதில்லை; தமிழ் தாய்மொழியாளர் எழுதிச் சரிபார்த்த பின் இங்கே வரும். அதுவரை ஆங்கிலப் பதிப்பு கீழே.</p>
+    )}
+
+    <header class="g-head">
+      <p class="eyebrow">
+        <span class="kicker">For parents</span>
+        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending review by a child-protection organisation</span>}
+      </p>
+      <h1>{g.title}</h1>
+      <p class="lead">{g.lead}</p>
+    </header>
+
+    <div class="sos" role="note">
+      <span>Child in danger now?</span>
+      <a class="btn primary" href="tel:112">Call 112</a>
+      <a class="btn" href="tel:1098">Childline 1098</a>
+      <a class="btn" href="#tells">If a child tells you →</a>
+    </div>
+
+    <nav class="map" aria-label="On this page">
+      {MAP.map(([id, n, tt, sub]) => (
+        <a href={`#${id}`}><span class="mn">{n}</span><strong>{tt}</strong><span class="ms">{sub}</span></a>
+      ))}
+    </nav>
+
+    <!-- 01 Mindset -->
+    <section id="mindset" class="blk" aria-labelledby="h-mindset">
+      <p class="kicker">01 · Start here</p>
+      <h2 id="h-mindset">The mindset</h2>
+      <div class="stat-row">
+        <div class="stat-big"><span class="num">{knownPer100}</span><span class="of">/100</span></div>
+        <p>In {knownPer100} of every 100 reported POCSO cases (India, {relYear}), the child knew the person. So "don't talk to strangers" was never the main lesson. <span class="muted small">Reported cases only · NCRB, Crime in India {relYear} · {fmtInt(relKnown.value)} of {fmtInt(relTotal.value)}.</span></p>
+      </div>
+      <div class="tiles five">
+        {g.mindset.map((m) => <div class="tile"><strong>{m.t}</strong><p>{m.b}</p></div>)}
+      </div>
+    </section>
+
+    <!-- 02 By age -->
+    <section id="by-age" class="blk" aria-labelledby="h-age">
+      <p class="kicker">02 · How to talk</p>
+      <h2 id="h-age">By age</h2>
+      <div class="ages">
+        {g.ages.map((a) => (
+          <article class="age" id={a.id}>
+            <header><span class="age-l">{a.label}</span><span class="age-f">{a.focus}</span></header>
+            <ul>{a.points.map((p) => <li>{p}</li>)}</ul>
+            <p class="say">{a.say}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 03 Rules -->
+    <section id="rules" class="blk" aria-labelledby="h-rules">
+      <p class="kicker">03 · The core curriculum</p>
+      <h2 id="h-rules">Five rules to teach until they can say them back</h2>
+      <ol class="pants">
+        {g.rules.map((r) => <li><span class="letter" aria-hidden="true">{r.k}</span><strong>{r.t}</strong><span>{r.b}</span></li>)}
+      </ol>
+      <p class="src">{g.rulesSource}</p>
+    </section>
+
+    <!-- 04 Precautions -->
+    <section id="precautions" class="blk" aria-labelledby="h-prec">
+      <p class="kicker">04 · What adults control</p>
+      <h2 id="h-prec">Precautions</h2>
+      <p class="lead">Most prevention is about the situation, not the lesson.</p>
+      <div class="tiles three">
+        {g.precautions.map((p, i) => <div class="tile"><span class="tn">{String(i + 1).padStart(2, '0')}</span><strong>{p.t}</strong><p>{p.b}</p></div>)}
+      </div>
+    </section>
+
+    <!-- 05 Signs -->
+    <section id="signs" class="blk" aria-labelledby="h-signs">
+      <p class="kicker">05 · Notice</p>
+      <h2 id="h-signs">Warning signs in children</h2>
+      <p class="caveat-lite">{g.signs.note}</p>
+      <div class="tiles four">
+        {g.signs.groups.map((s) => <div class="tile"><strong>{s.t}</strong><ul>{s.items.map((i) => <li>{i}</li>)}</ul></div>)}
+      </div>
+      <div class="teal">
+        <span class="teal-k">If you notice something, open gently</span>
+        <p>{g.signs.ask}</p>
+      </div>
+    </section>
+
+    <!-- 06 Grooming -->
+    <section id="grooming" class="blk" aria-labelledby="h-groom">
+      <p class="kicker">06 · Understand</p>
+      <h2 id="h-groom">How grooming works</h2>
+      <p class="lead">{g.grooming.def}</p>
+      <ol class="flow">
+        {g.grooming.steps.map((s, i) => <li><span class="fn">{i + 1}</span><strong>{s.t}</strong><span>{s.b}</span></li>)}
+      </ol>
+      <div class="split">
+        <div class="tile warm">
+          <strong>Red flags in an adult or older teen</strong>
+          <ul>{g.grooming.flags.map((f) => <li>{f}</li>)}</ul>
+        </div>
+        <div class="tile">
+          <strong>Online</strong>
+          <p>{g.grooming.online}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 Disclosure -->
+    <section id="tells" class="blk" aria-labelledby="h-tells">
+      <p class="kicker">07 · Respond</p>
+      <h2 id="h-tells">If a child tells you, or you suspect abuse</h2>
+      <div class="split">
+        <div class="tile do">
+          <strong>First ten minutes: do</strong>
+          <ul class="ticks">{g.disclosure.first.do.map((d) => <li>{d}</li>)}</ul>
+        </div>
+        <div class="tile dont">
+          <strong>Don't</strong>
+          <ul class="crosses">{g.disclosure.first.dont.map((d) => <li>{d}</li>)}</ul>
+        </div>
+      </div>
+      <ol class="steps">
+        {g.disclosure.steps.map((s, i) => <li><span class="sn">{i + 1}</span><div><strong>{s.t}</strong><p>{s.b}</p></div></li>)}
+      </ol>
+    </section>
+
+    <!-- 08 Kids -->
+    <section id="kids" class="blk" aria-labelledby="h-kids">
+      <p class="kicker">08 · For kids & teens</p>
+      <h2 id="h-kids">Your body-safety rules</h2>
+      <p class="lead">{g.kids.intro}</p>
+      <div class="ngt" aria-label="No, Go, Tell">
+        {g.kids.ngt.map((n) => <div><span>{n.k}!</span><p>{n.b}</p></div>)}
+      </div>
+      <div class="tiles three kid">
+        {g.kids.rules.map((r) => <div class="tile"><strong>{r.t}</strong><p>{r.b}</p></div>)}
+      </div>
+      <div class="trusted">
+        <strong>{g.kids.trusted}</strong>
+        <ol><li></li><li></li><li></li></ol>
+        <span class="muted small">Fill in together. If the first person doesn't help, tell the next.</span>
+      </div>
+      <h3 class="teen-h">For teens</h3>
+      <div class="tiles three">
+        {g.kids.teens.map((r) => <div class="tile"><strong>{r.t}</strong><p>{r.b}</p></div>)}
+      </div>
+    </section>
+
+    <!-- Key learnings -->
+    <section id="key" class="blk" aria-labelledby="h-key">
+      <p class="kicker">Summary</p>
+      <h2 id="h-key">Key learnings</h2>
+      <div class="split">
+        <div class="tile">
+          <strong>For parents</strong>
+          <ol class="keys">{g.keyParents.map((k) => <li>{k}</li>)}</ol>
+        </div>
+        <div class="tile teal-soft">
+          <strong>For kids</strong>
+          <ol class="keys">{g.keyKids.map((k) => <li>{k}</li>)}</ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Help -->
+    <section id="help" class="blk" aria-labelledby="h-help" lang={lang === 'ta' ? 'ta' : undefined}>
+      <h2 id="h-help">{t('home.help_title')}</h2>
+      <p class="muted">{t('home.help_lead')}</p>
+      <Helplines lang={lang} />
+    </section>
+
+    <!-- Sources -->
+    <section id="sources" class="blk" aria-labelledby="h-src">
+      <h2 id="h-src">Books and materials this guide draws on</h2>
+      <div class="split">
+        <details class="src-d" open>
+          <summary>Books for children ({g.books.kids.length})</summary>
+          <ul class="books">{g.books.kids.map(([ti, au, n]) => <li><cite>{ti}</cite> · {au}<span>{n}</span></li>)}</ul>
+          <p class="src-sub">For parents</p>
+          <ul class="books">{g.books.parents.map(([ti, au, n]) => <li><cite>{ti}</cite> · {au}<span>{n}</span></li>)}</ul>
+        </details>
+        <details class="src-d" open>
+          <summary>Organisations & frameworks ({g.books.orgs.length})</summary>
+          <ul class="books">{g.books.orgs.map(([n, u, d]) => <li><a href={u} rel="noopener external" target="_blank">{n}</a><span>{d}</span></li>)}</ul>
+        </details>
+      </div>
+      <p class="src">Educational information, not a substitute for professional advice. Pending review by a child-protection organisation before publication.</p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .ta-note { margin-bottom: 24px; }
+  .g-head { max-width: 760px; }
+  .eyebrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 12px; }
+  .eyebrow .kicker { margin: 0; }
+  .g-head h1 { margin-bottom: 12px; }
+
+  .sos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 24px 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  .sos > span { font-weight: 600; margin-right: 6px; }
+  .sos .btn { min-height: 40px; padding: 8px 14px; font-size: 0.875rem; }
+
+  .map { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+  @media (min-width: 760px) { .map { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .map a { display: grid; gap: 2px; background: var(--surface); padding: 14px 16px; text-decoration: none; color: var(--ink); }
+  .map a:hover { background: var(--accent-soft); }
+  .mn { font-family: var(--mono); font-size: 0.75rem; color: var(--link); }
+  .map strong { font-size: 0.9375rem; }
+  .ms { font-size: 0.8125rem; color: var(--muted); }
+
+  .blk { padding: clamp(40px, 7vw, 80px) 0 0; scroll-margin-top: 110px; }
+  .blk h2 { max-width: 28ch; }
+  .blk > .lead { margin-bottom: 20px; }
+
+  .tiles { display: grid; gap: 12px; margin-top: 20px; }
+  .tiles.five { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+  .tiles.four { grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+  .tiles.three { grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+  .tile strong { display: block; font-size: 1rem; line-height: 1.35; margin-bottom: 6px; }
+  .tile p { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--ink-2); }
+  .tile ul, .tile ol { margin: 6px 0 0; padding-left: 1.1rem; font-size: 0.9rem; line-height: 1.5; color: var(--ink-2); }
+  .tile li + li { margin-top: 4px; }
+  .tile.warm { background: var(--warm-bg); border-color: var(--warm-line); }
+  .tile.teal-soft { background: var(--accent-soft); border-color: transparent; }
+  .tile.teal-soft, .tile.teal-soft ol { color: var(--accent-soft-ink); }
+  .tn { font-family: var(--mono); font-size: 0.75rem; color: var(--link); display: block; margin-bottom: 6px; }
+
+  .stat-row { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; background: var(--accent); color: var(--on-accent); border-radius: 16px; padding: clamp(18px, 3vw, 28px); margin-top: 20px; }
+  .stat-row p { margin: 0; font-size: clamp(1rem, 1.8vw, 1.2rem); line-height: 1.45; font-weight: 500; }
+  .stat-row .muted { color: inherit; opacity: 0.8; display: block; margin-top: 6px; font-weight: 400; }
+  .stat-big { font-size: clamp(3rem, 8vw, 5rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  .of { font-size: 0.35em; letter-spacing: 0; opacity: 0.85; }
+  @media (max-width: 480px) { .stat-row { grid-template-columns: 1fr; gap: 8px; } }
+
+  .ages { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 12px; margin-top: 20px; }
+  .age { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; scroll-margin-top: 110px; }
+  .age header { background: var(--accent-soft); color: var(--accent-soft-ink); padding: 14px 18px; display: grid; gap: 2px; }
+  .age-l { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+  .age-f { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .age ul { margin: 0; padding: 16px 18px 0 2.1rem; font-size: 0.9rem; line-height: 1.5; color: var(--ink-2); flex: 1; }
+  .age li + li { margin-top: 8px; }
+  .say { margin: 16px 18px 18px; padding: 10px 12px; border-left: 3px solid var(--c-friends); background: var(--warm-bg); font-size: 0.875rem; font-style: italic; border-radius: 0 8px 8px 0; }
+
+  .pants { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 12px; }
+  .pants li { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 6px; align-content: start; }
+  .letter { width: 48px; height: 48px; border-radius: 12px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+  .pants strong { font-size: 1rem; line-height: 1.3; }
+  .pants li > span:last-child { font-size: 0.875rem; line-height: 1.5; color: var(--ink-2); }
+  .src { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 12px; }
+
+  .caveat-lite { background: var(--note-bg); border-radius: 10px; padding: 12px 16px; font-size: 0.9375rem; max-width: 70ch; }
+  .teal { background: var(--accent); color: var(--on-accent); border-radius: 16px; padding: clamp(18px, 3vw, 26px); margin-top: 16px; }
+  .teal-k { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.9; }
+  .teal p { margin: 8px 0 0; font-size: clamp(1.05rem, 2vw, 1.3rem); font-weight: 500; line-height: 1.4; }
+
+  .flow { list-style: none; margin: 20px 0 16px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 8px; counter-reset: f; }
+  .flow li { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 14px 14px; display: grid; gap: 4px; align-content: start; }
+  .fn { width: 26px; height: 26px; border-radius: 50%; background: var(--c-friends); color: oklch(0.24 0.015 60); font-size: 0.8125rem; font-weight: 700; display: grid; place-items: center; margin-bottom: 4px; }
+  .flow strong { font-size: 0.9375rem; }
+  .flow li > span:last-child { font-size: 0.8125rem; line-height: 1.45; color: var(--ink-2); }
+
+  .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 12px; margin-top: 16px; }
+  .ticks, .crosses { list-style: none; padding-left: 0 !important; }
+  .ticks li, .crosses li { padding-left: 26px; position: relative; }
+  .ticks li::before, .crosses li::before { position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: 700; }
+  .ticks li::before { content: '✓'; background: var(--accent); color: var(--on-accent); }
+  .crosses li::before { content: '×'; background: var(--c-warn); color: var(--on-accent); font-size: 0.85rem; }
+  .tile.do { border-color: var(--accent); }
+  .tile.dont { background: var(--warm-bg); border-color: var(--warm-line); }
+
+  .steps { list-style: none; margin: 20px 0 0; padding: 0; position: relative; }
+  .steps li { display: grid; grid-template-columns: 36px 1fr; gap: 14px; padding: 0 0 18px; position: relative; }
+  .steps li:not(:last-child)::after { content: ''; position: absolute; left: 17px; top: 36px; bottom: 0; border-left: 2px solid var(--line); }
+  .sn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); color: var(--link); font-weight: 700; display: grid; place-items: center; }
+  .steps strong { display: block; font-size: 1.05rem; margin: 6px 0 4px; }
+  .steps p { margin: 0; font-size: 0.9375rem; color: var(--ink-2); max-width: 70ch; }
+
+  .ngt { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+  .ngt div { border-radius: 16px; padding: 18px 16px; text-align: center; background: var(--accent-soft); color: var(--accent-soft-ink); }
+  .ngt div:first-child { background: var(--accent); color: var(--on-accent); }
+  .ngt span { display: block; font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .ngt p { margin: 6px 0 0; font-size: 0.875rem; line-height: 1.4; }
+  .kid .tile strong { font-size: 1.1rem; }
+  .trusted { margin-top: 12px; border: 2px dashed var(--line); border-radius: 16px; padding: 18px 20px; }
+  .trusted ol { margin: 10px 0; padding-left: 1.4rem; display: grid; gap: 14px; }
+  .trusted li { border-bottom: 1px solid var(--line); height: 1.4em; max-width: 360px; }
+  .teen-h { margin-top: 32px; }
+
+  .keys { padding-left: 1.4rem !important; }
+  .keys li { padding-left: 2px; }
+
+  .src-d { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; }
+  .src-d summary { cursor: pointer; font-weight: 600; }
+  .books { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; font-size: 0.9rem; }
+  .books li { border-top: 1px solid var(--line-soft); padding-top: 8px; }
+  .books span { display: block; font-size: 0.8125rem; color: var(--muted); }
+  .src-sub { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 16px 0 0; }
+  #help { padding-bottom: 0; }
+  @media print {
+    .map, .sos, #help { display: none; }
+    .blk { break-inside: avoid; padding-top: 24px; }
+  }
+</style>

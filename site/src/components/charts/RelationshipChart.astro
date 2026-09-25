@@ -75,11 +75,8 @@ const geoHas = (g: string) => panels.some((p) => p.geo === g);
 </div>
 
 <style>
-  .controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; margin: 1rem 0 0.5rem; }
-  .seg-ctl { display: inline-flex; gap: 0.35rem; flex-wrap: wrap; }
-  .pill { font: inherit; font-size: 0.875rem; font-weight: 600; min-height: 36px; padding: 0.3rem 0.85rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-  .pill[aria-pressed='true'] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  .pill:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: line-through; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 0 0 1.25rem; }
+  .pill:disabled { opacity: 0.4; cursor: not-allowed; }
   .tn-note { margin: 0 0 0.5rem; }
 </style>
 <script is:inline>
