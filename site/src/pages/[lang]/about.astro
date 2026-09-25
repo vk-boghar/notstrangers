@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { LANGS, CONTACT_EMAIL, CONTENT_PARTNER, SITE_NAME, type Lang } from '../../config/site';
+import { LANGS, CONTACT_EMAIL, SITE_NAME, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
 const lang = Astro.params.lang as Lang;
@@ -37,10 +37,8 @@ const ta = lang === 'ta';
     <h2>{ta ? 'யார் உருவாக்கினார்கள்' : 'Who built it'}</h2>
     <p>{ta ? 'தமிழ்நாட்டில் வேர்களைக் கொண்ட ஒரு தனிப்பட்ட தன்னார்வத் திட்டம்.' : 'An independent volunteer project by people with roots in Tamil Nadu.'} <span class="draft">OWNER: add your name/bio here</span></p>
 
-    <h2>{ta ? 'உள்ளடக்கக் கூட்டாளர்' : 'Content partner'}</h2>
-    {CONTENT_PARTNER
-      ? <p>{ta ? 'தடுப்பு உள்ளடக்கத்தைச் சரிபார்த்தவர்கள்:' : 'Prevention content reviewed by'} <a href={CONTENT_PARTNER.url}>{CONTENT_PARTNER.name}</a>.</p>
-      : <p>{ta ? '“நீங்கள் என்ன செய்யலாம்” பகுதி, ஒரு குழந்தைப் பாதுகாப்பு அமைப்பின் நிபுணர் சரிபார்ப்புக்காகக் காத்திருக்கிறது. அதுவரை அது “வரைவு” எனக் குறிக்கப்பட்டுள்ளது.' : 'The “What you can do” content is awaiting review by a child-protection organisation. Until then it is marked DRAFT.'}</p>}
+    <h2>{ta ? 'நிபுணர் சரிபார்ப்பு' : 'Expert review'}</h2>
+    <p>{ta ? '“நீங்கள் என்ன செய்யலாம்” மற்றும் “கற்க” பகுதிகள் நிபுணர் சரிபார்ப்புக்காகக் காத்திருக்கின்றன. அதுவரை அவை “வரைவு” எனக் குறிக்கப்பட்டுள்ளன.' : 'The “What you can do” and Learn content is awaiting expert review. Until then it is marked DRAFT.'}</p>
     <p>{ta ? 'எந்த அமைப்பும் இந்தத் தளத்தின் வரைபடங்களையும் பகிர்வு அட்டைகளையும் இலவசமாகப் பயன்படுத்தலாம்.' : 'Any organisation may use the charts and share cards freely.'}</p>
 
     <h2>{ta ? 'தொடர்பு' : 'Contact'}</h2>

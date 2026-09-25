@@ -35,6 +35,7 @@ const beats = [
               <span class="door-b">{TRACKS[t].blurb}</span>
               <span class="door-meta"><span class="chip">{mods.length} modules</span><span class="chip">~{trackMinutes(t)} min</span></span>
               <span class="prog js-only" data-progress={mods.map((m) => m.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></span>
+              <span class="door-go">Start →</span>
             </a>
           );
         })}
@@ -47,7 +48,7 @@ const beats = [
         </ol>
       </section>
 
-      <p class="note">Built on NSPCC Talk PANTS, Darkness to Light's five steps, Tulir and Arpan's personal-safety work, Stop It Now, Kidpower and WHO INSPIRE. Educational information, not professional advice. Pending review by a child-protection organisation before launch. Prefer everything on one page? <a href={`/${lang}/guide/`}>Read the one-page guide</a>.</p>
+      <p class="note">Built on NSPCC Talk PANTS, Darkness to Light's five steps, Arpan's personal-safety work, Stop It Now, Kidpower and WHO INSPIRE. Educational information, not professional advice. Pending expert review before launch. Prefer everything on one page? <a href={`/${lang}/guide/`}>Read the one-page guide</a>.</p>
     </div>
   </div>
 </Base>
@@ -57,16 +58,19 @@ const beats = [
   .eyebrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 12px; }
   .eyebrow .kicker { margin: 0; }
   .doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 32px; }
-  .door { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 24px; min-height: 260px; transition: border-color .2s, transform .2s; }
-  .door:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .door-parent { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-  .door-kid { background: var(--warm-bg); border-color: var(--warm-line); }
-  .door-teen { background: var(--accent-soft); border-color: transparent; color: var(--accent-soft-ink); }
-  .door-k { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; }
+  .door { --c: var(--accent); display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-top: 6px solid var(--c); border-radius: 20px; padding: 22px 24px 24px; min-height: 250px; transition: border-color .2s, box-shadow .2s, transform .2s; }
+  .door:hover { box-shadow: 0 10px 30px oklch(0.3 0.03 60 / 0.08); transform: translateY(-2px); }
+  .door-kid { --c: oklch(0.72 0.1 70); }
+  .door-teen { --c: oklch(0.55 0.07 250); }
+  .door-k { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c); font-weight: 500; }
+  .door-kid .door-k { color: oklch(0.5 0.09 60); }
+  .door .prog { color: var(--c); }
+  .door-go { margin-top: 6px; font-weight: 600; color: var(--c); }
+  .door-kid .door-go { color: oklch(0.5 0.09 60); }
   .door strong { font-size: clamp(1.6rem, 3vw, 2rem); letter-spacing: -0.02em; line-height: 1.1; }
-  .door-b { font-size: 0.9375rem; line-height: 1.5; opacity: 0.9; }
+  .door-b { font-size: 0.9375rem; line-height: 1.5; color: var(--ink-2); }
   .door-meta { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
-  .chip { font-family: var(--mono); font-size: 0.75rem; border: 1px solid currentColor; border-radius: 999px; padding: 2px 10px; opacity: 0.85; }
+  .chip { font-family: var(--mono); font-size: 0.75rem; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 2px 10px; }
   .beats { margin-top: 56px; }
   .beats h2 { font-size: clamp(1.3rem, 2.4vw, 1.6rem); }
   .beats ol { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }

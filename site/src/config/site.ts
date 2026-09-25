@@ -27,8 +27,6 @@ export const TAMIL_REVIEWED = false;
 /** Date the helplines block was last checked (spec §7.3). Update when you re-verify. */
 export const HELPLINES_VERIFIED_ON = '2026-09-24';
 
-/** Content partner, once agreed (spec §5.6). Leave null until then. */
-export const CONTENT_PARTNER: null | { name: string; url: string } = null;
 
 export const LANGS = ['en', 'ta'] as const;
 export type Lang = (typeof LANGS)[number];

@@ -36,7 +36,7 @@ const MAP = [
     <header class="g-head">
       <p class="eyebrow">
         <span class="kicker">For parents</span>
-        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending review by a child-protection organisation</span>}
+        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}
       </p>
       <h1>{g.title}</h1>
       <p class="lead">{g.lead}</p>
@@ -217,7 +217,7 @@ const MAP = [
           <ul class="books">{g.books.orgs.map(([n, u, d]) => <li><a href={u} rel="noopener external" target="_blank">{n}</a><span>{d}</span></li>)}</ul>
         </details>
       </div>
-      <p class="src">Educational information, not a substitute for professional advice. Pending review by a child-protection organisation before publication.</p>
+      <p class="src">Educational information, not a substitute for professional advice. Pending expert review before publication.</p>
     </section>
   </div>
 </Base>

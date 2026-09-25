@@ -1,5 +1,5 @@
 // Parent & child education guide — English source text.
-// STATUS: DRAFT, pending review by a child-protection organisation (target: Tulir, Chennai).
+// STATUS: DRAFT, pending expert review.
 // Tamil: must be written or reviewed by a native speaker. Never ship machine-translated safety text,
 // so /ta/guide/ shows this English text with a clear "Tamil version in preparation" note.
 // Grooming is described at the pattern level only, on purpose.
@@ -190,7 +190,6 @@ export const guide = {
     orgs: [
       ['NSPCC — Talk PANTS', 'https://www.nspcc.org.uk/keeping-children-safe/support-for-parents/pants-underwear-rule/', 'The five-rule framework used above'],
       ['Darkness to Light — Five Steps', 'https://www.d2l.org/', 'Learn · minimise opportunity · talk · recognise · react'],
-      ['Tulir, Chennai', 'https://www.tulir.org/', 'Personal-safety education and healing; Tamil materials'],
       ['Arpan, Mumbai', 'https://www.arpan.org.in/', 'Personal Safety Education for ages 4–18'],
       ['Aarambh India', 'https://aarambhindia.org/', 'Recognising abuse and grooming'],
       ['Stop It Now', 'https://www.stopitnow.org/', 'Free parent tip sheets and safety plans'],

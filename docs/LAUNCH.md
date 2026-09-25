@@ -44,28 +44,12 @@ Everything below needs a person: a browser download, a judgement call, or a rela
 ## D. Before public launch (Phase 2 gate)
 
 - [ ] **Tamil review** by a native speaker: `site/src/i18n/ta.json`. It is a careful draft, but a draft. When it's done, set `TAMIL_REVIEWED = true` and delete the `_status` line.
-- [ ] **Prevention content review** by a child-protection partner (target: Tulir – CPHCSA, Chennai). The copy is in `home.act_*`, `home.*_action` and `cards.*_action` in both JSON files. After review, set `PREVENTION_CONTENT_REVIEWED = true` and fill in `CONTENT_PARTNER`.
+- [ ] **Prevention content review** by an expert reviewer. The copy is in `home.act_*`, `home.*_action` and `cards.*_action` in both JSON files. After review, set `PREVENTION_CONTENT_REVIEWED = true`.
 - [ ] Re-verify helplines, then update `HELPLINES_VERIFIED_ON`.
 - [ ] Full 2017–2024 NCRB series and state tables parsed (section B).
 - [ ] Set `NOINDEX = false`. robots.txt and meta tags flip automatically.
 
-## E. Draft note to Tulir (send with the noindex preview link)
-
-> Subject: A free data site on child sexual abuse in Tamil Nadu — would you review it?
->
-> Dear Ms Reddy,
->
-> I've built a free, non-commercial website that presents NCRB and Tamil Nadu data on child sexual abuse in plain Tamil and English. It is aimed at parents, and its central message is that in about 97 of every 100 POCSO cases the child knew the person. It uses only aggregate statistics (no case details, names or images), has no ads or tracking, and pairs every number with a practical action for parents.
->
-> Preview (not public yet): <link>
->
-> Before it goes public, I would be grateful for Tulir's review of the framing and of the "What you can do" section, which is marked as a draft until an expert has checked it. You are welcome to use any chart or the Tamil/English share cards. I can also change any wording you suggest.
->
-> There is no other ask. Thank you for the work you do.
->
-> <name>
-
-## F. Each new NCRB edition (annual runbook)
+## E. Each new NCRB edition (annual runbook)
 
 1. Download the edition and commit it to `data/raw/ncrb/<year>/`.
 2. Copy the previous year's block in `tables.yaml`, then update file names and table IDs.
