@@ -5,7 +5,7 @@ Everything below needs a person: a browser download, a judgement call, or a rela
 ## A. Before the preview goes live (noindex) — about 30 minutes
 
 - [ ] **Name, domain, email** → `site/src/config/site.ts`: `SITE_NAME`, `SITE_NAME_TA`, `SITE_URL`, `CONTACT_EMAIL`. Then run `npm run cards` (share cards print the domain) and rebuild.
-- [ ] **About page** → replace the `OWNER: add your name/bio here` marker in `site/src/pages/[lang]/about.astro`.
+- [x] **About page** — "Who built it" text written.
 - [ ] **Git** → `git remote add origin <your repo> && git push -u origin main`.
 - [ ] **Host** (both free, static):
   - *Cloudflare Pages:* root directory `site`, build command `npm run build`, output `dist`, env `NODE_VERSION=22`.
