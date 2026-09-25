@@ -199,11 +199,11 @@ export const MODULES: Module[] = [
     id: 'k1', track: 'kid', title: 'Your body belongs to you', minutes: 4,
     hook: { kind: 'plain', text: 'You are the **boss of your body**. Hugs, kisses, tickles: you decide, every time.' },
     learn: [
-      { type: 'p', text: 'The parts of your body covered by your underwear are called **private parts**. They\'re private: nobody should see them or touch them, and you shouldn\'t see or touch anyone else\'s. (If a doctor checks, or Amma or Appa help you wash, they explain why and ask first. That\'s okay.)' },
+      { type: 'p', text: 'The parts of your body covered by your underwear are called **private parts**. They\'re private: nobody should see them or touch them, and you shouldn\'t see or touch anyone else\'s. (If a doctor checks, or Mom or Dad help you wash, they explain why and ask first. That\'s okay.)' },
       { type: 'p', text: '**Unsafe touch is never okay.** Touching private parts, or ANY touch that makes you feel yucky, scared, confused or weird in your tummy, even if it\'s someone you know and love, even if they smile. Your feelings are the alarm. Trust them.' },
     ],
     game: { kind: 'pairs', prompt: 'Safe or unsafe? Tap one.', a: 'Safe 👍', b: 'Unsafe ✋', cards: [
-      { text: 'A hug from Paati that you wanted', answer: 'a', fb: 'Safe. You wanted it, and it felt good.' },
+      { text: 'A hug from Grandma that you wanted', answer: 'a', fb: 'Safe. You wanted it, and it felt good.' },
       { text: 'Someone touches your private parts and says it\'s a game', answer: 'b', fb: 'Unsafe. Say NO, get away, and tell a grown-up.' },
       { text: 'A high-five from your coach', answer: 'a', fb: 'Safe. Friendly and out in the open.' },
       { text: 'Tickling that keeps going after you say stop', answer: 'b', fb: 'Unsafe. Your "stop" should be listened to. Tell a grown-up.' },
@@ -222,9 +222,9 @@ export const MODULES: Module[] = [
       ] },
     ],
     game: { kind: 'sort', prompt: 'Surprise, or tell a grown-up?', a: 'Surprise 🎁', b: 'Tell a grown-up 📢', cards: [
-      { text: '"We\'re getting Appa a cake. Shh!"', answer: 'a', fb: 'A surprise! Everyone will be happy when it\'s found out.' },
+      { text: '"We\'re getting Dad a cake. Shh!"', answer: 'a', fb: 'A surprise! Everyone will be happy when it\'s found out.' },
       { text: '"Don\'t tell anyone I touched you there."', answer: 'b', fb: 'Tell a grown-up right away. That\'s a bad secret.' },
-      { text: '"Let\'s hide Akka\'s present till her birthday."', answer: 'a', fb: 'A surprise. It ends happily.' },
+      { text: '"Let\'s hide your sister\'s present till her birthday."', answer: 'a', fb: 'A surprise. It ends happily.' },
       { text: '"If you tell your parents, you\'ll be in big trouble."', answer: 'b', fb: 'Tell a grown-up. The "trouble" part is not true.' },
     ] },
     doIt: 'Tell your parent one surprise you\'re keeping. A fun one!',
