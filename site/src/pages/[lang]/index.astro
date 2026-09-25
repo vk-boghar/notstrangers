@@ -15,6 +15,7 @@ import JusticeFunnel from '../../components/charts/JusticeFunnel.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 import { one, maybe, where, latestYear, fmtInt, pct, daysInYear, periodLabel, fmtDate } from '../../lib/data';
+import { tracksFor, byTrackL, trackMinutesL, type Track } from '../../lib/learn';
 
 export function getStaticPaths() {
   return LANGS.map((lang) => ({ params: { lang } }));
@@ -58,6 +59,38 @@ const ftscCourts = one({ dataset: 'ftsc_capacity', geo: 'IN', dim: 'all_ftsc' })
 const ftscPocso = one({ dataset: 'ftsc_capacity', geo: 'IN', dim: 'exclusive_pocso' });
 const courtYear = latestYear('pocso_court', 'IN');
 const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
+
+// ── "Two ways to use this site" block ──────────────────────────────────────
+const TR = tracksFor(lang);
+const TRACK_ORDER: Track[] = ['parent', 'kid', 'teen'];
+const tnPend = maybe({ dataset: 'court_pendency', geo: 'TN', dim: 'pending_trial' });
+const P = lang === 'ta' ? {
+  kicker: 'இந்தத் தளம் என்ன செய்கிறது',
+  title: 'என்ன நடக்கிறது என்று எண்கள் காட்டுகின்றன. என்ன செய்வது என்று பாடங்கள் கற்றுத்தருகின்றன.',
+  lead: 'அதிகாரப்பூர்வ தரவு, எளிய மொழியில் — அதனுடன் பெற்றோர், குழந்தைகள், பதின்வயதினருக்கான சிறு பாடங்கள். இலவசம். கணக்கு தேவையில்லை. கண்காணிப்பு இல்லை.',
+  a_k: '1 · புரிந்துகொள்ளுங்கள்', a_t: 'தரவைப் பாருங்கள்', a_b: 'ஒவ்வொரு எண்ணுக்கும் ஆதாரம், ஒவ்வொரு வரைபடமும் பதிவிறக்கத்துக்கு. பதிவான வழக்குகள் மட்டும் — அப்படியே குறிக்கப்பட்டுள்ளது.',
+  f1: 'குற்றம் செய்தவர் குழந்தைக்குத் தெரிந்தவர்', f2: 'போக்சோ வழக்குகள், இந்தியா', f3: 'தமிழ்நாட்டில் விசாரணைக்குக் காத்திருக்கும் வழக்குகள்',
+  a_go: 'கதையைப் படியுங்கள் ↓', a_india: 'இந்தியா', a_tn: 'தமிழ்நாடு',
+  b_k: '2 · செயல்படுங்கள்', b_t: 'என்ன செய்வது என்று கற்றுக்கொள்ளுங்கள்', b_b: 'சிறு பாடங்கள்: என்ன கற்றுத்தருவது, என்ன சொல்வது, எதைக் கவனிப்பது, ஏதாவது நடந்தால் என்ன செய்வது.',
+  mods: 'பாடங்கள்', min: 'நிமி',
+  q_l: 'பாடம் 7-இலிருந்து · முதல் 10 நிமிடங்கள்', q: '“என்னிடம் சொன்னதற்கு நன்றி. இது உன் தவறு இல்லை.”',
+  plan: 'பெற்றோர் பாதை ஒரு அச்சிடக்கூடிய குடும்பப் பாதுகாப்புத் திட்டத்துடன் முடிகிறது.', b_go: 'கற்கத் தொடங்குங்கள் →',
+  trust: ['ஒவ்வொரு எண்ணுக்கும் ஆதாரம்', 'கணக்கு தேவையில்லை', 'குக்கீகள், கண்காணிப்பு இல்லை', 'தமிழ் & English', 'முற்றிலும் இலவசம்'],
+  hero_learn: 'என்ன செய்வது என்று கற்றுக்கொள்ளுங்கள் →',
+} : {
+  kicker: 'What this site does',
+  title: 'The numbers show what\'s happening. The lessons show you what to do.',
+  lead: 'Official data in plain language, paired with short lessons for parents, kids and teens. Free. No account. No tracking.',
+  a_k: '1 · Understand', a_t: 'See the data', a_b: 'Every number sourced, every chart downloadable. Reported cases only, and labelled that way.',
+  f1: 'offender known to the child', f2: 'POCSO cases, India', f3: 'POCSO cases waiting for trial in Tamil Nadu',
+  a_go: 'Read the story ↓', a_india: 'India', a_tn: 'Tamil Nadu',
+  b_k: '2 · Act', b_t: 'Learn what to do', b_b: 'Short lessons: what to teach, what to say, what to watch for, and what to do if something happens.',
+  mods: 'modules', min: 'min',
+  q_l: 'From module 7 · The first 10 minutes', q: '“Thank you for telling me. This is not your fault.”',
+  plan: 'The parent track ends with a printable family safety plan.', b_go: 'Start learning →',
+  trust: ['Every number sourced', 'No account needed', 'No cookies, no tracking', 'Tamil & English', 'Free, always'],
+  hero_learn: 'Learn what to do →',
+};
 ---
 <Base lang={lang}>
   <!-- Hook -->
@@ -67,8 +100,8 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
       <h1 id="hook-h">{t('home.hook_title', { n: knownPer100 })}</h1>
       <p class="hook-sub">{t('home.hook_sub')}</p>
       <p class="ctas">
-        <a class="btn primary" href="#who">{t('home.hook_scroll')} ↓</a>
-        <a class="btn" href={`/${lang}/guide/`}>{t('nav.guide')}</a>
+        <a class="btn primary" href={`/${lang}/learn/`}>{P.hero_learn}</a>
+        <a class="btn" href="#who">{t('home.hook_scroll')} ↓</a>
       </p>
       <Cite rows={[relTotal, relKnown]} lang={lang} />
       <p class="calc num">{fmtInt(relKnown.value)} / {fmtInt(relTotal.value)} = {pct(relKnown.value, relTotal.value)}% → {knownPer100} {lang === 'ta' ? '/ 100' : 'of 100'}</p>
@@ -88,6 +121,53 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
         <span><i class="dot off"></i>{t('home.who_cat_short_unknown')}</span>
       </figcaption>
     </figure>
+  </section>
+
+  <!-- Two ways in -->
+  <section class="paths" aria-labelledby="paths-h">
+    <div class="wrap-wide">
+      <p class="kicker">{P.kicker}</p>
+      <h2 id="paths-h" class="paths-h">{P.title}</h2>
+      <p class="lead">{P.lead}</p>
+      <div class="paths-grid">
+        <div class="path path-data">
+          <p class="pk">{P.a_k}</p>
+          <h3>{P.a_t}</h3>
+          <p class="pb">{P.a_b}</p>
+          <ul class="facts">
+            <li><span class="fv num">{pct(relKnown.value, relTotal.value)}%</span><span>{P.f1} · {relYear}</span></li>
+            <li><span class="fv num">{fmtInt(pocso.value)}</span><span>{P.f2} · {sYear}</span></li>
+            {tnPend && <li><span class="fv num">{fmtInt(tnPend.value)}</span><span>{P.f3}</span></li>}
+          </ul>
+          <p class="plinks">
+            <a class="btn" href="#scale">{P.a_go}</a>
+            <a href={`/${lang}/explore/india/`}>{P.a_india} →</a>
+            <a href={`/${lang}/explore/tamil-nadu/`}>{P.a_tn} →</a>
+          </p>
+        </div>
+        <div class="path path-learn">
+          <p class="pk">{P.b_k}</p>
+          <h3>{P.b_t}</h3>
+          <p class="pb">{P.b_b}</p>
+          <ul class="tracks">
+            {TRACK_ORDER.map((tk) => (
+              <li><a href={`/${lang}/learn/${tk}/`} class={`tr tr-${tk}`}>
+                <strong>{TR[tk].title}</strong>
+                <span class="tm num">{byTrackL(lang, tk).length} {P.mods} · ~{trackMinutesL(lang, tk)} {P.min}</span>
+                <span class="ar" aria-hidden="true">→</span>
+              </a></li>
+            ))}
+          </ul>
+          <figure class="sample">
+            <blockquote>{P.q}</blockquote>
+            <figcaption>{P.q_l}</figcaption>
+          </figure>
+          <p class="pb small-plan">{P.plan}</p>
+          <p><a class="btn inv" href={`/${lang}/learn/`}>{P.b_go}</a></p>
+        </div>
+      </div>
+      <ul class="trust">{P.trust.map((x) => <li>{x}</li>)}</ul>
+    </div>
   </section>
 
   <LatestStrip lang={lang} />
@@ -293,6 +373,45 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
   .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
   .dot.on { background: var(--accent); }
   .dot.off { border: 2px solid var(--muted); }
+  .paths { background: var(--accent-soft); border-block: 1px solid color-mix(in oklch, var(--accent) 18%, transparent); padding: clamp(48px, 8vw, 96px) 0; margin-bottom: clamp(48px, 8vw, 96px); }
+  .paths .kicker { color: var(--accent-soft-ink); }
+  .paths-h { max-width: 24ch; font-size: clamp(1.7rem, 3.8vw, 2.6rem); }
+  :global(:lang(ta)) .paths-h { max-width: none; }
+  .paths-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 16px; margin-top: 28px; align-items: stretch; }
+  .path { border-radius: 20px; padding: clamp(22px, 3.5vw, 32px); display: flex; flex-direction: column; min-width: 0; }
+  .path h3 { font-size: clamp(1.4rem, 2.6vw, 1.75rem); margin: 0 0 8px; }
+  .pk { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 10px; }
+  :global(:lang(ta)) .pk { font-family: var(--font); letter-spacing: 0; text-transform: none; font-size: 0.875rem; font-weight: 600; }
+  .pb { font-size: 0.9875rem; line-height: 1.55; margin-bottom: 18px; }
+  .path-data { background: var(--surface); border: 1px solid var(--line); }
+  .path-data .pk { color: var(--link); }
+  .path-data .pb { color: var(--ink-2); }
+  .facts { list-style: none; margin: 0 0 20px; padding: 0; display: grid; }
+  .facts li { display: grid; grid-template-columns: minmax(96px, auto) 1fr; gap: 14px; align-items: baseline; padding: 12px 0; border-top: 1px solid var(--line-soft); }
+  .fv { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; }
+  .facts li > span:last-child { font-size: 0.875rem; color: var(--ink-2); line-height: 1.4; }
+  .plinks { margin-top: auto; margin-bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .path-learn { background: var(--accent); color: var(--on-accent); }
+  .path-learn .pk { opacity: 0.85; }
+  .path-learn .pb { opacity: 0.92; }
+  .tracks { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
+  .tr { display: grid; grid-template-columns: 1fr auto 20px; gap: 4px 12px; align-items: center; text-decoration: none; color: var(--on-accent); background: color-mix(in oklch, var(--on-accent) 10%, transparent); border-radius: 14px; padding: 14px 16px; min-height: 56px; }
+  .tr:hover { background: color-mix(in oklch, var(--on-accent) 18%, transparent); }
+  .tr strong { font-size: 1.05rem; }
+  .tm { font-family: var(--mono); font-size: 0.75rem; opacity: 0.85; white-space: nowrap; }
+  :global(:lang(ta)) .tm { font-family: var(--font); }
+  @media (max-width: 420px) { .tr { grid-template-columns: 1fr 20px; } .tm { grid-column: 1; grid-row: 2; } .ar { grid-row: 1 / span 2; grid-column: 2; } }
+  .sample { margin: 0 0 14px; padding: 16px 18px; background: var(--surface); color: var(--ink); border-radius: 14px; border-left: 4px solid var(--c-friends); }
+  .sample blockquote { margin: 0; font-size: 1.1rem; font-weight: 500; line-height: 1.4; }
+  .sample figcaption { margin-top: 6px; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  :global(:lang(ta)) .sample figcaption { font-family: var(--font); font-size: 0.8rem; }
+  .small-plan { font-size: 0.875rem; margin-bottom: 18px; }
+  .path-learn p:last-child { margin: auto 0 0; }
+  .btn.inv { background: var(--on-accent); color: var(--accent); border-color: var(--on-accent); font-weight: 600; }
+  .btn.inv:hover { background: color-mix(in oklch, var(--on-accent) 90%, var(--accent)); }
+  .trust { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .trust li { font-size: 0.8125rem; color: var(--accent-soft-ink); background: color-mix(in oklch, var(--surface) 70%, transparent); border-radius: 999px; padding: 6px 12px; }
+  .trust li::before { content: '✓ '; font-weight: 700; }
   .mini-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0 0 8px; }
   .card.mini { padding: 16px; border-radius: 12px; display: grid; gap: 4px; }
   .card.mini + .card.mini { margin-top: 0; }
