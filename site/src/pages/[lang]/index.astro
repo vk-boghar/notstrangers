@@ -255,7 +255,7 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
           </li>
         ))}
       </ol>
-      <p><a class="btn primary" href={`/${lang}/guide/`}>{t('nav.guide')} →</a></p>
+      <p class="act-ctas"><a class="btn primary" href={`/${lang}/learn/`}>{lang === 'ta' ? 'கற்கத் தொடங்குங்கள்' : 'Start learning: short modules'} →</a> <a class="btn" href={`/${lang}/guide/`}>{t('nav.guide')}</a></p>
 
       <h2 class="help-h" id="help">{t('home.help_title')}</h2>
       <p class="muted">{t('home.help_lead')}</p>
@@ -314,6 +314,7 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
   .an { font-family: var(--mono); font-size: 0.8125rem; color: var(--link); padding-top: 2px; }
   .actions strong { display: block; font-size: 1rem; line-height: 1.4; margin-bottom: 4px; }
   .ab { display: block; font-size: 0.875rem; line-height: 1.55; color: var(--ink-2); }
+  .act-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
   .help-h { margin-top: 56px; font-size: clamp(1.3rem, 2.4vw, 1.6rem); }
   .explore { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--line); }
   .explore .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }

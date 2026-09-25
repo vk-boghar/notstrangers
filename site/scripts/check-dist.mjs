@@ -27,7 +27,10 @@ for (const f of html) {
   if (NOINDEX && !/<meta name="robots" content="noindex,nofollow"/.test(s)) fail(f, 'missing noindex meta');
   // 2. no trackers, no cookies, no third-party assets
   if (TRACKERS.test(s)) fail(f, 'tracker signature found');
-  if (/document\.cookie|localStorage|sessionStorage/.test(s)) fail(f, 'cookie / storage access found');
+  // Cookies never. On-device storage only on /learn (progress + family plan, never sent anywhere).
+  const isLearn = /^(en|ta)\/learn\//.test(name);
+  if (/document\.cookie|sessionStorage/.test(s)) fail(f, 'cookie / session storage access found');
+  if (!isLearn && /localStorage/.test(s)) fail(f, 'localStorage outside /learn');
   for (const m of s.matchAll(EXTERNAL_ASSET)) {
     if (/^<link\b/i.test(m[0]) && /rel=["'](canonical|alternate)["']/i.test(m[0])) continue;
     fail(f, `third-party asset: ${m[0].slice(0, 120)}`);
@@ -36,7 +39,8 @@ for (const f of html) {
   if (/<img\b/i.test(s)) fail(f, '<img> found — this site uses no photos (spec §6)');
   // 4. JS budget: inline scripts only, small
   const js = [...s.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]).join('');
-  if (js.length > 6000) fail(f, `inline JS ${js.length} bytes > 6000 budget`);
+  const budget = isLearn ? 9000 : 6000;
+  if (js.length > budget) fail(f, `inline JS ${js.length} bytes > ${budget} budget`);
   if (/<script\b[^>]*\bsrc=/i.test(s)) fail(f, 'external <script src> found');
   // 5. page weight (HTML incl. inlined CSS) — 3G budget
   if (s.length > 180_000) warn.push(`${name}: HTML ${Math.round(s.length / 1024)} KB`);
@@ -52,6 +56,10 @@ for (const f of html) {
     if (cites < 6) fail(f, `only ${cites} source citations on the story page`);
     const tables = (s.match(/class="table-alt"/g) || []).length;
     if (tables < 3) fail(f, `only ${tables} accessible table alternatives`);
+  }
+  if (isLearn) {
+    if (!PREVENTION_REVIEWED && !/class="draft"/.test(s)) fail(f, 'learn page must be marked DRAFT');
+    if (!/tel:1098/.test(s)) fail(f, 'learn page must link Childline 1098');
   }
   // 6b. parent guide must stay marked DRAFT until reviewed, and must show helplines
   if (/^(en|ta)\/guide\/index\.html$/.test(name)) {

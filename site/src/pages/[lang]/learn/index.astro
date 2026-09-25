@@ -1,0 +1,77 @@
+---
+import Base from '../../../layouts/Base.astro';
+import LearnKit from '../../../components/learn/LearnKit.astro';
+import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../config/site';
+import { TRACKS, byTrack, trackMinutes, type Track } from '../../../lib/learn';
+
+export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
+const lang = Astro.params.lang as Lang;
+const order: Track[] = ['parent', 'kid', 'teen'];
+const beats = [
+  ['Hook', 'One number or one real-life moment.'],
+  ['Learn', 'A 3-minute read. One idea, plain words.'],
+  ['Say it', 'The exact words to use.'],
+  ['Do it', 'One small action this week.'],
+  ['Check', 'A few scenarios. Never scored.'],
+];
+---
+<Base lang={lang} title="Learn" description="Short, practical lessons on keeping children safe, for parents, kids and teens.">
+  <div class="wrap-wide page">
+    <LearnKit lang={lang} />
+    <div lang={lang === 'ta' ? 'en' : undefined}>
+      <header class="l-head">
+        <p class="eyebrow"><span class="kicker">Learn</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}</p>
+        <h1>Small lessons. Real words. One action each.</h1>
+        <p class="lead">Pick where you are starting from. Each module takes a few minutes, and your progress is saved only on this device. No account, no tracking.</p>
+      </header>
+
+      <div class="doors">
+        {order.map((t) => {
+          const mods = byTrack(t);
+          return (
+            <a class={`door door-${t}`} href={`/${lang}/learn/${t}/`}>
+              <span class="door-k">{TRACKS[t].door}</span>
+              <strong>{TRACKS[t].title}</strong>
+              <span class="door-b">{TRACKS[t].blurb}</span>
+              <span class="door-meta"><span class="chip">{mods.length} modules</span><span class="chip">~{trackMinutes(t)} min</span></span>
+              <span class="prog js-only" data-progress={mods.map((m) => m.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></span>
+            </a>
+          );
+        })}
+      </div>
+
+      <section class="beats" aria-labelledby="beats-h">
+        <h2 id="beats-h">Every module works the same way</h2>
+        <ol>
+          {beats.map(([t, b], i) => <li><span class="bn">{i + 1}</span><strong>{t}</strong><span>{b}</span></li>)}
+        </ol>
+      </section>
+
+      <p class="note">Built on NSPCC Talk PANTS, Darkness to Light's five steps, Tulir and Arpan's personal-safety work, Stop It Now, Kidpower and WHO INSPIRE. Educational information, not professional advice. Pending review by a child-protection organisation before launch. Prefer everything on one page? <a href={`/${lang}/guide/`}>Read the one-page guide</a>.</p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .l-head { max-width: 760px; }
+  .eyebrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 12px; }
+  .eyebrow .kicker { margin: 0; }
+  .doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 32px; }
+  .door { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 24px; min-height: 260px; transition: border-color .2s, transform .2s; }
+  .door:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .door-parent { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .door-kid { background: var(--warm-bg); border-color: var(--warm-line); }
+  .door-teen { background: var(--accent-soft); border-color: transparent; color: var(--accent-soft-ink); }
+  .door-k { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; }
+  .door strong { font-size: clamp(1.6rem, 3vw, 2rem); letter-spacing: -0.02em; line-height: 1.1; }
+  .door-b { font-size: 0.9375rem; line-height: 1.5; opacity: 0.9; }
+  .door-meta { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
+  .chip { font-family: var(--mono); font-size: 0.75rem; border: 1px solid currentColor; border-radius: 999px; padding: 2px 10px; opacity: 0.85; }
+  .beats { margin-top: 56px; }
+  .beats h2 { font-size: clamp(1.3rem, 2.4vw, 1.6rem); }
+  .beats ol { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .beats li { background: var(--surface); padding: 16px; display: grid; gap: 4px; align-content: start; }
+  .bn { font-family: var(--mono); font-size: 0.75rem; color: var(--link); }
+  .beats li > span:last-child { font-size: 0.875rem; color: var(--ink-2); }
+  .note { margin-top: 32px; font-size: 0.875rem; color: var(--muted); max-width: 72ch; }
+</style>

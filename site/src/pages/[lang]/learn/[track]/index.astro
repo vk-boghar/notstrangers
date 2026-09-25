@@ -1,0 +1,61 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import LearnKit from '../../../../components/learn/LearnKit.astro';
+import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../../config/site';
+import { TRACKS, byTrack, trackMinutes, type Track } from '../../../../lib/learn';
+
+export function getStaticPaths() {
+  return LANGS.flatMap((lang) => (['parent', 'kid', 'teen'] as Track[]).map((track) => ({ params: { lang, track } })));
+}
+const lang = Astro.params.lang as Lang;
+const track = Astro.params.track as Track;
+const T = TRACKS[track];
+const mods = byTrack(track);
+---
+<Base lang={lang} title={T.door} description={T.blurb}>
+  <div class="wrap page narrow-page">
+    <LearnKit lang={lang} />
+    <div lang={lang === 'ta' ? 'en' : undefined}>
+      <p class="crumb"><a href={`/${lang}/learn/`}>Learn</a> / {T.door}</p>
+      <p class="eyebrow"><span class="kicker">{mods.length} modules · ~{trackMinutes(track)} min</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}</p>
+      <h1>{T.title}</h1>
+      <p class="lead">{T.blurb} <span class="muted">{T.tone}</span></p>
+      {track === 'kid' && <p class="with-parent">Best done together: a parent reads, the child answers and taps.</p>}
+      <div class="prog js-only big" data-progress={mods.map((m) => m.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></div>
+
+      <ol class="mods">
+        {mods.map((m, i) => (
+          <li data-mod={m.id}>
+            <a href={`/${lang}/learn/${track}/${m.id}/`}>
+              <span class="n">{String(i + 1).padStart(2, '0')}</span>
+              <span class="t"><strong>{m.title}</strong>{m.builder === 'plan' && <span class="small muted">Build a printable one-page plan</span>}</span>
+              <span class="chip">{m.minutes} min</span>
+              <span class="tick" aria-hidden="true">✓</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p><a class="btn primary" href={`/${lang}/learn/${track}/${mods[0].id}/`}>Start with module 1 →</a> <a class="btn" href={`/${lang}/learn/`}>Other tracks</a></p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .narrow-page { max-width: calc(800px + 2 * var(--gutter)); }
+  .crumb { font-size: 0.875rem; color: var(--muted); margin-bottom: 20px; }
+  .eyebrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 12px; }
+  .eyebrow .kicker { margin: 0; }
+  .with-parent { background: var(--warm-bg); border: 1px solid var(--warm-line); border-radius: 12px; padding: 12px 16px; font-size: 0.9375rem; }
+  .prog.big { color: var(--accent); margin: 24px 0 8px; max-width: 420px; }
+  .prog.big b { height: 8px; }
+  .mods { list-style: none; padding: 0; margin: 20px 0 32px; display: grid; gap: 10px; }
+  .mods a { display: grid; grid-template-columns: 36px 1fr auto 28px; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; text-decoration: none; color: var(--ink); min-height: 64px; }
+  .mods a:hover { border-color: var(--accent); }
+  .n { font-family: var(--mono); font-size: 0.8125rem; color: var(--link); }
+  .t { display: grid; gap: 2px; }
+  .t strong { font-size: 1.05rem; line-height: 1.3; }
+  .chip { font-family: var(--mono); font-size: 0.75rem; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; color: var(--muted); white-space: nowrap; }
+  .tick { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); color: transparent; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+  li.is-done .tick { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  @media (max-width: 420px) { .mods a { grid-template-columns: 28px 1fr 26px; } .mods .chip { grid-column: 2; justify-self: start; } .tick { grid-row: 1; grid-column: 3; } }
+</style>
