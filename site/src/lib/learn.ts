@@ -301,6 +301,10 @@ export const MODULES: Module[] = [
   },
 ];
 
+/** Tracks shown on the site. The kid track's content and code are kept but hidden for now. */
+export const VISIBLE_TRACKS: Track[] = ['parent', 'teen'];
+export const isVisible = (t: Track) => VISIBLE_TRACKS.includes(t);
+
 export const byTrack = (t: Track) => MODULES.filter((m) => m.track === t);
 export const trackMinutes = (t: Track) => byTrack(t).reduce((s, m) => s + m.minutes, 0);
 

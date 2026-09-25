@@ -2,10 +2,10 @@
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../../config/site';
-import { tracksFor, byTrackL, trackMinutesL, uiFor, type Track } from '../../../../lib/learn';
+import { tracksFor, byTrackL, trackMinutesL, uiFor, VISIBLE_TRACKS, type Track } from '../../../../lib/learn';
 
 export function getStaticPaths() {
-  return LANGS.flatMap((lang) => (['parent', 'kid', 'teen'] as Track[]).map((track) => ({ params: { lang, track } })));
+  return LANGS.flatMap((lang) => VISIBLE_TRACKS.map((track) => ({ params: { lang, track } })));
 }
 const lang = Astro.params.lang as Lang;
 const track = Astro.params.track as Track;

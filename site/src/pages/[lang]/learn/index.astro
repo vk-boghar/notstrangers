@@ -2,13 +2,13 @@
 import Base from '../../../layouts/Base.astro';
 import LearnKit from '../../../components/learn/LearnKit.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../config/site';
-import { tracksFor, byTrackL, trackMinutesL, uiFor, type Track } from '../../../lib/learn';
+import { tracksFor, byTrackL, trackMinutesL, uiFor, type Track, VISIBLE_TRACKS } from '../../../lib/learn';
 
 export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
 const lang = Astro.params.lang as Lang;
 const U = uiFor(lang);
 const TR = tracksFor(lang);
-const order: Track[] = ['parent', 'kid', 'teen'];
+const order: Track[] = VISIBLE_TRACKS;
 ---
 <Base lang={lang} title={U.learn} description={U.lead}>
   <div class="wrap-wide page">

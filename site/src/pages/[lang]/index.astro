@@ -15,7 +15,7 @@ import JusticeFunnel from '../../components/charts/JusticeFunnel.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 import { one, maybe, where, latestYear, fmtInt, pct, daysInYear, periodLabel, fmtDate } from '../../lib/data';
-import { tracksFor, byTrackL, trackMinutesL, type Track } from '../../lib/learn';
+import { tracksFor, byTrackL, trackMinutesL, VISIBLE_TRACKS, type Track } from '../../lib/learn';
 
 export function getStaticPaths() {
   return LANGS.map((lang) => ({ params: { lang } }));
@@ -62,12 +62,12 @@ const ACTIONS = [1, 2, 3, 4, 5, 6, 7];
 
 // ── "Two ways to use this site" block ──────────────────────────────────────
 const TR = tracksFor(lang);
-const TRACK_ORDER: Track[] = ['parent', 'kid', 'teen'];
+const TRACK_ORDER: Track[] = VISIBLE_TRACKS;
 const tnPend = maybe({ dataset: 'court_pendency', geo: 'TN', dim: 'pending_trial' });
 const P = lang === 'ta' ? {
   kicker: 'இந்தத் தளம் என்ன செய்கிறது',
   title: 'என்ன நடக்கிறது என்று எண்கள் காட்டுகின்றன. என்ன செய்வது என்று பாடங்கள் கற்றுத்தருகின்றன.',
-  lead: 'அதிகாரப்பூர்வ தரவு, எளிய மொழியில் — அதனுடன் பெற்றோர், குழந்தைகள், பதின்வயதினருக்கான சிறு பாடங்கள். இலவசம். கணக்கு தேவையில்லை. கண்காணிப்பு இல்லை.',
+  lead: 'அதிகாரப்பூர்வ தரவு, எளிய மொழியில் — அதனுடன் பெற்றோர், பதின்வயதினருக்கான சிறு பாடங்கள். இலவசம். கணக்கு தேவையில்லை. கண்காணிப்பு இல்லை.',
   a_k: '1 · புரிந்துகொள்ளுங்கள்', a_t: 'தரவைப் பாருங்கள்', a_b: 'ஒவ்வொரு எண்ணுக்கும் ஆதாரம், ஒவ்வொரு வரைபடமும் பதிவிறக்கத்துக்கு. பதிவான வழக்குகள் மட்டும் — அப்படியே குறிக்கப்பட்டுள்ளது.',
   f1: 'குற்றம் செய்தவர் குழந்தைக்குத் தெரிந்தவர்', f2: 'போக்சோ வழக்குகள், இந்தியா', f3: 'தமிழ்நாட்டில் விசாரணைக்குக் காத்திருக்கும் வழக்குகள்',
   a_go: 'கதையைப் படியுங்கள் ↓', a_india: 'இந்தியா', a_tn: 'தமிழ்நாடு',
@@ -80,7 +80,7 @@ const P = lang === 'ta' ? {
 } : {
   kicker: 'What this site does',
   title: 'The numbers show what\'s happening. The lessons show you what to do.',
-  lead: 'Official data in plain language, paired with short lessons for parents, kids and teens. Free. No account. No tracking.',
+  lead: 'Official data in plain language, paired with short lessons for parents and teens. Free. No account. No tracking.',
   a_k: '1 · Understand', a_t: 'See the data', a_b: 'Every number sourced, every chart downloadable. Reported cases only, and labelled that way.',
   f1: 'offender known to the child', f2: 'POCSO cases, India', f3: 'POCSO cases waiting for trial in Tamil Nadu',
   a_go: 'Read the story ↓', a_india: 'India', a_tn: 'Tamil Nadu',

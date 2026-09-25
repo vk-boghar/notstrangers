@@ -2,11 +2,11 @@
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, SITE_URL, type Lang } from '../../../../config/site';
-import { modulesFor, tracksFor, byTrackL, uiFor, planFor, rich, type Module } from '../../../../lib/learn';
+import { modulesFor, tracksFor, byTrackL, uiFor, planFor, rich, isVisible, type Module } from '../../../../lib/learn';
 import { one, latestYear, fmtInt } from '../../../../lib/data';
 
 export function getStaticPaths() {
-  return LANGS.flatMap((lang) => modulesFor(lang).map((m) => ({ params: { lang, track: m.track, module: m.id }, props: { m } })));
+  return LANGS.flatMap((lang) => modulesFor(lang).filter((m) => isVisible(m.track)).map((m) => ({ params: { lang, track: m.track, module: m.id }, props: { m } })));
 }
 const lang = Astro.params.lang as Lang;
 const { m } = Astro.props as { m: Module };
