@@ -2,53 +2,48 @@
 import Base from '../../../layouts/Base.astro';
 import LearnKit from '../../../components/learn/LearnKit.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../config/site';
-import { TRACKS, byTrack, trackMinutes, type Track } from '../../../lib/learn';
+import { tracksFor, byTrackL, trackMinutesL, uiFor, type Track } from '../../../lib/learn';
 
 export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
 const lang = Astro.params.lang as Lang;
+const U = uiFor(lang);
+const TR = tracksFor(lang);
 const order: Track[] = ['parent', 'kid', 'teen'];
-const beats = [
-  ['Hook', 'One number or one real-life moment.'],
-  ['Learn', 'A 3-minute read. One idea, plain words.'],
-  ['Say it', 'The exact words to use.'],
-  ['Do it', 'One small action this week.'],
-  ['Check', 'A few scenarios. Never scored.'],
-];
 ---
-<Base lang={lang} title="Learn" description="Short, practical lessons on keeping children safe, for parents, kids and teens.">
+<Base lang={lang} title={U.learn} description={U.lead}>
   <div class="wrap-wide page">
     <LearnKit lang={lang} />
-    <div lang={lang === 'ta' ? 'en' : undefined}>
+    <div>
       <header class="l-head">
-        <p class="eyebrow"><span class="kicker">Learn</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}</p>
-        <h1>Small lessons. Real words. One action each.</h1>
-        <p class="lead">Pick where you are starting from. Each module takes a few minutes, and your progress is saved only on this device. No account, no tracking.</p>
+        <p class="eyebrow"><span class="kicker">{U.learn}</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}</p>
+        <h1>{U.h1}</h1>
+        <p class="lead">{U.lead}</p>
       </header>
 
       <div class="doors">
         {order.map((t) => {
-          const mods = byTrack(t);
+          const mods = byTrackL(lang, t);
           return (
             <a class={`door door-${t}`} href={`/${lang}/learn/${t}/`}>
-              <span class="door-k">{TRACKS[t].door}</span>
-              <strong>{TRACKS[t].title}</strong>
-              <span class="door-b">{TRACKS[t].blurb}</span>
-              <span class="door-meta"><span class="chip">{mods.length} modules</span><span class="chip">~{trackMinutes(t)} min</span></span>
+              <span class="door-k">{TR[t].door}</span>
+              <strong>{TR[t].title}</strong>
+              <span class="door-b">{TR[t].blurb}</span>
+              <span class="door-meta"><span class="chip">{mods.length} {U.modules}</span><span class="chip">~{trackMinutesL(lang, t)} {U.min}</span></span>
               <span class="prog js-only" data-progress={mods.map((m) => m.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></span>
-              <span class="door-go">Start →</span>
+              <span class="door-go">{U.start}</span>
             </a>
           );
         })}
       </div>
 
       <section class="beats" aria-labelledby="beats-h">
-        <h2 id="beats-h">Every module works the same way</h2>
+        <h2 id="beats-h">{U.beatsH}</h2>
         <ol>
-          {beats.map(([t, b], i) => <li><span class="bn">{i + 1}</span><strong>{t}</strong><span>{b}</span></li>)}
+          {U.beats.map(([t, b], i) => <li><span class="bn">{i + 1}</span><strong>{t}</strong><span>{b}</span></li>)}
         </ol>
       </section>
 
-      <p class="note">Built on NSPCC Talk PANTS, Darkness to Light's five steps, Arpan's personal-safety work, Stop It Now, Kidpower and WHO INSPIRE. Educational information, not professional advice. Pending expert review before launch. Prefer everything on one page? <a href={`/${lang}/guide/`}>Read the one-page guide</a>.</p>
+      <p class="note">{U.note} {U.prefer} <a href={`/${lang}/guide/`}>{U.guideLink}</a>.</p>
     </div>
   </div>
 </Base>

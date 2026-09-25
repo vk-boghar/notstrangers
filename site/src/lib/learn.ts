@@ -323,3 +323,94 @@ export function rich(s: string) {
   const esc = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return esc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 }
+
+// ── Language selection ───────────────────────────────────────────────────────
+import { MODULES_TA, TRACKS_TA, PLAN_DEFAULT_RULES_TA, PLAN_ONLINE_TA, PLAN_PROMISE_TA } from './learn.ta';
+export type L = 'en' | 'ta';
+export const modulesFor = (l: L) => (l === 'ta' ? MODULES_TA : MODULES);
+export const tracksFor = (l: L) => (l === 'ta' ? TRACKS_TA : TRACKS);
+export const byTrackL = (l: L, t: Track) => modulesFor(l).filter((m) => m.track === t);
+export const trackMinutesL = (l: L, t: Track) => byTrackL(l, t).reduce((s, m) => s + m.minutes, 0);
+export const planFor = (l: L) => (l === 'ta'
+  ? { rules: PLAN_DEFAULT_RULES_TA, online: PLAN_ONLINE_TA, promise: PLAN_PROMISE_TA }
+  : { rules: PLAN_DEFAULT_RULES, online: PLAN_ONLINE, promise: PLAN_PROMISE });
+
+// The Tamil set must mirror the English one (same ids, tracks, order), or the build fails.
+{
+  const a = MODULES.map((m) => `${m.id}:${m.track}:${m.builder ?? ''}:${m.game?.cards.length ?? 0}`).join();
+  const b = MODULES_TA.map((m) => `${m.id}:${m.track}:${m.builder ?? ''}:${m.game?.cards.length ?? 0}`).join();
+  if (a !== b) throw new Error('learn.ta.ts is out of step with learn.ts');
+}
+
+const UI_EN = {
+  learn: 'Learn', draft: 'DRAFT · pending expert review',
+  h1: 'Small lessons. Real words. One action each.',
+  lead: 'Pick where you are starting from. Each module takes a few minutes, and your progress is saved only on this device. No account, no tracking.',
+  modules: 'modules', min: 'min', start: 'Start →',
+  beatsH: 'Every module works the same way',
+  beats: [['Hook', 'One number or one real-life moment.'], ['Learn', 'A 3-minute read. One idea, plain words.'], ['Say it', 'The exact words to use.'], ['Do it', 'One small action this week.'], ['Check', 'A few scenarios. Never scored.']],
+  note: "Built on NSPCC Talk PANTS, Darkness to Light's five steps, Arpan's personal-safety work, Stop It Now, Kidpower and WHO INSPIRE. Educational information, not professional advice. Pending expert review before launch.",
+  prefer: 'Prefer everything on one page?', guideLink: 'Read the one-page guide',
+  moduleOf: (i: number, n: number) => `Module ${i} of ${n}`,
+  withParent: 'Best done together: a parent reads, the child answers and taps.',
+  planNote: 'Build a printable one-page plan',
+  startFirst: 'Start with module 1 →', otherTracks: 'Other tracks',
+  hook: { kpi: 'The number', statement: 'Remember this', scenario: 'Picture this', plain: '' },
+  ofHundred: 'of 100', meaning: 'Meaning:', action: 'Action:',
+  kpiSrc: (y: number, a: string, b: string) => `NCRB, Crime in India ${y} · POCSO Sec 4 & 6 · ${a} of ${b} · Tier 1`,
+  learnH: 'Learn', buildH: 'Build', tryIt: 'Try it', ages: 'Ages', ageBand: 'Age band',
+  say: 'Say it like this', doIt: 'Do it this week', check: 'Check yourself', checkHint: 'Think about it, then tap to see. Nothing is scored.',
+  markDone: 'Mark this module done', done: '✓ Done. Nice work.', next: 'Next:', all: 'All modules', back: 'Back to Learn',
+  ok: '✓ ', again: 'Look again: ',
+  whatsapp: 'Send on WhatsApp', shareBtn: 'Share…',
+  trustedH: 'My trusted grown-ups', trustedHint: "Fill in three names with your parent. Include one person outside the family, like a teacher or a friend's parent.",
+  name: 'Name', outside: 'Someone outside the family', phone: 'Phone',
+  cardRules: 'NO · GO · TELL. Keep telling until someone helps. It is never my fault.',
+  cardNums: 'Childline <strong>1098</strong> · Emergency <strong>112</strong>',
+  savedDevice: 'Saved only on this device.', savedNever: 'Saved only on this device. Never sent anywhere.',
+  printCard: 'Print my card', printPlan: 'Print our plan', clear: 'Clear',
+  planH: 'Your family safety plan', planPrint: 'Our family safety plan',
+  legends: ['1 · Our 5 rules, in our words', '2 · Our trusted adults', '3 · Our online rules', '4 · Our promise', '5 · Emergency numbers'],
+  trustedAdultsHint: '3–5 people, including at least one outside the family.',
+  addOwn: 'Add your own rule', trustedAria: (i: number) => `Trusted adult ${i}`,
+  nums: '<strong>1098</strong> Childline (24×7) · <strong>112</strong> Police / emergency · <strong>1930</strong> Cyber crime · POCSO e-Box: ncpcr.gov.in',
+  revisit: 'Revisit every 6 months, or when something changes: a new school, activity or device. · notstrangers.org',
+  doneMsg: "When it's on the fridge: your family has a plan. That's prevention.",
+};
+type UI = typeof UI_EN;
+const UI_TA: UI = {
+  learn: 'கற்க', draft: 'வரைவு · நிபுணர் சரிபார்ப்பு நிலுவையில்',
+  h1: 'சிறிய பாடங்கள். உண்மையான வார்த்தைகள். ஒவ்வொன்றுக்கும் ஒரு செயல்.',
+  lead: 'நீங்கள் எங்கிருந்து தொடங்குகிறீர்கள் என்று தேர்ந்தெடுங்கள். ஒவ்வொரு பாடமும் சில நிமிடங்களே. உங்கள் முன்னேற்றம் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும். கணக்கு இல்லை, கண்காணிப்பு இல்லை.',
+  modules: 'பாடங்கள்', min: 'நிமி', start: 'தொடங்கு →',
+  beatsH: 'ஒவ்வொரு பாடமும் ஒரே மாதிரி',
+  beats: [['தொடக்கம்', 'ஒரு எண் அல்லது ஒரு நிஜ வாழ்க்கைத் தருணம்.'], ['கற்க', '3 நிமிட வாசிப்பு. ஒரு கருத்து, எளிய வார்த்தைகள்.'], ['சொல்லுங்கள்', 'பயன்படுத்த வேண்டிய சரியான வார்த்தைகள்.'], ['செய்யுங்கள்', 'இந்த வாரம் ஒரு சிறிய செயல்.'], ['சரிபார்', 'சில சூழ்நிலைகள். மதிப்பெண் இல்லை.']],
+  note: 'NSPCC Talk PANTS, Darkness to Light-இன் ஐந்து படிகள், Arpan-இன் தனிப்பட்ட பாதுகாப்புப் பணி, Stop It Now, Kidpower, WHO INSPIRE ஆகியவற்றின் அடிப்படையில். இது கல்வித் தகவல், தொழில்முறை ஆலோசனை அல்ல. வெளியீட்டுக்கு முன் நிபுணர் சரிபார்ப்பு நிலுவையில்.',
+  prefer: 'எல்லாவற்றையும் ஒரே பக்கத்தில் பார்க்க வேண்டுமா?', guideLink: 'ஒரு பக்க வழிகாட்டியைப் படியுங்கள்',
+  moduleOf: (i, n) => `பாடம் ${i} / ${n}`,
+  withParent: 'சேர்ந்து செய்வது சிறந்தது: பெற்றோர் படிக்க, குழந்தை பதில் சொல்லித் தொடட்டும்.',
+  planNote: 'அச்சிடக்கூடிய ஒரு பக்கத் திட்டத்தை உருவாக்குங்கள்',
+  startFirst: 'பாடம் 1-இலிருந்து தொடங்குங்கள் →', otherTracks: 'மற்ற பாதைகள்',
+  hook: { kpi: 'எண்', statement: 'நினைவில் கொள்ளுங்கள்', scenario: 'கற்பனை செய்யுங்கள்', plain: '' },
+  ofHundred: '/ 100', meaning: 'பொருள்:', action: 'செயல்:',
+  kpiSrc: (y, a, b) => `NCRB, இந்தியாவில் குற்றங்கள் ${y} · போக்சோ பிரிவு 4 & 6 · ${b}-இல் ${a} · அடுக்கு 1`,
+  learnH: 'கற்க', buildH: 'உருவாக்கு', tryIt: 'முயன்று பார்', ages: 'வயது', ageBand: 'வயதுப் பிரிவு',
+  say: 'இப்படிச் சொல்லுங்கள்', doIt: 'இந்த வாரம் செய்யுங்கள்', check: 'உங்களைச் சரிபாருங்கள்', checkHint: 'யோசித்துவிட்டு, பார்க்கத் தொடுங்கள். மதிப்பெண் இல்லை.',
+  markDone: 'இந்தப் பாடம் முடிந்தது எனக் குறி', done: '✓ முடிந்தது. அருமை.', next: 'அடுத்து:', all: 'எல்லாப் பாடங்களும்', back: 'கற்க பக்கத்துக்குத் திரும்பு',
+  ok: '✓ ', again: 'மீண்டும் பார்: ',
+  whatsapp: 'வாட்ஸ்அப்பில் அனுப்பு', shareBtn: 'பகிர்…',
+  trustedH: 'என் நம்பிக்கைக்குரிய பெரியவர்கள்', trustedHint: 'உன் பெற்றோருடன் மூன்று பெயர்களை நிரப்பு. குடும்பத்துக்கு வெளியே ஒருவரைச் சேர்: ஆசிரியர் அல்லது நண்பரின் பெற்றோர் போல.',
+  name: 'பெயர்', outside: 'குடும்பத்துக்கு வெளியே ஒருவர்', phone: 'தொலைபேசி',
+  cardRules: 'வேண்டாம் · ஓடு · சொல். யாராவது உதவும் வரை சொல்லிக்கொண்டே இரு. அது ஒருபோதும் என் தவறு அல்ல.',
+  cardNums: 'சைல்டுலைன் <strong>1098</strong> · அவசரம் <strong>112</strong>',
+  savedDevice: 'இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும்.', savedNever: 'இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும். எங்கும் அனுப்பப்படாது.',
+  printCard: 'என் அட்டையை அச்சிடு', printPlan: 'எங்கள் திட்டத்தை அச்சிடு', clear: 'அழி',
+  planH: 'உங்கள் குடும்பப் பாதுகாப்புத் திட்டம்', planPrint: 'எங்கள் குடும்பப் பாதுகாப்புத் திட்டம்',
+  legends: ['1 · எங்கள் 5 விதிகள், எங்கள் வார்த்தைகளில்', '2 · எங்கள் நம்பிக்கைக்குரிய பெரியவர்கள்', '3 · எங்கள் இணைய விதிகள்', '4 · எங்கள் வாக்குறுதி', '5 · அவசர எண்கள்'],
+  trustedAdultsHint: '3–5 பேர், குடும்பத்துக்கு வெளியே குறைந்தது ஒருவர் உட்பட.',
+  addOwn: 'உங்கள் சொந்த விதியைச் சேருங்கள்', trustedAria: (i) => `நம்பிக்கைக்குரிய பெரியவர் ${i}`,
+  nums: '<strong>1098</strong> சைல்டுலைன் (24×7) · <strong>112</strong> காவல் / அவசரம் · <strong>1930</strong> சைபர் குற்றம் · POCSO e-Box: ncpcr.gov.in',
+  revisit: '6 மாதங்களுக்கு ஒருமுறை, அல்லது ஏதாவது மாறும்போது மீண்டும் பாருங்கள்: புதிய பள்ளி, செயல்பாடு அல்லது கைபேசி. · notstrangers.org',
+  doneMsg: 'ஃப்ரிட்ஜில் ஒட்டியதும்: உங்கள் குடும்பத்துக்கு ஒரு திட்டம் இருக்கிறது. அதுதான் தடுப்பு.',
+};
+export const uiFor = (l: L): UI => (l === 'ta' ? UI_TA : UI_EN);

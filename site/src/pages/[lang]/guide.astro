@@ -1,68 +1,57 @@
 ---
-// "What you can do": a one-page map for parents and children. English source text only; the Tamil
-// route shows it with a notice, because safety text must never ship machine-translated.
+// "What you can do": a one-page map for parents and children. English in guide.ts, Tamil draft in
+// guide.ta.ts (flagged site-wide as pending native-speaker review).
 import Base from '../../layouts/Base.astro';
 import Helplines from '../../components/Helplines.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
-import { guide as g } from '../../lib/guide';
+import { guide, guideUiEn } from '../../lib/guide';
+import { guideTa, guideUiTa } from '../../lib/guide.ta';
 import { one, latestYear, fmtInt } from '../../lib/data';
 
 export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
 const lang = Astro.params.lang as Lang;
 const { t } = useT(lang);
+const g = lang === 'ta' ? guideTa : guide;
+const U = lang === 'ta' ? guideUiTa : guideUiEn;
 const relYear = latestYear('pocso_relationship', 'IN')!;
 const relTotal = one({ dataset: 'pocso_relationship', geo: 'IN', year: relYear, dim: 'total' });
 const relKnown = one({ dataset: 'pocso_relationship', geo: 'IN', year: relYear, dim: 'known_total' });
 const knownPer100 = Math.round((relKnown.value / relTotal.value) * 100);
 
-const MAP = [
-  ['mindset', '01', 'Start here', 'The mindset'],
-  ['by-age', '02', 'Talk by age', '2–5 · 6–9 · 10–12 · teens'],
-  ['rules', '03', 'Five rules', 'P · A · N · T · S'],
-  ['precautions', '04', 'Precautions', 'What adults control'],
-  ['signs', '05', 'Warning signs', 'Change, pattern, cluster'],
-  ['grooming', '06', 'Grooming', 'How it works'],
-  ['tells', '07', 'If a child tells you', 'Calm → care → report'],
-  ['kids', '08', 'For kids & teens', 'Read together'],
-] as const;
 ---
 <Base lang={lang} title={g.title} description={g.lead}>
-  <div class="wrap-wide page" lang={lang === 'ta' ? 'en' : undefined}>
-    {lang === 'ta' && (
-      <p class="pending ta-note" lang="ta"><strong>தமிழ் பதிப்பு தயாராகிறது.</strong> பாதுகாப்பு வழிகாட்டியை இயந்திர மொழிபெயர்ப்பில் வெளியிடுவதில்லை; தமிழ் தாய்மொழியாளர் எழுதிச் சரிபார்த்த பின் இங்கே வரும். அதுவரை ஆங்கிலப் பதிப்பு கீழே.</p>
-    )}
-
+  <div class="wrap-wide page">
     <header class="g-head">
       <p class="eyebrow">
-        <span class="kicker">For parents</span>
-        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}
+        <span class="kicker">{U.forParents}</span>
+        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}
       </p>
       <h1>{g.title}</h1>
       <p class="lead">{g.lead}</p>
     </header>
 
     <div class="sos" role="note">
-      <span>Child in danger now?</span>
-      <a class="btn primary" href="tel:112">Call 112</a>
-      <a class="btn" href="tel:1098">Childline 1098</a>
-      <a class="btn" href="#tells">If a child tells you →</a>
-      <a class="btn" href={`/${lang}/learn/`}>Prefer short lessons? Learn →</a>
+      <span>{U.sos}</span>
+      <a class="btn primary" href="tel:112">{U.call112}</a>
+      <a class="btn" href="tel:1098">{U.childline}</a>
+      <a class="btn" href="#tells">{U.ifTells}</a>
+      <a class="btn" href={`/${lang}/learn/`}>{U.preferLearn}</a>
     </div>
 
-    <nav class="map" aria-label="On this page">
-      {MAP.map(([id, n, tt, sub]) => (
+    <nav class="map" aria-label={U.onPage}>
+      {U.map.map(([id, n, tt, sub]) => (
         <a href={`#${id}`}><span class="mn">{n}</span><strong>{tt}</strong><span class="ms">{sub}</span></a>
       ))}
     </nav>
 
     <!-- 01 Mindset -->
     <section id="mindset" class="blk" aria-labelledby="h-mindset">
-      <p class="kicker">01 · Start here</p>
-      <h2 id="h-mindset">The mindset</h2>
+      <p class="kicker">{U.k1}</p>
+      <h2 id="h-mindset">{U.h1}</h2>
       <div class="stat-row">
         <div class="stat-big"><span class="num">{knownPer100}</span><span class="of">/100</span></div>
-        <p>In {knownPer100} of every 100 reported POCSO cases (India, {relYear}), the child knew the person. So "don't talk to strangers" was never the main lesson. <span class="muted small">Reported cases only · NCRB, Crime in India {relYear} · {fmtInt(relKnown.value)} of {fmtInt(relTotal.value)}.</span></p>
+        <p>{U.stat(knownPer100, relYear)} <span class="muted small">{U.statSrc(relYear, fmtInt(relKnown.value), fmtInt(relTotal.value))}</span></p>
       </div>
       <div class="tiles five">
         {g.mindset.map((m) => <div class="tile"><strong>{m.t}</strong><p>{m.b}</p></div>)}
@@ -71,8 +60,8 @@ const MAP = [
 
     <!-- 02 By age -->
     <section id="by-age" class="blk" aria-labelledby="h-age">
-      <p class="kicker">02 · How to talk</p>
-      <h2 id="h-age">By age</h2>
+      <p class="kicker">{U.k2}</p>
+      <h2 id="h-age">{U.h2}</h2>
       <div class="ages">
         {g.ages.map((a) => (
           <article class="age" id={a.id}>
@@ -86,8 +75,8 @@ const MAP = [
 
     <!-- 03 Rules -->
     <section id="rules" class="blk" aria-labelledby="h-rules">
-      <p class="kicker">03 · The core curriculum</p>
-      <h2 id="h-rules">Five rules to teach until they can say them back</h2>
+      <p class="kicker">{U.k3}</p>
+      <h2 id="h-rules">{U.h3}</h2>
       <ol class="pants">
         {g.rules.map((r) => <li><span class="letter" aria-hidden="true">{r.k}</span><strong>{r.t}</strong><span>{r.b}</span></li>)}
       </ol>
@@ -96,9 +85,9 @@ const MAP = [
 
     <!-- 04 Precautions -->
     <section id="precautions" class="blk" aria-labelledby="h-prec">
-      <p class="kicker">04 · What adults control</p>
-      <h2 id="h-prec">Precautions</h2>
-      <p class="lead">Most prevention is about the situation, not the lesson.</p>
+      <p class="kicker">{U.k4}</p>
+      <h2 id="h-prec">{U.h4}</h2>
+      <p class="lead">{U.l4}</p>
       <div class="tiles three">
         {g.precautions.map((p, i) => <div class="tile"><span class="tn">{String(i + 1).padStart(2, '0')}</span><strong>{p.t}</strong><p>{p.b}</p></div>)}
       </div>
@@ -106,33 +95,33 @@ const MAP = [
 
     <!-- 05 Signs -->
     <section id="signs" class="blk" aria-labelledby="h-signs">
-      <p class="kicker">05 · Notice</p>
-      <h2 id="h-signs">Warning signs in children</h2>
+      <p class="kicker">{U.k5}</p>
+      <h2 id="h-signs">{U.h5}</h2>
       <p class="caveat-lite">{g.signs.note}</p>
       <div class="tiles four">
         {g.signs.groups.map((s) => <div class="tile"><strong>{s.t}</strong><ul>{s.items.map((i) => <li>{i}</li>)}</ul></div>)}
       </div>
       <div class="teal">
-        <span class="teal-k">If you notice something, open gently</span>
+        <span class="teal-k">{U.open}</span>
         <p>{g.signs.ask}</p>
       </div>
     </section>
 
     <!-- 06 Grooming -->
     <section id="grooming" class="blk" aria-labelledby="h-groom">
-      <p class="kicker">06 · Understand</p>
-      <h2 id="h-groom">How grooming works</h2>
+      <p class="kicker">{U.k6}</p>
+      <h2 id="h-groom">{U.h6}</h2>
       <p class="lead">{g.grooming.def}</p>
       <ol class="flow">
         {g.grooming.steps.map((s, i) => <li><span class="fn">{i + 1}</span><strong>{s.t}</strong><span>{s.b}</span></li>)}
       </ol>
       <div class="split">
         <div class="tile warm">
-          <strong>Red flags in an adult or older teen</strong>
+          <strong>{U.flagsH}</strong>
           <ul>{g.grooming.flags.map((f) => <li>{f}</li>)}</ul>
         </div>
         <div class="tile">
-          <strong>Online</strong>
+          <strong>{U.onlineH}</strong>
           <p>{g.grooming.online}</p>
         </div>
       </div>
@@ -140,15 +129,15 @@ const MAP = [
 
     <!-- 07 Disclosure -->
     <section id="tells" class="blk" aria-labelledby="h-tells">
-      <p class="kicker">07 · Respond</p>
-      <h2 id="h-tells">If a child tells you, or you suspect abuse</h2>
+      <p class="kicker">{U.k7}</p>
+      <h2 id="h-tells">{U.h7}</h2>
       <div class="split">
         <div class="tile do">
-          <strong>First ten minutes: do</strong>
+          <strong>{U.doH}</strong>
           <ul class="ticks">{g.disclosure.first.do.map((d) => <li>{d}</li>)}</ul>
         </div>
         <div class="tile dont">
-          <strong>Don't</strong>
+          <strong>{U.dontH}</strong>
           <ul class="crosses">{g.disclosure.first.dont.map((d) => <li>{d}</li>)}</ul>
         </div>
       </div>
@@ -159,8 +148,8 @@ const MAP = [
 
     <!-- 08 Kids -->
     <section id="kids" class="blk" aria-labelledby="h-kids">
-      <p class="kicker">08 · For kids & teens</p>
-      <h2 id="h-kids">Your body-safety rules</h2>
+      <p class="kicker">{U.k8}</p>
+      <h2 id="h-kids">{U.h8}</h2>
       <p class="lead">{g.kids.intro}</p>
       <div class="ngt" aria-label="No, Go, Tell">
         {g.kids.ngt.map((n) => <div><span>{n.k}!</span><p>{n.b}</p></div>)}
@@ -171,9 +160,9 @@ const MAP = [
       <div class="trusted">
         <strong>{g.kids.trusted}</strong>
         <ol><li></li><li></li><li></li></ol>
-        <span class="muted small">Fill in together. If the first person doesn't help, tell the next.</span>
+        <span class="muted small">{U.fillIn}</span>
       </div>
-      <h3 class="teen-h">For teens</h3>
+      <h3 class="teen-h">{U.teensH}</h3>
       <div class="tiles three">
         {g.kids.teens.map((r) => <div class="tile"><strong>{r.t}</strong><p>{r.b}</p></div>)}
       </div>
@@ -181,22 +170,22 @@ const MAP = [
 
     <!-- Key learnings -->
     <section id="key" class="blk" aria-labelledby="h-key">
-      <p class="kicker">Summary</p>
-      <h2 id="h-key">Key learnings</h2>
+      <p class="kicker">{U.kS}</p>
+      <h2 id="h-key">{U.hS}</h2>
       <div class="split">
         <div class="tile">
-          <strong>For parents</strong>
+          <strong>{U.forP}</strong>
           <ol class="keys">{g.keyParents.map((k) => <li>{k}</li>)}</ol>
         </div>
         <div class="tile teal-soft">
-          <strong>For kids</strong>
+          <strong>{U.forK}</strong>
           <ol class="keys">{g.keyKids.map((k) => <li>{k}</li>)}</ol>
         </div>
       </div>
     </section>
 
     <!-- Help -->
-    <section id="help" class="blk" aria-labelledby="h-help" lang={lang === 'ta' ? 'ta' : undefined}>
+    <section id="help" class="blk" aria-labelledby="h-help">
       <h2 id="h-help">{t('home.help_title')}</h2>
       <p class="muted">{t('home.help_lead')}</p>
       <Helplines lang={lang} />
@@ -204,20 +193,20 @@ const MAP = [
 
     <!-- Sources -->
     <section id="sources" class="blk" aria-labelledby="h-src">
-      <h2 id="h-src">Books and materials this guide draws on</h2>
+      <h2 id="h-src">{U.hSrc}</h2>
       <div class="split">
         <details class="src-d" open>
-          <summary>Books for children ({g.books.kids.length})</summary>
-          <ul class="books">{g.books.kids.map(([ti, au, n]) => <li><cite>{ti}</cite> · {au}<span>{n}</span></li>)}</ul>
-          <p class="src-sub">For parents</p>
-          <ul class="books">{g.books.parents.map(([ti, au, n]) => <li><cite>{ti}</cite> · {au}<span>{n}</span></li>)}</ul>
+          <summary>{U.kidsBooks} ({g.books.kids.length})</summary>
+          <ul class="books">{g.books.kids.map(([ti, au, n]) => <li><cite lang="en">{ti}</cite> · {au}<span>{n}</span></li>)}</ul>
+          <p class="src-sub">{U.parentBooks}</p>
+          <ul class="books">{g.books.parents.map(([ti, au, n]) => <li><cite lang="en">{ti}</cite> · {au}<span>{n}</span></li>)}</ul>
         </details>
         <details class="src-d" open>
-          <summary>Organisations & frameworks ({g.books.orgs.length})</summary>
+          <summary>{U.orgs} ({g.books.orgs.length})</summary>
           <ul class="books">{g.books.orgs.map(([n, u, d]) => <li><a href={u} rel="noopener external" target="_blank">{n}</a><span>{d}</span></li>)}</ul>
         </details>
       </div>
-      <p class="src">Educational information, not a substitute for professional advice. Pending expert review before publication.</p>
+      <p class="src">{U.disclaimer}</p>
     </section>
   </div>
 </Base>

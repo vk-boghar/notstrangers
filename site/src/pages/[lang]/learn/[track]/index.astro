@@ -2,25 +2,26 @@
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../../config/site';
-import { TRACKS, byTrack, trackMinutes, type Track } from '../../../../lib/learn';
+import { tracksFor, byTrackL, trackMinutesL, uiFor, type Track } from '../../../../lib/learn';
 
 export function getStaticPaths() {
   return LANGS.flatMap((lang) => (['parent', 'kid', 'teen'] as Track[]).map((track) => ({ params: { lang, track } })));
 }
 const lang = Astro.params.lang as Lang;
 const track = Astro.params.track as Track;
-const T = TRACKS[track];
-const mods = byTrack(track);
+const U = uiFor(lang);
+const T = tracksFor(lang)[track];
+const mods = byTrackL(lang, track);
 ---
 <Base lang={lang} title={T.door} description={T.blurb}>
   <div class="wrap page narrow-page">
     <LearnKit lang={lang} />
-    <div lang={lang === 'ta' ? 'en' : undefined}>
-      <p class="crumb"><a href={`/${lang}/learn/`}>Learn</a> / {T.door}</p>
-      <p class="eyebrow"><span class="kicker">{mods.length} modules · ~{trackMinutes(track)} min</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}</p>
+    <div>
+      <p class="crumb"><a href={`/${lang}/learn/`}>{U.learn}</a> / {T.door}</p>
+      <p class="eyebrow"><span class="kicker">{mods.length} {U.modules} · ~{trackMinutesL(lang, track)} {U.min}</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}</p>
       <h1>{T.title}</h1>
       <p class="lead">{T.blurb} <span class="muted">{T.tone}</span></p>
-      {track === 'kid' && <p class="with-parent">Best done together: a parent reads, the child answers and taps.</p>}
+      {track === 'kid' && <p class="with-parent">{U.withParent}</p>}
       <div class="prog js-only big" data-progress={mods.map((m) => m.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></div>
 
       <ol class="mods">
@@ -28,14 +29,14 @@ const mods = byTrack(track);
           <li data-mod={m.id}>
             <a href={`/${lang}/learn/${track}/${m.id}/`}>
               <span class="n">{String(i + 1).padStart(2, '0')}</span>
-              <span class="t"><strong>{m.title}</strong>{m.builder === 'plan' && <span class="small muted">Build a printable one-page plan</span>}</span>
-              <span class="chip">{m.minutes} min</span>
+              <span class="t"><strong>{m.title}</strong>{m.builder === 'plan' && <span class="small muted">{U.planNote}</span>}</span>
+              <span class="chip">{m.minutes} {U.min}</span>
               <span class="tick" aria-hidden="true">✓</span>
             </a>
           </li>
         ))}
       </ol>
-      <p><a class="btn primary" href={`/${lang}/learn/${track}/${mods[0].id}/`}>Start with module 1 →</a> <a class="btn" href={`/${lang}/learn/`}>Other tracks</a></p>
+      <p><a class="btn primary" href={`/${lang}/learn/${track}/${mods[0].id}/`}>{U.startFirst}</a> <a class="btn" href={`/${lang}/learn/`}>{U.otherTracks}</a></p>
     </div>
   </div>
 </Base>

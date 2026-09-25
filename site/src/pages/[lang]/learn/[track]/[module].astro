@@ -2,16 +2,18 @@
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, SITE_URL, type Lang } from '../../../../config/site';
-import { TRACKS, MODULES, byTrack, rich, PLAN_DEFAULT_RULES, PLAN_ONLINE, PLAN_PROMISE, type Module } from '../../../../lib/learn';
+import { modulesFor, tracksFor, byTrackL, uiFor, planFor, rich, type Module } from '../../../../lib/learn';
 import { one, latestYear, fmtInt } from '../../../../lib/data';
 
 export function getStaticPaths() {
-  return LANGS.flatMap((lang) => MODULES.map((m) => ({ params: { lang, track: m.track, module: m.id }, props: { m } })));
+  return LANGS.flatMap((lang) => modulesFor(lang).map((m) => ({ params: { lang, track: m.track, module: m.id }, props: { m } })));
 }
 const lang = Astro.params.lang as Lang;
 const { m } = Astro.props as { m: Module };
-const T = TRACKS[m.track];
-const mods = byTrack(m.track);
+const U = uiFor(lang);
+const PLAN = planFor(lang);
+const T = tracksFor(lang)[m.track];
+const mods = byTrackL(lang, m.track);
 const idx = mods.findIndex((x) => x.id === m.id);
 const prev = mods[idx - 1], next = mods[idx + 1];
 const base = `/${lang}/learn/${m.track}/`;
@@ -23,16 +25,16 @@ const relKnown = one({ dataset: 'pocso_relationship', geo: 'IN', year: relYear, 
 const known = String(Math.round((relKnown.value / relTotal.value) * 100));
 const fill = (s?: string) => (s ?? '').replaceAll('{known}', known);
 const shareUrl = `${SITE_URL}${base}${m.id}/`;
-const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Picture this', plain: '' }[m.hook.kind];
+const hookLabel = U.hook[m.hook.kind];
 ---
 <Base lang={lang} title={`${m.title} · ${T.door}`} description={fill(m.hook.text).replace(/\*\*/g, '')}>
   <div class="wrap page mod-page">
     <LearnKit lang={lang} />
-    <article lang={lang === 'ta' ? 'en' : undefined} class:list={['mod', `track-${m.track}`]}>
-      <nav class="crumb" aria-label="Breadcrumb"><a href={`/${lang}/learn/`}>Learn</a> / <a href={base}>{T.door}</a> / Module {idx + 1} of {mods.length}</nav>
+    <article class:list={['mod', `track-${m.track}`]}>
+      <nav class="crumb" aria-label="Breadcrumb"><a href={`/${lang}/learn/`}>{U.learn}</a> / <a href={base}>{T.door}</a> / {U.moduleOf(idx + 1, mods.length)}</nav>
       <div class="meta">
-        <span class="chip">{m.minutes} min</span>
-        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">DRAFT · pending expert review</span>}
+        <span class="chip">{m.minutes} {U.min}</span>
+        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}
         <div class="prog js-only" data-progress={mods.map((x) => x.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></div>
       </div>
       <h1>{m.title}</h1>
@@ -42,12 +44,12 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
         {hookLabel && <p class="beat">{hookLabel}</p>}
         {m.hook.kind === 'kpi' ? (
           <div class="kpi">
-            <div class="kpi-num"><span class="num">{known}</span><span class="of">of 100</span></div>
+            <div class="kpi-num"><span class="num">{known}</span><span class="of">{U.ofHundred}</span></div>
             <div>
               <p class="kpi-text" set:html={rich(fill(m.hook.text))} />
-              {m.hook.meaning && <p class="kpi-meaning"><b>Meaning:</b> {fill(m.hook.meaning)}</p>}
-              {m.hook.action && <p class="kpi-action"><b>Action:</b> {fill(m.hook.action)}</p>}
-              <p class="kpi-src">NCRB, Crime in India {relYear} · POCSO Sec 4 &amp; 6 · {fmtInt(relKnown.value)} of {fmtInt(relTotal.value)} · Tier 1</p>
+              {m.hook.meaning && <p class="kpi-meaning"><b>{U.meaning}</b> {fill(m.hook.meaning)}</p>}
+              {m.hook.action && <p class="kpi-action"><b>{U.action}</b> {fill(m.hook.action)}</p>}
+              <p class="kpi-src">{U.kpiSrc(relYear, fmtInt(relKnown.value), fmtInt(relTotal.value))}</p>
             </div>
           </div>
         ) : <p class="hook-text" set:html={rich(fill(m.hook.text))} />}
@@ -55,7 +57,7 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
 
       <!-- 2 Learn -->
       <section class="beat-sec" aria-labelledby={`${m.id}-learn`}>
-        <h2 id={`${m.id}-learn`} class="beat">{m.builder === 'plan' ? 'Build' : 'Learn'}</h2>
+        <h2 id={`${m.id}-learn`} class="beat">{m.builder === 'plan' ? U.buildH : U.learnH}</h2>
         {m.learn.map((b, bi) => {
           if (b.type === 'p') return <p class="lp" set:html={rich(b.text)} />;
           if (b.type === 'list') return <ul class="ll">{b.items.map((i) => <li set:html={rich(i)} />)}</ul>;
@@ -64,12 +66,12 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
           if (b.type === 'callout') return <div class:list={['callout', b.tone]}><strong>{b.title}</strong><ul>{b.items.map((i) => <li set:html={rich(i)} />)}</ul></div>;
           if (b.type === 'tabs') return (
             <div class="tabs" data-tabs>
-              <div class="seg-ctl js-only" role="tablist" aria-label="Age band">
+              <div class="seg-ctl js-only" role="tablist" aria-label={U.ageBand}>
                 {b.items.map((t, i) => <button type="button" role="tab" data-tab={`${m.id}-t${bi}-${i}`} aria-selected={i === 0 ? 'true' : 'false'}>{t.label}</button>)}
               </div>
               {b.items.map((t, i) => (
                 <div class="tab-panel" id={`${m.id}-t${bi}-${i}`} role="tabpanel">
-                  <p class="tab-h">Ages {t.label}</p>
+                  <p class="tab-h">{U.ages} {t.label}</p>
                   <p set:html={rich(t.text)} />
                   <blockquote class="say-q">{t.say}</blockquote>
                 </div>
@@ -83,11 +85,11 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
       <!-- Interactive -->
       {m.game && (
         <section class="beat-sec game" aria-labelledby={`${m.id}-game`}>
-          <h2 id={`${m.id}-game`} class="beat">Try it</h2>
+          <h2 id={`${m.id}-game`} class="beat">{U.tryIt}</h2>
           <p class="game-p">{m.game.prompt}</p>
           <div class="cards">
             {m.game.cards.map((c) => (
-              <div class="gcard" data-answer={c.answer}>
+              <div class="gcard" data-answer={c.answer} data-ok={U.ok} data-again={U.again}>
                 <p class="gq">{c.text}</p>
                 <div class="gbtns js-only">
                   <button type="button" data-pick="a" aria-pressed="false">{m.game!.a}</button>
@@ -102,70 +104,70 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
 
       {m.builder === 'trusted' && (
         <section class="beat-sec builder printable" data-store="ns-trusted-v1" aria-labelledby="tb-h">
-          <h2 id="tb-h" class="beat">My trusted grown-ups</h2>
-          <p class="print-only print-title">My trusted grown-ups</p>
-          <p class="hint no-print">Fill in three names with your parent. Include one person outside the family, like a teacher or a friend's parent.</p>
+          <h2 id="tb-h" class="beat">{U.trustedH}</h2>
+          <p class="print-only print-title">{U.trustedH}</p>
+          <p class="hint no-print">{U.trustedHint}</p>
           {[1, 2, 3].map((i) => (
-            <label class="row"><span class="rl">{i}</span><input name={`t${i}`} type="text" autocomplete="off" placeholder={i === 3 ? 'Someone outside the family' : 'Name'} /></label>
+            <label class="row"><span class="rl">{i}</span><input name={`t${i}`} type="text" autocomplete="off" placeholder={i === 3 ? U.outside : U.name} /></label>
           ))}
-          <p class="card-rules">NO · GO · TELL. Keep telling until someone helps. It is never my fault.</p>
-          <p class="card-rules">Childline <strong>1098</strong> · Emergency <strong>112</strong></p>
-          <p class="stay no-print">Saved only on this device.</p>
-          <div class="bbtns js-only no-print"><button type="button" class="btn primary" data-print>Print my card</button><button type="button" class="btn" data-clear>Clear</button></div>
+          <p class="card-rules">{U.cardRules}</p>
+          <p class="card-rules" set:html={U.cardNums} />
+          <p class="stay no-print">{U.savedDevice}</p>
+          <div class="bbtns js-only no-print"><button type="button" class="btn primary" data-print>{U.printCard}</button><button type="button" class="btn" data-clear>{U.clear}</button></div>
         </section>
       )}
 
       {m.builder === 'plan' && (
         <section class="beat-sec builder printable plan" data-store="ns-plan-v1" aria-labelledby="plan-h">
-          <h2 id="plan-h" class="beat no-print">Your family safety plan</h2>
-          <p class="print-only print-title">Our family safety plan</p>
+          <h2 id="plan-h" class="beat no-print">{U.planH}</h2>
+          <p class="print-only print-title">{U.planPrint}</p>
           <fieldset>
-            <legend>1 · Our 5 rules, in our words</legend>
-            {PLAN_DEFAULT_RULES.map((r, i) => <label class="row"><span class="rl">{i + 1}</span><input name={`r${i}`} type="text" value={r} /></label>)}
+            <legend>{U.legends[0]}</legend>
+            {PLAN.rules.map((r, i) => <label class="row"><span class="rl">{i + 1}</span><input name={`r${i}`} type="text" value={r} /></label>)}
           </fieldset>
           <fieldset>
-            <legend>2 · Our trusted adults</legend>
-            <p class="hint no-print">3–5 people, including at least one outside the family.</p>
+            <legend>{U.legends[1]}</legend>
+            <p class="hint no-print">{U.trustedAdultsHint}</p>
             {[1, 2, 3, 4, 5].map((i) => (
-              <div class="row two"><span class="rl">{i}</span><input name={`a${i}`} type="text" autocomplete="off" placeholder="Name" aria-label={`Trusted adult ${i} name`} /><input name={`p${i}`} type="tel" autocomplete="off" placeholder="Phone" aria-label={`Trusted adult ${i} phone`} /></div>
+              <div class="row two"><span class="rl">{i}</span><input name={`a${i}`} type="text" autocomplete="off" placeholder={U.name} aria-label={`${U.trustedAria(i)} · ${U.name}`} /><input name={`p${i}`} type="tel" autocomplete="off" placeholder={U.phone} aria-label={`${U.trustedAria(i)} · ${U.phone}`} /></div>
             ))}
           </fieldset>
           <fieldset>
-            <legend>3 · Our online rules</legend>
-            {PLAN_ONLINE.map((r, i) => <label class="check"><input type="checkbox" name={`o${i}`} checked /> <span>{r}</span></label>)}
-            <label class="row"><span class="rl">+</span><input name="o_own" type="text" placeholder="Add your own rule" /></label>
+            <legend>{U.legends[2]}</legend>
+            {PLAN.online.map((r, i) => <label class="check"><input type="checkbox" name={`o${i}`} checked /> <span>{r}</span></label>)}
+            <label class="row"><span class="rl">+</span><input name="o_own" type="text" placeholder={U.addOwn} /></label>
           </fieldset>
           <fieldset>
-            <legend>4 · Our promise</legend>
-            <textarea name="promise" rows="2">{PLAN_PROMISE}</textarea>
+            <legend>{U.legends[3]}</legend>
+            <textarea name="promise" rows="2">{PLAN.promise}</textarea>
           </fieldset>
           <fieldset class="nums">
-            <legend>5 · Emergency numbers</legend>
-            <p><strong>1098</strong> Childline (24×7) · <strong>112</strong> Police / emergency · <strong>1930</strong> Cyber crime · POCSO e-Box: ncpcr.gov.in</p>
+            <legend>{U.legends[4]}</legend>
+            <p set:html={U.nums} />
           </fieldset>
-          <p class="print-only foot-print">Revisit every 6 months, or when something changes: a new school, activity or device. · notstrangers.org</p>
-          <p class="stay no-print">Saved only on this device. Never sent anywhere.</p>
-          <div class="bbtns js-only no-print"><button type="button" class="btn primary" data-print>Print our plan</button><button type="button" class="btn" data-clear>Clear</button></div>
-          <p class="done-msg no-print">When it's on the fridge: your family has a plan. That's prevention.</p>
+          <p class="print-only foot-print">{U.revisit}</p>
+          <p class="stay no-print">{U.savedNever}</p>
+          <div class="bbtns js-only no-print"><button type="button" class="btn primary" data-print>{U.printPlan}</button><button type="button" class="btn" data-clear>{U.clear}</button></div>
+          <p class="done-msg no-print">{U.doneMsg}</p>
         </section>
       )}
 
       <!-- 3 Say it -->
       {m.say && (
         <section class="beat-sec" aria-labelledby={`${m.id}-say`}>
-          <h2 id={`${m.id}-say`} class="beat">{m.sayTitle ?? 'Say it like this'}</h2>
+          <h2 id={`${m.id}-say`} class="beat">{m.sayTitle ?? U.say}</h2>
           {m.say.map((s) => <blockquote class="say-q">{s}</blockquote>)}
         </section>
       )}
 
       <!-- 4 Do it -->
       <section class="doit" aria-labelledby={`${m.id}-do`}>
-        <h2 id={`${m.id}-do`} class="beat">Do it this week</h2>
+        <h2 id={`${m.id}-do`} class="beat">{U.doIt}</h2>
         <p set:html={rich(m.doIt)} />
         {m.share && (
           <p class="share-row">
-            <a class="btn sm" href={`https://wa.me/?text=${encodeURIComponent(`${m.title}: ${shareUrl}`)}`} rel="noopener external" target="_blank">Send on WhatsApp</a>
-            <button type="button" class="btn sm" data-share hidden>Share…</button>
+            <a class="btn sm" href={`https://wa.me/?text=${encodeURIComponent(`${m.title}: ${shareUrl}`)}`} rel="noopener external" target="_blank">{U.whatsapp}</a>
+            <button type="button" class="btn sm" data-share hidden>{U.shareBtn}</button>
           </p>
         )}
       </section>
@@ -173,8 +175,8 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
       <!-- 5 Check -->
       {m.checks.length > 0 && (
         <section class="beat-sec" aria-labelledby={`${m.id}-check`}>
-          <h2 id={`${m.id}-check`} class="beat">Check yourself</h2>
-          <p class="muted small">Think about it, then tap to see. Nothing is scored.</p>
+          <h2 id={`${m.id}-check`} class="beat">{U.check}</h2>
+          <p class="muted small">{U.checkHint}</p>
           {m.checks.map((c) => (
             <details class="check-q">
               <summary>{c.q}</summary>
@@ -185,10 +187,10 @@ const hookLabel = { kpi: 'The number', statement: 'Remember this', scenario: 'Pi
       )}
 
       <div class="finish no-print">
-        <button type="button" class="btn primary js-only" data-done-btn={m.id} data-off="Mark this module done" data-on="✓ Done. Nice work." aria-pressed="false">Mark this module done</button>
+        <button type="button" class="btn primary js-only" data-done-btn={m.id} data-off={U.markDone} data-on={U.done} aria-pressed="false">{U.markDone}</button>
         <div class="pn">
-          {prev ? <a class="btn" href={`${base}${prev.id}/`}>← {prev.title}</a> : <a class="btn" href={base}>← All modules</a>}
-          {next ? <a class="btn" href={`${base}${next.id}/`}>Next: {next.title} →</a> : <a class="btn" href={`/${lang}/learn/`}>Back to Learn →</a>}
+          {prev ? <a class="btn" href={`${base}${prev.id}/`}>← {prev.title}</a> : <a class="btn" href={base}>← {U.all}</a>}
+          {next ? <a class="btn" href={`${base}${next.id}/`}>{U.next} {next.title} →</a> : <a class="btn" href={`/${lang}/learn/`}>{U.back} →</a>}
         </div>
       </div>
     </article>

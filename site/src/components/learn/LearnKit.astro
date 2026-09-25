@@ -1,14 +1,11 @@
 ---
-// Shared bits for every /learn page: the always-visible emergency strip, the Tamil notice, and one
+// Shared bits for every /learn page: the always-visible emergency strip and one
 // small script for on-device progress, tabs, games, builders and sharing. No accounts, no network:
 // progress and plans live in this browser's localStorage only, wrapped so the page works without it.
 import type { Lang } from '../../config/site';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
-{lang === 'ta' && (
-  <p class="pending ta-note" lang="ta"><strong>தமிழ் பதிப்பு தயாராகிறது.</strong> பாதுகாப்புப் பாடங்களை இயந்திர மொழிபெயர்ப்பில் வெளியிடுவதில்லை; தமிழ் தாய்மொழியாளர் எழுதிச் சரிபார்த்த பின் இங்கே வரும். அதுவரை ஆங்கிலப் பதிப்பு.</p>
-)}
 <div class="sos-strip" role="complementary" aria-label="Emergency help">
   <span>{lang === 'ta' ? 'உடனடி உதவி?' : 'Need help now?'}</span>
   <a href="tel:1098"><strong>1098</strong> Childline</a>
@@ -63,7 +60,7 @@ const { lang } = Astro.props;
       var card = b.closest('[data-answer]'), ok = b.dataset.pick === card.dataset.answer;
       card.querySelectorAll('[data-pick]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
       var fb = card.querySelector('.fb'); fb.hidden = false;
-      fb.querySelector('b').textContent = ok ? '✓ ' : 'Look again: ';
+      fb.querySelector('b').textContent = ok ? card.dataset.ok : card.dataset.again;
     } else if (b.hasAttribute('data-print')) {
       window.print();
     } else if (b.hasAttribute('data-clear')) {

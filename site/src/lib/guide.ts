@@ -1,9 +1,9 @@
 // Parent & child education guide — English source text.
 // STATUS: DRAFT, pending expert review.
-// Tamil: must be written or reviewed by a native speaker. Never ship machine-translated safety text,
-// so /ta/guide/ shows this English text with a clear "Tamil version in preparation" note.
+// Tamil draft lives in guide.ta.ts (pending native-speaker review, flagged site-wide by TAMIL_REVIEWED).
 // Grooming is described at the pattern level only, on purpose.
 
+export type Guide = typeof guide;
 export const guide = {
   title: 'What you can do',
   lead: 'A one-page map for parents: what to teach, what to watch, and what to do if a child tells you something. Keep it short, calm and often.',
@@ -198,3 +198,32 @@ export const guide = {
     ],
   },
 };
+
+export const guideUiEn = {
+  map: [
+    ['mindset', '01', 'Start here', 'The mindset'],
+    ['by-age', '02', 'Talk by age', '2–5 · 6–9 · 10–12 · teens'],
+    ['rules', '03', 'Five rules', 'P · A · N · T · S'],
+    ['precautions', '04', 'Precautions', 'What adults control'],
+    ['signs', '05', 'Warning signs', 'Change, pattern, cluster'],
+    ['grooming', '06', 'Grooming', 'How it works'],
+    ['tells', '07', 'If a child tells you', 'Calm → care → report'],
+    ['kids', '08', 'For kids & teens', 'Read together'],
+  ],
+  forParents: 'For parents', draft: 'DRAFT · pending expert review', onPage: 'On this page',
+  sos: 'Child in danger now?', call112: 'Call 112', childline: 'Childline 1098', ifTells: 'If a child tells you →', preferLearn: 'Prefer short lessons? Learn →',
+  k1: '01 · Start here', h1: 'The mindset',
+  stat: (n: number, y: number) => `In ${n} of every 100 reported POCSO cases (India, ${y}), the child knew the person. So "don't talk to strangers" was never the main lesson.`,
+  statSrc: (y: number, a: string, b: string) => `Reported cases only · NCRB, Crime in India ${y} · ${a} of ${b}.`,
+  k2: '02 · How to talk', h2: 'By age',
+  k3: '03 · The core curriculum', h3: 'Five rules to teach until they can say them back',
+  k4: '04 · What adults control', h4: 'Precautions', l4: 'Most prevention is about the situation, not the lesson.',
+  k5: '05 · Notice', h5: 'Warning signs in children', open: 'If you notice something, open gently',
+  k6: '06 · Understand', h6: 'How grooming works', flagsH: 'Red flags in an adult or older teen', onlineH: 'Online',
+  k7: '07 · Respond', h7: 'If a child tells you, or you suspect abuse', doH: 'First ten minutes: do', dontH: "Don't",
+  k8: '08 · For kids & teens', h8: 'Your body-safety rules', fillIn: "Fill in together. If the first person doesn't help, tell the next.", teensH: 'For teens',
+  kS: 'Summary', hS: 'Key learnings', forP: 'For parents', forK: 'For kids',
+  hSrc: 'Books and materials this guide draws on', kidsBooks: 'Books for children', parentBooks: 'For parents', orgs: 'Organisations & frameworks',
+  disclaimer: 'Educational information, not a substitute for professional advice. Pending expert review before publication.',
+};
+export type GuideUi = typeof guideUiEn;
