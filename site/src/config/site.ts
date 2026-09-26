@@ -9,6 +9,9 @@ export const SITE_NAME_TA = 'அந்நியர்கள் அல்ல';
 /** Final domain, no trailing slash. Used for canonical URLs, OG tags and share cards. */
 export const SITE_URL = 'https://notstrangers.org';
 
+/** Public Instagram account (plain link only: no embeds, no tracking pixels). */
+export const INSTAGRAM = { handle: 'notstrangers_org', url: 'https://www.instagram.com/notstrangers_org/' };
+
 /** Where "Found an error?" goes. */
 export const CONTACT_EMAIL = 'hello@notstrangers.org';
 

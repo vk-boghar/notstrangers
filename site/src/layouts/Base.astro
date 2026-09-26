@@ -15,7 +15,7 @@ import ps600 from '@fontsource/public-sans/files/public-sans-latin-600-normal.wo
 import tamil400 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-400-normal.woff2?url';
 import tamil600 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-600-normal.woff2?url';
 import {
-  SITE_NAME, SITE_NAME_TA, SITE_URL, NOINDEX, TAMIL_REVIEWED, CONTACT_EMAIL, type Lang,
+  SITE_NAME, SITE_NAME_TA, SITE_URL, NOINDEX, TAMIL_REVIEWED, CONTACT_EMAIL, INSTAGRAM, type Lang,
 } from '../config/site';
 import { useT, otherLang, swapLangPath } from '../i18n';
 import { META, fmtDate } from '../lib/data';
@@ -116,6 +116,7 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
           <p class="brand-f"><span class="logo" aria-hidden="true"></span><strong>{name}</strong></p>
           <p>{t('footer.noncommercial')} {t('footer.no_cases')}</p>
           <p>{lang === 'ta' ? 'அவசரம்:' : 'In an emergency call'} <a href="tel:112" class="num">112</a>{lang === 'ta' ? '; குழந்தைகள் உதவி எண்' : '; for a child in need of care,'} <a href="tel:1098" class="num">1098</a>.</p>
+          <p class="follow-f">{lang === 'ta' ? 'இன்ஸ்டாகிராமில் பின்தொடருங்கள்:' : 'Follow us on Instagram:'} <a href={INSTAGRAM.url} rel="noopener external me" target="_blank">@{INSTAGRAM.handle}</a></p>
           <p class="mono-line">
             {t('footer.error')} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
             · {t('footer.updated')}: <span class="num">{fmtDate(META.generated_on, lang)}</span>
@@ -164,6 +165,7 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
   .foot-main { max-width: 60ch; }
   .foot-main p { margin: 0 0 0.6rem; }
   .brand-f { display: flex; align-items: center; color: var(--ink); }
+  .follow-f a { font-weight: 600; }
   .mono-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
   :global(:lang(ta)) .mono-line { font-family: var(--font); }
   .foot-links { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, auto); gap: 4px 24px; align-content: start; }

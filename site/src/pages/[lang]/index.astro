@@ -12,7 +12,7 @@ import BarList from '../../components/charts/BarList.astro';
 import StackBar from '../../components/charts/StackBar.astro';
 import RelationshipChart from '../../components/charts/RelationshipChart.astro';
 import JusticeFunnel from '../../components/charts/JusticeFunnel.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
+import { LANGS, PREVENTION_CONTENT_REVIEWED, INSTAGRAM, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 import { one, maybe, where, latestYear, fmtInt, pct, daysInYear, periodLabel, fmtDate } from '../../lib/data';
 import { tracksFor, byTrackL, trackMinutesL, VISIBLE_TRACKS, type Track } from '../../lib/learn';
@@ -167,6 +167,10 @@ const P = lang === 'ta' ? {
         </div>
       </div>
       <ul class="trust">{P.trust.map((x) => <li>{x}</li>)}</ul>
+      <a class="follow" href={INSTAGRAM.url} rel="noopener external me" target="_blank">
+        <span class="follow-t"><strong>{lang === 'ta' ? 'இன்ஸ்டாகிராமில் எங்களைப் பின்தொடருங்கள்' : 'Follow us on Instagram'}</strong><span>{lang === 'ta' ? 'புதிய தரவு, நடைமுறைக் குறிப்புகள், பகிரக்கூடிய அட்டைகள்.' : 'New data, practical tips and cards you can share.'}</span></span>
+        <span class="follow-h">@{INSTAGRAM.handle} →</span>
+      </a>
     </div>
   </section>
 
@@ -409,6 +413,11 @@ const P = lang === 'ta' ? {
   .path-learn p:last-child { margin: auto 0 0; }
   .btn.inv { background: var(--on-accent); color: var(--accent); border-color: var(--on-accent); font-weight: 600; }
   .btn.inv:hover { background: color-mix(in oklch, var(--on-accent) 90%, var(--accent)); }
+  .follow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; margin-top: 20px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--ink); }
+  .follow:hover { border-color: var(--accent); }
+  .follow-t { display: grid; gap: 2px; }
+  .follow-t span { font-size: 0.875rem; color: var(--ink-2); }
+  .follow-h { font-weight: 600; color: var(--link); white-space: nowrap; }
   .trust { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .trust li { font-size: 0.8125rem; color: var(--accent-soft-ink); background: color-mix(in oklch, var(--surface) 70%, transparent); border-radius: 999px; padding: 6px 12px; }
   .trust li::before { content: '✓ '; font-weight: 700; }
