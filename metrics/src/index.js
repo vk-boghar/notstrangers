@@ -90,7 +90,7 @@ export default {
       if (!res) {
         const data = await stub.counts();
         res = new Response(JSON.stringify(data), {
-          headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
+          headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
         });
         ctx.waitUntil(cache.put(key, res.clone()));
       }

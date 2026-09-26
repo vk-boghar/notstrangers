@@ -29,7 +29,7 @@ Clearing browser storage can double-count. That's acceptable for a directional n
   - `POST /event` `{"event":"module_complete","module":"parents-01","v":1}` returns 204. Allow-listed
     events and slugs only (anything else gets 400), allowed origins only (403), and an edge rate limit of
     10 per minute per client (429). The rate limiter keeps its key in memory at the edge only.
-  - `GET /counts` returns `{updated_at, total, learners, by_module, last_30_days}`, cached for 5 minutes.
+  - `GET /counts` returns `{updated_at, total, learners, by_module, last_30_days}`, cached for 1 minute.
 - Site: `site/src/components/learn/LearnKit.astro` sends events (a `fetch` with `keepalive`. We don't
   use `sendBeacon`, because the site's no-referrer policy would make its Origin `null` and the Worker
   would reject it). `CountScript.astro` fills the count lines and hides them silently on any error.
