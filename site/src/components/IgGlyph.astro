@@ -1,0 +1,11 @@
+---
+// Official Instagram glyph (black), from Meta's IG brand asset pack 2023. Used unaltered, only to
+// link to our own account. Brand rules: keep it black (or white), unmodified, at least 29px.
+import raw from '../assets/instagram-glyph-black.svg?raw';
+interface Props { size?: number }
+const { size = 29 } = Astro.props;
+const svg = raw
+  .replace(/<\?xml[^>]*>/, '')
+  .replace('<svg ', `<svg width="${size}" height="${size}" aria-hidden="true" focusable="false" class="ig-glyph" `);
+---
+<Fragment set:html={svg} />
