@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import IgGlyph from '../../components/IgGlyph.astro';
+import Count from '../../components/learn/Count.astro';
+import CountScript from '../../components/learn/CountScript.astro';
 import LatestStrip from '../../components/LatestStrip.astro';
 import Cite from '../../components/Cite.astro';
 import Caveat from '../../components/Caveat.astro';
@@ -165,6 +167,7 @@ const P = lang === 'ta' ? {
             <figcaption>{P.q_l}</figcaption>
           </figure>
           <p class="pb small-plan">{P.plan}</p>
+          <div class="home-count"><Count lang={lang} kind="learners" /></div>
           <p><a class="btn inv" href={`/${lang}/learn/`}>{P.b_go}</a></p>
         </div>
       </div>
@@ -358,6 +361,7 @@ const P = lang === 'ta' ? {
       </div>
     </div>
   </section>
+  <CountScript />
 </Base>
 
 <style>
@@ -417,6 +421,8 @@ const P = lang === 'ta' ? {
   .sample blockquote { margin: 0; font-size: 1.1rem; font-weight: 500; line-height: 1.4; }
   .sample figcaption { margin-top: 6px; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
   :global(:lang(ta)) .sample figcaption { font-family: var(--font); font-size: 0.8rem; }
+  .home-count { margin-bottom: 16px; }
+  .home-count :global(small) { color: inherit; opacity: 0.8; }
   .small-plan { font-size: 0.875rem; margin-bottom: 18px; }
   .path-learn p:last-child { margin: auto 0 0; }
   .btn.inv { background: var(--on-accent); color: var(--accent); border-color: var(--on-accent); font-weight: 600; }

@@ -12,6 +12,14 @@ export const SITE_URL = 'https://notstrangers.org';
 /** Public Instagram account (plain link only: no embeds, no tracking pixels). */
 export const INSTAGRAM = { handle: 'notstrangers_org', url: 'https://www.instagram.com/notstrangers_org/' };
 
+/**
+ * Anonymous learning-module counter (metrics/ Cloudflare Worker, see docs/METRICS.md).
+ * Empty = counting and count display are switched off (no network requests at all).
+ */
+export const METRICS_URL = '';
+/** Public count lines stay hidden until the real count reaches this number. Real counts only. */
+export const COUNTER_SHOW_FROM = 108;
+
 /** Where "Found an error?" goes. */
 export const CONTACT_EMAIL = 'hello@notstrangers.org';
 

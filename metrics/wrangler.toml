@@ -1,0 +1,24 @@
+# Anonymous module-completion counter for notstrangers.org (see docs/METRICS.md).
+# Deployed by .github/workflows/metrics.yml. No IPs, user agents or identifiers are stored.
+name = "notstrangers-metrics"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://notstrangers.org,https://www.notstrangers.org,http://localhost:4321"
+
+[[durable_objects.bindings]]
+name = "COUNTER"
+class_name = "Counter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Counter"]
+
+# Edge rate limit: 10 events per minute per client. The limiter keeps its keys in memory at the
+# edge only; nothing is written to storage.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }

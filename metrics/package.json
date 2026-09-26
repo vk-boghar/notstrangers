@@ -1,0 +1,1 @@
+{ "name": "notstrangers-metrics", "private": true, "type": "module", "devDependencies": { "wrangler": "^4" } }

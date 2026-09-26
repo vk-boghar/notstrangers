@@ -1,0 +1,25 @@
+---
+// A public count line, filled from the anonymous counter. Hidden unless METRICS_URL is set, the
+// fetch succeeds, and the real count has reached COUNTER_SHOW_FROM. Never blocks the page.
+import type { Lang } from '../../config/site';
+interface Props { lang: Lang; kind: 'learners' | 'module'; slug?: string; noun?: 'parents' | 'teens' | 'kids' }
+const { lang, kind, slug, noun = 'parents' } = Astro.props;
+const ta = lang === 'ta';
+const NOUN_TA = { parents: 'பெற்றோர்', teens: 'பதின்வயதினர்', kids: 'குழந்தைகள்' } as const;
+const tpl = kind === 'learners'
+  ? (ta ? '{n} பேர் குழந்தைகளைப் பாதுகாப்பது எப்படி என்று கற்கிறார்கள்.' : '{n} people are learning how to keep children safe.')
+  : (ta ? `🧡 {n} ${NOUN_TA[noun]} இந்தப் பாடத்தை முடித்துள்ளனர்.` : `🧡 {n} ${noun} have completed this module.`);
+const note = ta
+  ? 'அநாமதேயமாக எண்ணப்படுகிறது — பெயர் இல்லை, மின்னஞ்சல் இல்லை, உங்களைப் பற்றி எதுவும் சேமிக்கப்படுவதில்லை.'
+  : 'Counted anonymously — no names, no emails, nothing stored about you.';
+---
+<p class="ns-count" hidden data-count={kind} data-slug={slug} data-tpl={tpl}>
+  <span class="ns-count-n"></span>
+  <small>{note}</small>
+</p>
+<style>
+  .ns-count { margin: 0; display: grid; gap: 2px; }
+  .ns-count[hidden] { display: none; }
+  .ns-count-n { font-weight: 600; }
+  .ns-count small { font-size: 0.75rem; color: var(--muted); }
+</style>

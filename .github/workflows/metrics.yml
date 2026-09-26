@@ -1,0 +1,40 @@
+name: Deploy metrics worker
+# Deploys metrics/ (the anonymous learning-module counter) to Cloudflare Workers.
+# Needs two repository secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (docs/METRICS.md).
+# Skips cleanly until they exist.
+on:
+  push:
+    branches: [main]
+    paths: ['metrics/**', '.github/workflows/metrics.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cloudflare credentials present?
+        id: cf
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then echo ok=1 >> "$GITHUB_OUTPUT"; else echo "::notice::Cloudflare secrets not set yet; skipping deploy."; echo ok=0 >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.cf.outputs.ok == '1'
+        with: { node-version: '22', cache: npm, cache-dependency-path: metrics/package-lock.json }
+      - name: Install
+        if: steps.cf.outputs.ok == '1'
+        working-directory: metrics
+        run: npm ci
+      - name: Deploy
+        if: steps.cf.outputs.ok == '1'
+        working-directory: metrics
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx wrangler deploy

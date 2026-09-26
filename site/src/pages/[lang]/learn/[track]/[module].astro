@@ -1,6 +1,7 @@
 ---
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
+import Count from '../../../../components/learn/Count.astro';
 import { LANGS, PREVENTION_CONTENT_REVIEWED, SITE_URL, type Lang } from '../../../../config/site';
 import { modulesFor, tracksFor, byTrackL, uiFor, planFor, rich, isVisible, type Module } from '../../../../lib/learn';
 import { one, latestYear, fmtInt } from '../../../../lib/data';
@@ -16,6 +17,8 @@ const T = tracksFor(lang)[m.track];
 const mods = byTrackL(lang, m.track);
 const idx = mods.findIndex((x) => x.id === m.id);
 const prev = mods[idx - 1], next = mods[idx + 1];
+const NOUN = { parent: 'parents', kid: 'kids', teen: 'teens' } as const;
+const mslug = `${NOUN[m.track]}-${m.id.slice(1).padStart(2, '0')}`;
 const base = `/${lang}/learn/${m.track}/`;
 
 // KPI hooks use the live dataset, never a typed-in number.
@@ -147,7 +150,7 @@ const hookLabel = U.hook[m.hook.kind];
           </fieldset>
           <p class="print-only foot-print">{U.revisit}</p>
           <p class="stay no-print">{U.savedNever}</p>
-          <div class="bbtns js-only no-print"><button type="button" class="btn primary" data-print>{U.printPlan}</button><button type="button" class="btn" data-clear>{U.clear}</button></div>
+          <div class="bbtns js-only no-print"><button type="button" class="btn primary" data-print data-complete-id="p8" data-complete-slug="family-safety-plan">{U.printPlan}</button><button type="button" class="btn" data-clear>{U.clear}</button></div>
           <p class="done-msg no-print">{U.doneMsg}</p>
         </section>
       )}
@@ -188,9 +191,10 @@ const hookLabel = U.hook[m.hook.kind];
 
       <div class="finish no-print">
         <button type="button" class="btn primary js-only" data-done-btn={m.id} data-off={U.markDone} data-on={U.done} aria-pressed="false">{U.markDone}</button>
+        <Count lang={lang} kind="module" slug={mslug} noun={NOUN[m.track]} />
         <div class="pn">
           {prev ? <a class="btn" href={`${base}${prev.id}/`}>← {prev.title}</a> : <a class="btn" href={base}>← {U.all}</a>}
-          {next ? <a class="btn" href={`${base}${next.id}/`}>{U.next} {next.title} →</a> : <a class="btn" href={`/${lang}/learn/`}>{U.back} →</a>}
+          {next ? <a class="btn" data-complete={m.id} href={`${base}${next.id}/`}>{U.next} {next.title} →</a> : <a class="btn" data-complete={m.id} href={`/${lang}/learn/`}>{U.back} →</a>}
         </div>
       </div>
     </article>
