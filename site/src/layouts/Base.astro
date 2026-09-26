@@ -81,7 +81,6 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
   </head>
   <body>
     <a class="skip" href="#main">{t('nav.skip')}</a>
-    {NOINDEX && <div class="banner banner-preview" role="note">{t('banner.preview')}</div>}
 
     <header class="site-header">
       <div class="wrap-wide bar">
@@ -132,7 +131,6 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
 
 <style>
   .banner { font-size: 0.8125rem; text-align: center; padding: 8px var(--gutter); }
-  .banner-preview { background: var(--ink); color: var(--bg); }
   .banner-ta { background: var(--warm-bg); color: var(--ink); border-top: 1px solid var(--warm-line); }
   .site-header {
     position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--line);
