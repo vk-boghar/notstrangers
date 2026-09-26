@@ -2,7 +2,7 @@
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
 import Count from '../../../../components/learn/Count.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, SITE_URL, type Lang } from '../../../../config/site';
+import { LANGS, SITE_URL, type Lang } from '../../../../config/site';
 import { modulesFor, tracksFor, byTrackL, uiFor, planFor, rich, isVisible, type Module } from '../../../../lib/learn';
 import { one, latestYear, fmtInt } from '../../../../lib/data';
 
@@ -37,7 +37,7 @@ const hookLabel = U.hook[m.hook.kind];
       <nav class="crumb" aria-label="Breadcrumb"><a href={`/${lang}/learn/`}>{U.learn}</a> / <a href={base}>{T.door}</a> / {U.moduleOf(idx + 1, mods.length)}</nav>
       <div class="meta">
         <span class="chip">{m.minutes} {U.min}</span>
-        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}
+       
         <div class="prog js-only" data-progress={mods.map((x) => x.id).join(',')}><b><i></i></b><em>0 / {mods.length}</em></div>
       </div>
       <h1>{m.title}</h1>

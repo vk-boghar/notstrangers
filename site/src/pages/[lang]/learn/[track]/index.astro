@@ -1,7 +1,7 @@
 ---
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../../config/site';
+import { LANGS, type Lang } from '../../../../config/site';
 import { tracksFor, byTrackL, trackMinutesL, uiFor, VISIBLE_TRACKS, type Track } from '../../../../lib/learn';
 
 export function getStaticPaths() {
@@ -18,7 +18,7 @@ const mods = byTrackL(lang, track);
     <LearnKit lang={lang} />
     <div>
       <p class="crumb"><a href={`/${lang}/learn/`}>{U.learn}</a> / {T.door}</p>
-      <p class="eyebrow"><span class="kicker">{mods.length} {U.modules} · ~{trackMinutesL(lang, track)} {U.min}</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}</p>
+      <p class="eyebrow"><span class="kicker">{mods.length} {U.modules} · ~{trackMinutesL(lang, track)} {U.min}</span></p>
       <h1>{T.title}</h1>
       <p class="lead">{T.blurb} <span class="muted">{T.tone}</span></p>
       {track === 'kid' && <p class="with-parent">{U.withParent}</p>}

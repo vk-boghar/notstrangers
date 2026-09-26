@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import LearnKit from '../../../components/learn/LearnKit.astro';
 import Count from '../../../components/learn/Count.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../../config/site';
+import { LANGS, type Lang } from '../../../config/site';
 import { tracksFor, byTrackL, trackMinutesL, uiFor, type Track, VISIBLE_TRACKS } from '../../../lib/learn';
 
 export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
@@ -16,7 +16,7 @@ const order: Track[] = VISIBLE_TRACKS;
     <LearnKit lang={lang} />
     <div>
       <header class="l-head">
-        <p class="eyebrow"><span class="kicker">{U.learn}</span>{!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}</p>
+        <p class="eyebrow"><span class="kicker">{U.learn}</span></p>
         <h1>{U.h1}</h1>
         <p class="lead">{U.lead}</p>
       </header>

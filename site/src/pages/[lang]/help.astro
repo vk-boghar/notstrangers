@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Helplines from '../../components/Helplines.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
+import { LANGS, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 export function getStaticPaths() { return LANGS.map((lang) => ({ params: { lang } })); }
 const lang = Astro.params.lang as Lang;
@@ -13,7 +13,7 @@ const { t } = useT(lang);
     <p class="lead">{t('pages.help_lead')}</p>
     <Helplines lang={lang} />
     <section class="card disclose">
-      <h2>{t('pages.help_disclose_title')} {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{t('common.draft')}</span>}</h2>
+      <h2>{t('pages.help_disclose_title')}</h2>
       <p><strong>{t('home.act_5_t')}</strong></p>
       <p>{t('home.act_5_b')}</p>
       <p><a href={`/${lang}/guide/#tells`}>{t("nav.guide")} →</a></p>

@@ -50,7 +50,6 @@ for (const f of html) {
     const caveats = (s.match(/class="caveat"/g) || []).length;
     if (caveats < 3) fail(f, `only ${caveats} "only reported cases" caveats on the story page`);
     if (!/who_explainer|friends, online friends|நண்பர்கள், இணைய நண்பர்கள்/.test(s)) fail(f, 'relationship explainer missing');
-    if (!PREVENTION_REVIEWED && !/class="draft"/.test(s)) fail(f, 'prevention content must be marked DRAFT');
     if (!/(Last verified|கடைசியாகச் சரிபார்த்தது)/.test(s)) fail(f, 'helplines "last verified" date missing');
     const cites = (s.match(/class="cite"/g) || []).length;
     if (cites < 6) fail(f, `only ${cites} source citations on the story page`);
@@ -58,12 +57,12 @@ for (const f of html) {
     if (tables < 3) fail(f, `only ${tables} accessible table alternatives`);
   }
   if (isLearn) {
-    if (!PREVENTION_REVIEWED && !/class="draft"/.test(s)) fail(f, 'learn page must be marked DRAFT');
     if (!/tel:1098/.test(s)) fail(f, 'learn page must link Childline 1098');
   }
+  // Review status lives on the About page (not as a banner on every page).
+  if (/^(en|ta)\/about\/index\.html$/.test(name) && !PREVENTION_REVIEWED && !/(Review status|சரிபார்ப்பு நிலை)/.test(s)) fail(f, 'About page must state review status');
   // 6b. parent guide must stay marked DRAFT until reviewed, and must show helplines
   if (/^(en|ta)\/guide\/index\.html$/.test(name)) {
-    if (!PREVENTION_REVIEWED && !/class="draft"/.test(s)) fail(f, 'parent guide must be marked DRAFT');
     if (!/tel:1098/.test(s)) fail(f, 'parent guide must link Childline 1098');
   }
 }

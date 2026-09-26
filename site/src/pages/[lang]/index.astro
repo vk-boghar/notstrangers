@@ -15,7 +15,7 @@ import BarList from '../../components/charts/BarList.astro';
 import StackBar from '../../components/charts/StackBar.astro';
 import RelationshipChart from '../../components/charts/RelationshipChart.astro';
 import JusticeFunnel from '../../components/charts/JusticeFunnel.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, INSTAGRAM, type Lang } from '../../config/site';
+import { LANGS, INSTAGRAM, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 import { one, maybe, where, latestYear, fmtInt, pct, daysInYear, periodLabel, fmtDate } from '../../lib/data';
 import { tracksFor, byTrackL, trackMinutesL, VISIBLE_TRACKS, type Track } from '../../lib/learn';
@@ -333,7 +333,7 @@ const P = lang === 'ta' ? {
           <p class="kicker">05 · {t('home.act_kicker')}</p>
           <h2 id="act-h" class="h-narrow">{t('home.act_title')}</h2>
         </div>
-        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{t('common.draft')}</span>}
+       
       </div>
       <p class="lead">{t('home.act_lead')}</p>
       <ol class="actions">

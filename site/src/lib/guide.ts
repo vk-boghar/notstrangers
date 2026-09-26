@@ -224,6 +224,6 @@ export const guideUiEn = {
   k8: '08 · For kids & teens', h8: 'Your body-safety rules', fillIn: "Fill in together. If the first person doesn't help, tell the next.", teensH: 'For teens',
   kS: 'Summary', hS: 'Key learnings', forP: 'For parents', forK: 'For kids',
   hSrc: 'Books and materials this guide draws on', kidsBooks: 'Books for children', parentBooks: 'For parents', orgs: 'Organisations & frameworks',
-  disclaimer: 'Educational information, not a substitute for professional advice. Pending expert review before publication.',
+  disclaimer: 'Educational information, not a substitute for professional advice.',
 };
 export type GuideUi = typeof guideUiEn;

@@ -3,7 +3,7 @@
 // guide.ta.ts (flagged site-wide as pending native-speaker review).
 import Base from '../../layouts/Base.astro';
 import Helplines from '../../components/Helplines.astro';
-import { LANGS, PREVENTION_CONTENT_REVIEWED, type Lang } from '../../config/site';
+import { LANGS, type Lang } from '../../config/site';
 import { useT } from '../../i18n';
 import { guide, guideUiEn } from '../../lib/guide';
 import { guideTa, guideUiTa } from '../../lib/guide.ta';
@@ -25,7 +25,7 @@ const knownPer100 = Math.round((relKnown.value / relTotal.value) * 100);
     <header class="g-head">
       <p class="eyebrow">
         <span class="kicker">{U.forParents}</span>
-        {!PREVENTION_CONTENT_REVIEWED && <span class="draft">{U.draft}</span>}
+       
       </p>
       <h1>{g.title}</h1>
       <p class="lead">{g.lead}</p>
