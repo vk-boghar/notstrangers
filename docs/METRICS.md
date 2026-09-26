@@ -15,8 +15,9 @@ Clearing browser storage can double-count. That's acceptable for a directional n
 
 ## Where the numbers show
 
-- Learn page and home page: "N people have started these lessons." (all courses)
-- Each course page: "N parents (or teens) have started this course."
+- Learn page and home page: "N people and counting, building a safer circle around children." (all courses)
+- Parent course page: "N parents and counting, building a safer circle around children."
+- Teen course page: "N teens and counting, learning to look out for each other."
 - Always with: "Counted anonymously — no names, no emails, nothing stored about you."
 
 **Real counts only.** A line stays hidden until its real count reaches `COUNTER_SHOW_FROM` (108) in

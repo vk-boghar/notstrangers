@@ -5,10 +5,20 @@ import type { Lang } from '../../config/site';
 interface Props { lang: Lang; kind: 'started' | 'track'; slug?: 'parents' | 'teens' | 'kids' }
 const { lang, kind, slug } = Astro.props;
 const ta = lang === 'ta';
-const NOUN_TA = { parents: 'பெற்றோர்', teens: 'பதின்வயதினர்', kids: 'குழந்தைகள்' } as const;
-const tpl = kind === 'started'
-  ? (ta ? '{n} பேர் இந்தப் பாடங்களைத் தொடங்கியுள்ளனர்.' : '{n} people have started these lessons.')
-  : (ta ? `{n} ${NOUN_TA[slug ?? 'parents']} இந்தப் பாடத்தொடரைத் தொடங்கியுள்ளனர்.` : `{n} ${slug ?? 'parents'} have started this course.`);
+const EN = {
+  started: '{n} people and counting, building a safer circle around children.',
+  parents: '{n} parents and counting, building a safer circle around children.',
+  teens: '{n} teens and counting, learning to look out for each other.',
+  kids: '{n} children and counting, learning their body-safety rules.',
+};
+const TA = {
+  started: '{n} பேர், இன்னும் கூடிக்கொண்டே — குழந்தைகளைச் சுற்றி ஒரு பாதுகாப்பான வட்டத்தை உருவாக்குகிறோம்.',
+  parents: '{n} பெற்றோர், இன்னும் கூடிக்கொண்டே — குழந்தைகளைச் சுற்றி ஒரு பாதுகாப்பான வட்டத்தை உருவாக்குகிறோம்.',
+  teens: '{n} பதின்வயதினர், இன்னும் கூடிக்கொண்டே — ஒருவரையொருவர் கவனித்துக்கொள்ளக் கற்கிறார்கள்.',
+  kids: '{n} குழந்தைகள், இன்னும் கூடிக்கொண்டே — தங்கள் உடல் பாதுகாப்பு விதிகளைக் கற்கிறார்கள்.',
+};
+const key = kind === 'started' ? 'started' : (slug ?? 'parents');
+const tpl = (ta ? TA : EN)[key];
 const note = ta
   ? 'அநாமதேயமாக எண்ணப்படுகிறது — பெயர் இல்லை, மின்னஞ்சல் இல்லை, உங்களைப் பற்றி எதுவும் சேமிக்கப்படுவதில்லை.'
   : 'Counted anonymously — no names, no emails, nothing stored about you.';
