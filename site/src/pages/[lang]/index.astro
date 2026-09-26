@@ -103,7 +103,7 @@ const P = lang === 'ta' ? {
         <a class="btn primary" href={`/${lang}/learn/`}>{P.hero_learn}</a>
         <a class="btn" href="#who">{t('home.hook_scroll')} ↓</a>
       </p>
-      <p class="ig-hero"><a href={INSTAGRAM.url} rel="noopener external me" target="_blank"><span class="ig-dot" aria-hidden="true"></span>{lang === 'ta' ? 'இன்ஸ்டாகிராமில் பின்தொடருங்கள்' : 'Follow on Instagram'} <strong>@{INSTAGRAM.handle} →</strong></a></p>
+      <p class="ig-hero"><a href={INSTAGRAM.url} rel="noopener external me" target="_blank"><svg class="ig-ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.7l1.2-1.8c.2-.3.5-.5.9-.5h3.4c.4 0 .7.2.9.5L15.8 6h1.7A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span class="ig-l">{lang === 'ta' ? 'இன்ஸ்டாகிராமில்' : 'Instagram'}</span> <strong>@{INSTAGRAM.handle} →</strong></a></p>
       <Cite rows={[relTotal, relKnown]} lang={lang} />
       <p class="calc num">{fmtInt(relKnown.value)} / {fmtInt(relTotal.value)} = {pct(relKnown.value, relTotal.value)}% → {knownPer100} {lang === 'ta' ? '/ 100' : 'of 100'}</p>
       <Share lang={lang} card="hook" text={t('home.hook_title', { n: knownPer100 })} />
@@ -170,7 +170,7 @@ const P = lang === 'ta' ? {
       <ul class="trust">{P.trust.map((x) => <li>{x}</li>)}</ul>
       <a class="follow" href={INSTAGRAM.url} rel="noopener external me" target="_blank">
         <span class="follow-t"><strong>{lang === 'ta' ? 'இன்ஸ்டாகிராமில் எங்களைப் பின்தொடருங்கள்' : 'Follow us on Instagram'}</strong><span>{lang === 'ta' ? 'புதிய தரவு, நடைமுறைக் குறிப்புகள், பகிரக்கூடிய அட்டைகள்.' : 'New data, practical tips and cards you can share.'}</span></span>
-        <span class="follow-h">@{INSTAGRAM.handle} →</span>
+        <span class="follow-h"><svg class="ig-ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.7l1.2-1.8c.2-.3.5-.5.9-.5h3.4c.4 0 .7.2.9.5L15.8 6h1.7A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg> @{INSTAGRAM.handle} →</span>
       </a>
     </div>
   </section>
@@ -374,7 +374,8 @@ const P = lang === 'ta' ? {
   .ig-hero a { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.9375rem; color: var(--ink); text-decoration: none; background: var(--warm-bg); border: 1px solid var(--warm-line); border-radius: 999px; padding: 8px 16px; min-height: 40px; }
   .ig-hero a:hover { border-color: var(--accent); }
   .ig-hero strong { color: var(--link); white-space: nowrap; }
-  .ig-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-friends); flex: none; }
+  .ig-ic { flex: none; color: var(--link); }
+  .ig-l { color: var(--ink-2); }
   .calc { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin: 0.25rem 0 0; }
   .waffle { margin: 0; justify-self: center; width: 100%; max-width: 440px; }
   .waffle svg { display: block; width: 100%; height: auto; }
@@ -423,7 +424,7 @@ const P = lang === 'ta' ? {
   .follow:hover { border-color: var(--accent); }
   .follow-t { display: grid; gap: 2px; }
   .follow-t span { font-size: 0.875rem; color: var(--ink-2); }
-  .follow-h { font-weight: 600; color: var(--link); white-space: nowrap; }
+  .follow-h { font-weight: 600; color: var(--link); white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
   .trust { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .trust li { font-size: 0.8125rem; color: var(--accent-soft-ink); background: color-mix(in oklch, var(--surface) 70%, transparent); border-radius: 999px; padding: 6px 12px; }
   .trust li::before { content: '✓ '; font-weight: 700; }
