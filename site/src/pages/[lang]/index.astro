@@ -103,6 +103,7 @@ const P = lang === 'ta' ? {
         <a class="btn primary" href={`/${lang}/learn/`}>{P.hero_learn}</a>
         <a class="btn" href="#who">{t('home.hook_scroll')} ↓</a>
       </p>
+      <p class="ig-hero"><a href={INSTAGRAM.url} rel="noopener external me" target="_blank"><span class="ig-dot" aria-hidden="true"></span>{lang === 'ta' ? 'இன்ஸ்டாகிராமில் பின்தொடருங்கள்' : 'Follow on Instagram'} <strong>@{INSTAGRAM.handle} →</strong></a></p>
       <Cite rows={[relTotal, relKnown]} lang={lang} />
       <p class="calc num">{fmtInt(relKnown.value)} / {fmtInt(relTotal.value)} = {pct(relKnown.value, relTotal.value)}% → {knownPer100} {lang === 'ta' ? '/ 100' : 'of 100'}</p>
       <Share lang={lang} card="hook" text={t('home.hook_title', { n: knownPer100 })} />
@@ -369,6 +370,11 @@ const P = lang === 'ta' ? {
   .hook-sub { font-size: clamp(1.15rem, 2vw, 1.375rem); line-height: 1.5; color: var(--ink-2); max-width: 34ch; margin-bottom: 28px; }
   :global(:lang(ta)) .hook-sub { font-size: clamp(1.05rem, 1.9vw, 1.25rem); line-height: 1.75; max-width: 40ch; }
   .ctas { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 24px; }
+  .ig-hero { margin: -8px 0 24px; }
+  .ig-hero a { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.9375rem; color: var(--ink); text-decoration: none; background: var(--warm-bg); border: 1px solid var(--warm-line); border-radius: 999px; padding: 8px 16px; min-height: 40px; }
+  .ig-hero a:hover { border-color: var(--accent); }
+  .ig-hero strong { color: var(--link); white-space: nowrap; }
+  .ig-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-friends); flex: none; }
   .calc { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin: 0.25rem 0 0; }
   .waffle { margin: 0; justify-self: center; width: 100%; max-width: 440px; }
   .waffle svg { display: block; width: 100%; height: auto; }
