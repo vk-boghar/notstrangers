@@ -49,7 +49,7 @@ export const TRACKS: Record<Track, { title: string; door: string; blurb: string;
 export const MODULES: Module[] = [
   // ─────────────────────────── PARENT ───────────────────────────
   {
-    id: 'p1', track: 'parent', title: 'Why this matters', minutes: 4,
+    id: 'p1', track: 'parent', title: 'Why this matters', minutes: 1,
     hook: { kind: 'kpi', big: '{known}', text: 'In about {known} of every 100 **reported** POCSO cases, the child knew the person. (Reported is not the same as occurred.)', meaning: '"Don\'t talk to strangers" was never the lesson. Safety lives inside the circle of trust.', action: 'This week, look at your child\'s circle (relatives, tutors, coaches, neighbours), not the street.' },
     learn: [
       { type: 'list', items: [
@@ -67,7 +67,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p2', track: 'parent', title: 'The 5 body-safety rules', minutes: 5,
+    id: 'p2', track: 'parent', title: 'The 5 body-safety rules', minutes: 2,
     hook: { kind: 'scenario', text: 'Your 6-year-old asks, "What are private parts?" and you freeze. This module ends the freezing. **Five sentences**, that\'s all.' },
     learn: [
       { type: 'rules', items: [
@@ -87,7 +87,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p3', track: 'parent', title: 'Words that work: talking by age', minutes: 6,
+    id: 'p3', track: 'parent', title: 'Words that work: talking by age', minutes: 2,
     hook: { kind: 'scenario', text: 'Your 4-year-old asks, "Why does uncle tickle me even when I say stop?" The answer you give in the next **30 seconds** teaches more than any rulebook.' },
     learn: [
       { type: 'p', text: 'Match the words to the age. Short, honest, at their level. Pick your child\'s age band, and peek at the others.' },
@@ -105,7 +105,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p4', track: 'parent', title: 'Make your home safer: precautions', minutes: 5,
+    id: 'p4', track: 'parent', title: 'Make your home safer: precautions', minutes: 2,
     hook: { kind: 'statement', text: 'Abuse needs privacy. **Remove the privacy, remove most of the opportunity.** The highest-leverage five minutes on this site.' },
     learn: [
       { type: 'rules', items: [
@@ -125,7 +125,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p5', track: 'parent', title: 'Notice early: warning signs', minutes: 5,
+    id: 'p5', track: 'parent', title: 'Notice early: warning signs', minutes: 2,
     hook: { kind: 'statement', text: 'Signs are **smoke, not fire**. Your job is to notice, not to diagnose. One sign means little; a sudden change or a cluster means pay attention.' },
     learn: [
       { type: 'callout', title: 'Behaviour and mood', items: ['Sudden withdrawal, or sudden aggression', 'Anxiety, clinginess, tearfulness', 'Sleep problems, nightmares, bedwetting or thumb-sucking again', 'Falling grades, missing school, losing interest in friends', 'Eating changes', 'Teens: risk-taking, running away, alcohol or drugs, self-harm'] },
@@ -142,7 +142,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p6', track: 'parent', title: 'How grooming works', minutes: 5,
+    id: 'p6', track: 'parent', title: 'How grooming works', minutes: 2,
     hook: { kind: 'statement', text: 'Groomers don\'t just groom the child. **They groom the parents too**: helpful, trusted, always around. That\'s why "but he\'s such a nice man" is the most dangerous sentence in prevention.' },
     learn: [
       { type: 'steps', items: [
@@ -165,7 +165,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p7', track: 'parent', title: 'The first 10 minutes: if a child tells you', minutes: 6,
+    id: 'p7', track: 'parent', title: 'The first 10 minutes: if a child tells you', minutes: 2,
     hook: { kind: 'statement', text: 'What you do in the **first 10 minutes** decides whether the child keeps talking, or shuts down for years.' },
     learn: [
       { type: 'callout', title: 'In the moment', items: ['**Stay calm.** Shock, anger or tears will shut them down. Breathe. Listen.', '**Believe them.** Children very rarely lie about abuse.', '**Thank them.**', '**Don\'t interrogate.** No leading questions. Open prompts only: "Can you tell me more about that?"', '**Say it\'s not their fault**, explicitly.', '**Don\'t promise total secrecy.**', '**Don\'t confront the suspected abuser yourself.** It can endanger the child and damage the case.'] },
@@ -186,7 +186,7 @@ export const MODULES: Module[] = [
     ],
   },
   {
-    id: 'p8', track: 'parent', title: 'Capstone: your family safety plan', minutes: 10,
+    id: 'p8', track: 'parent', title: 'Capstone: your family safety plan', minutes: 2,
     hook: { kind: 'statement', text: 'Knowledge fades. **A plan on the fridge doesn\'t.** Leave this track with one page your whole family can follow.' },
     learn: [{ type: 'p', text: 'Fill in the plan below. It stays on this device only, is never sent anywhere, and you can clear it at any time. Then print it.' }],
     builder: 'plan',
@@ -249,7 +249,7 @@ export const MODULES: Module[] = [
 
   // ─────────────────────────── TEEN ───────────────────────────
   {
-    id: 't1', track: 'teen', title: 'Consent and pressure', minutes: 5,
+    id: 't1', track: 'teen', title: 'Consent and pressure', minutes: 3,
     hook: { kind: 'scenario', text: '"If you loved me, you would." You\'ve heard it in films. **Here\'s what it actually is.**' },
     learn: [
       { type: 'list', items: [
@@ -265,7 +265,7 @@ export const MODULES: Module[] = [
     checks: [{ q: 'They said yes at first, then went quiet and froze. Consent?', a: 'No. Freezing isn\'t yes. Check in, and stop if there\'s no real yes.' }],
   },
   {
-    id: 't2', track: 'teen', title: 'Online safety', minutes: 5,
+    id: 't2', track: 'teen', title: 'Online safety', minutes: 4,
     hook: { kind: 'statement', text: '**Anyone can pretend to be anyone online.** That "17-year-old friend" can be a 40-year-old stranger.' },
     learn: [
       { type: 'list', items: [
@@ -285,7 +285,7 @@ export const MODULES: Module[] = [
     checks: [{ q: 'An online friend you\'ve never met asks for a photo and says "don\'t tell anyone." You…', a: 'Stop. Screenshot. Block. Tell a trusted adult. Every step matters.' }],
   },
   {
-    id: 't3', track: 'teen', title: 'If it happened to you', minutes: 4,
+    id: 't3', track: 'teen', title: 'If it happened to you', minutes: 3,
     hook: { kind: 'plain', text: 'It was **not your fault.** Read that again. **Not your fault.**' },
     learn: [
       { type: 'list', items: [
