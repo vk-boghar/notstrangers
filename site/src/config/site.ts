@@ -16,7 +16,7 @@ export const INSTAGRAM = { handle: 'notstrangers_org', url: 'https://www.instagr
  * Anonymous learning-module counter (metrics/ Cloudflare Worker, see docs/METRICS.md).
  * Empty = counting and count display are switched off (no network requests at all).
  */
-export const METRICS_URL = '';
+export const METRICS_URL = 'https://notstrangers-metrics.vaikunthln.workers.dev';
 /** Public count lines stay hidden until the real count reaches this number. Real counts only. */
 export const COUNTER_SHOW_FROM = 108;
 

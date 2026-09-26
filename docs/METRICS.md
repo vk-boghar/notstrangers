@@ -35,7 +35,11 @@ Clearing browser storage can double-count. That's acceptable for a directional n
   would reject it). `CountScript.astro` fills the count lines and hides them silently on any error.
 - `METRICS_URL = ''` in `site/src/config/site.ts` switches everything off: no requests at all.
 
-## One-time setup (about 10 minutes)
+## Live
+
+Worker: https://notstrangers-metrics.vaikunthln.workers.dev (`/counts` is public).
+
+## One-time setup (about 10 minutes, done)
 
 1. Create a free Cloudflare account at dash.cloudflare.com.
 2. **Account ID:** Workers & Pages → Overview, then copy the Account ID from the right-hand panel.
