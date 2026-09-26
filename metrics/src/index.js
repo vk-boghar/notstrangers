@@ -12,14 +12,17 @@ const MODULES = new Set([
 ]);
 // module_complete: one module finished (counted once per browser per module).
 // learner: first module ever finished in this browser (a "people learning" proxy).
-const EVENTS = new Set(['module_complete', 'learner']);
+const TRACKS = new Set(['parents', 'teens', 'kids']);
+// track_start: someone opened a course (counted once per browser per course). This is the headline number.
+const EVENTS = new Set(['track_start', 'module_complete', 'learner']);
 const day = () => new Date().toISOString().slice(0, 10);
 
 export class Counter extends DurableObject {
   // A single Durable Object instance serialises all writes, so increments are atomic.
   async record(event, module) {
     const d = day();
-    const keys = event === 'learner' ? ['learners', `day:${d}:learners`] : ['total', `module:${module}`, `day:${d}`];
+    const keys = event === 'track_start' ? ['started', `started:${module}`, `day:${d}:started`]
+      : event === 'learner' ? ['learners', `day:${d}:learners`] : ['total', `module:${module}`, `day:${d}`];
     const cur = await this.ctx.storage.get(keys);
     const next = {};
     for (const k of keys) next[k] = (cur.get(k) || 0) + 1;
@@ -29,18 +32,24 @@ export class Counter extends DurableObject {
   async counts() {
     const all = await this.ctx.storage.list();
     const byModule = {};
+    const byTrack = {};
     const days = {};
+    const startDays = {};
     for (const [k, v] of all) {
       if (k.startsWith('module:')) byModule[k.slice(7)] = v;
+      else if (k.startsWith('started:')) byTrack[k.slice(8)] = v;
       else if (/^day:\d{4}-\d{2}-\d{2}$/.test(k)) days[k.slice(4)] = v;
+      else if (/^day:\d{4}-\d{2}-\d{2}:started$/.test(k)) startDays[k.slice(4, 14)] = v;
     }
     const last30 = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
-      last30.push({ day: d, count: days[d] || 0 });
+      last30.push({ day: d, started: startDays[d] || 0, count: days[d] || 0 });
     }
     return {
       updated_at: new Date().toISOString(),
+      started: all.get('started') || 0,
+      started_by_track: byTrack,
       total: all.get('total') || 0,
       learners: all.get('learners') || 0,
       by_module: byModule,
@@ -76,7 +85,7 @@ export default {
       try { body = JSON.parse((await req.text()).slice(0, 500)); } catch { return new Response('bad json', { status: 400, headers: cors(origin, allowed) }); }
       const ev = body && body.event;
       const mod = body && body.module;
-      if (!EVENTS.has(ev) || (ev === 'module_complete' && !MODULES.has(mod))) {
+      if (!EVENTS.has(ev) || (ev === 'module_complete' && !MODULES.has(mod)) || (ev === 'track_start' && !TRACKS.has(mod))) {
         return new Response('bad event', { status: 400, headers: cors(origin, allowed) });
       }
       await stub.record(ev, mod);

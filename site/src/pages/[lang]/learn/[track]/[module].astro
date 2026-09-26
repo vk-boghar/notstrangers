@@ -1,7 +1,6 @@
 ---
 import Base from '../../../../layouts/Base.astro';
 import LearnKit from '../../../../components/learn/LearnKit.astro';
-import Count from '../../../../components/learn/Count.astro';
 import { LANGS, SITE_URL, type Lang } from '../../../../config/site';
 import { modulesFor, tracksFor, byTrackL, uiFor, planFor, rich, isVisible, type Module } from '../../../../lib/learn';
 import { one, latestYear, fmtInt } from '../../../../lib/data';
@@ -32,7 +31,7 @@ const hookLabel = U.hook[m.hook.kind];
 ---
 <Base lang={lang} title={`${m.title} · ${T.door}`} description={fill(m.hook.text).replace(/\*\*/g, '')}>
   <div class="wrap page mod-page">
-    <LearnKit lang={lang} />
+    <LearnKit lang={lang} track={m.track} />
     <article class:list={['mod', `track-${m.track}`]}>
       <nav class="crumb" aria-label="Breadcrumb"><a href={`/${lang}/learn/`}>{U.learn}</a> / <a href={base}>{T.door}</a> / {U.moduleOf(idx + 1, mods.length)}</nav>
       <div class="meta">
@@ -191,7 +190,6 @@ const hookLabel = U.hook[m.hook.kind];
 
       <div class="finish no-print">
         <button type="button" class="btn primary js-only" data-done-btn={m.id} data-off={U.markDone} data-on={U.done} aria-pressed="false">{U.markDone}</button>
-        <Count lang={lang} kind="module" slug={mslug} noun={NOUN[m.track]} />
         <div class="pn">
           {prev ? <a class="btn" href={`${base}${prev.id}/`}>← {prev.title}</a> : <a class="btn" href={base}>← {U.all}</a>}
           {next ? <a class="btn" data-complete={m.id} href={`${base}${next.id}/`}>{U.next} {next.title} →</a> : <a class="btn" data-complete={m.id} href={`/${lang}/learn/`}>{U.back} →</a>}

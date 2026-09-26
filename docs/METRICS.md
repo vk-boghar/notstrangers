@@ -7,20 +7,20 @@ No accounts, no emails, no IPs, no user agents, no fingerprints, no cookies, no 
 
 | Event | When | Counted once per |
 |---|---|---|
-| `module_complete` + slug (`parents-01` … `parents-08`, `teens-01` … `teens-03`, `kids-01` … `kids-03`) | The visitor clicks **Next / Back to Learn** at the end of a module, or **Mark this module done** | browser + module (`localStorage["ns_c1_<slug>"]`) |
-| `module_complete` + `family-safety-plan` | The visitor prints the family safety plan (also counts `parents-08`) | browser |
-| `learner` | The first module a browser ever completes | browser (`localStorage["ns_c1_learner"]`) |
+| `track_start` + `parents` / `teens` (`kids` while hidden) | Someone opens a course: its page (e.g. "I'm a parent") or any of its modules | browser + course (`localStorage["ns_s1_<track>"]`) |
 
+That's the headline number: how many people have started a course. Module completions are no longer
+sent (the Worker still accepts the older `module_complete` / `learner` events, but the site doesn't send them).
 Clearing browser storage can double-count. That's acceptable for a directional number.
 
 ## Where the numbers show
 
-- End of every module: "🧡 N parents (or teens) have completed this module."
-- Learn page and home page: "N people are learning how to keep children safe." (the `learner` count)
+- Learn page and home page: "N people have started these lessons." (all courses)
+- Each course page: "N parents (or teens) have started this course."
 - Always with: "Counted anonymously — no names, no emails, nothing stored about you."
 
 **Real counts only.** A line stays hidden until its real count reaches `COUNTER_SHOW_FROM` (108) in
-`site/src/config/site.ts`, so a new site never shows a tiny number. The count is never padded.
+`site/src/config/site.ts`. The count is never padded.
 
 ## Pieces
 
@@ -29,7 +29,7 @@ Clearing browser storage can double-count. That's acceptable for a directional n
   - `POST /event` `{"event":"module_complete","module":"parents-01","v":1}` returns 204. Allow-listed
     events and slugs only (anything else gets 400), allowed origins only (403), and an edge rate limit of
     10 per minute per client (429). The rate limiter keeps its key in memory at the edge only.
-  - `GET /counts` returns `{updated_at, total, learners, by_module, last_30_days}`, cached for 1 minute.
+  - `GET /counts` returns `{updated_at, started, started_by_track, total, learners, by_module, last_30_days}`, cached for 1 minute.
 - Site: `site/src/components/learn/LearnKit.astro` sends events (a `fetch` with `keepalive`. We don't
   use `sendBeacon`, because the site's no-referrer policy would make its Origin `null` and the Worker
   would reject it). `CountScript.astro` fills the count lines and hides them silently on any error.

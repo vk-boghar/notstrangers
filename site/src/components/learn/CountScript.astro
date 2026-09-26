@@ -9,7 +9,7 @@ import { METRICS_URL, COUNTER_SHOW_FROM } from '../../config/site';
       fetch(url + '/counts', { mode: 'cors' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
         if (!d) return;
         els.forEach(function (el) {
-          var n = el.dataset.count === 'learners' ? d.learners : (d.by_module || {})[el.dataset.slug];
+          var n = el.dataset.count === 'started' ? d.started : (d.started_by_track || {})[el.dataset.slug];
           if (typeof n !== 'number' || n < min) return;
           el.querySelector('.ns-count-n').textContent = el.dataset.tpl.replace('{n}', n.toLocaleString('en-IN'));
           el.hidden = false;

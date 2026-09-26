@@ -4,15 +4,16 @@
 // progress and plans live in this browser's localStorage only, wrapped so the page works without it.
 import { METRICS_URL, type Lang } from '../../config/site';
 import CountScript from './CountScript.astro';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props { lang: Lang; track?: 'parent' | 'teen' | 'kid' }
+const { lang, track } = Astro.props;
+const TRACK_SLUG = { parent: 'parents', teen: 'teens', kid: 'kids' } as const;
 ---
 <div class="sos-strip" role="complementary" aria-label="Emergency help">
   <span>{lang === 'ta' ? 'உடனடி உதவி?' : 'Need help now?'}</span>
   <a href="tel:1098"><strong>1098</strong> Childline</a>
   <a href="tel:112"><strong>112</strong> {lang === 'ta' ? 'அவசரம்' : 'Emergency'}</a>
 </div>
-<div id="ns-metrics" hidden data-url={METRICS_URL}></div>
+<div id="ns-metrics" hidden data-url={METRICS_URL} data-track={track ? TRACK_SLUG[track] : undefined}></div>
 <CountScript />
 <noscript><style>.js-only{display:none!important}.fb{display:block!important}.tab-panel{display:block!important}</style></noscript>
 <style>
@@ -37,21 +38,13 @@ const { lang } = Astro.props;
   function load(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var done = load(KEY, []);
-  // Anonymous completion counter: one event per module per browser, deduplicated here with
-  // ns_done_<slug>. Nothing identifying is sent. Off entirely when no metrics URL is configured.
-  var MURL = (document.getElementById('ns-metrics') || { dataset: {} }).dataset.url;
-  function slug(id) { var n = id.slice(1); return { p: 'parents', k: 'kids', t: 'teens' }[id[0]] + '-' + (n.length < 2 ? '0' + n : n); }
+  // Anonymous "started a course" counter: opening a course (its page or any of its modules) counts
+  // that browser once per course. No completions are sent. Off when no metrics URL is configured.
+  var MEL = document.getElementById('ns-metrics') || { dataset: {} };
+  var MURL = MEL.dataset.url, TRACK = MEL.dataset.track;
   function send(o) { if (!MURL || !window.fetch) return; try { fetch(MURL + '/event', { method: 'POST', mode: 'cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(o) }).catch(function () {}); } catch (e) {} }
-  function completed(id, s) {
-    if (done.indexOf(id) < 0) { done.push(id); save(KEY, done); }
-    // Only remember "already counted" when a count is actually sent, so modules finished while
-    // counting was off (or on an older page) still count later. Keys are versioned (ns_c1_*).
-    if (!MURL) return;
-    s = s || slug(id); var k = 'ns_c1_' + s;
-    if (load(k, null)) return; save(k, 1);
-    send({ event: 'module_complete', module: s, v: 1 });
-    if (!load('ns_c1_learner', null)) { save('ns_c1_learner', 1); send({ event: 'learner', v: 1 }); }
-  }
+  if (MURL && TRACK && !load('ns_s1_' + TRACK, null)) { save('ns_s1_' + TRACK, 1); send({ event: 'track_start', module: TRACK, v: 1 }); }
+  function completed(id) { if (done.indexOf(id) < 0) { done.push(id); save(KEY, done); } }
   function paint() {
     document.querySelectorAll('[data-mod]').forEach(function (el) { el.classList.toggle('is-done', done.indexOf(el.dataset.mod) > -1); });
     document.querySelectorAll('[data-progress]').forEach(function (el) {
@@ -82,7 +75,7 @@ const { lang } = Astro.props;
       var fb = card.querySelector('.fb'); fb.hidden = false;
       fb.querySelector('b').textContent = ok ? card.dataset.ok : card.dataset.again;
     } else if (b.hasAttribute('data-print')) {
-      if (b.dataset.completeSlug) { completed(b.dataset.completeId); completed(b.dataset.completeId, b.dataset.completeSlug); }
+      if (b.dataset.completeId) completed(b.dataset.completeId);
       window.print();
     } else if (b.hasAttribute('data-clear')) {
       var f = b.closest('[data-store]'); try { localStorage.removeItem(f.dataset.store); } catch (x) {}
