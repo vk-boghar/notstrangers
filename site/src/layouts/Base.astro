@@ -16,7 +16,7 @@ import ps600 from '@fontsource/public-sans/files/public-sans-latin-600-normal.wo
 import tamil400 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-400-normal.woff2?url';
 import tamil600 from '@fontsource/noto-sans-tamil/files/noto-sans-tamil-tamil-600-normal.woff2?url';
 import {
-  SITE_NAME, SITE_NAME_TA, SITE_URL, NOINDEX, TAMIL_REVIEWED, CONTACT_EMAIL, INSTAGRAM, type Lang,
+  SITE_NAME, SITE_NAME_TA, SITE_URL, NOINDEX, TAMIL_REVIEWED, CONTACT_EMAIL, INSTAGRAM, CF_ANALYTICS_TOKEN, type Lang,
 } from '../config/site';
 import { useT, otherLang, swapLangPath } from '../i18n';
 import { META, fmtDate } from '../lib/data';
@@ -128,6 +128,9 @@ const isCurrent = (href: string) => (href === `/${lang}/` ? path === href : path
         </ul>
       </div>
     </footer>
+    {CF_ANALYTICS_TOKEN && (
+      <script is:inline type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CF_ANALYTICS_TOKEN })}></script>
+    )}
   </body>
 </html>
 

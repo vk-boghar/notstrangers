@@ -349,7 +349,7 @@ export const planFor = (l: L) => (l === 'ta'
 const UI_EN = {
   learn: 'Learn', draft: 'DRAFT · pending expert review',
   h1: 'Small lessons. Real words. One action each.',
-  lead: 'Pick where you are starting from. Each module takes a few minutes, and your progress is saved only on this device. No account, no tracking.',
+  lead: 'Pick where you are starting from. Each module takes a few minutes, and your progress is saved only on this device. No account needed.',
   modules: 'modules', min: 'min', start: 'Start →',
   beatsH: 'Every module works the same way',
   beats: [['Hook', 'One number or one real-life moment.'], ['Learn', 'A 3-minute read. One idea, plain words.'], ['Say it', 'The exact words to use.'], ['Do it', 'One small action this week.'], ['Check', 'A few scenarios. Never scored.']],
@@ -385,7 +385,7 @@ type UI = typeof UI_EN;
 const UI_TA: UI = {
   learn: 'கற்க', draft: 'வரைவு · நிபுணர் சரிபார்ப்பு நிலுவையில்',
   h1: 'சிறிய பாடங்கள். உண்மையான வார்த்தைகள். ஒவ்வொன்றுக்கும் ஒரு செயல்.',
-  lead: 'நீங்கள் எங்கிருந்து தொடங்குகிறீர்கள் என்று தேர்ந்தெடுங்கள். ஒவ்வொரு பாடமும் சில நிமிடங்களே. உங்கள் முன்னேற்றம் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும். கணக்கு இல்லை, கண்காணிப்பு இல்லை.',
+  lead: 'நீங்கள் எங்கிருந்து தொடங்குகிறீர்கள் என்று தேர்ந்தெடுங்கள். ஒவ்வொரு பாடமும் சில நிமிடங்களே. உங்கள் முன்னேற்றம் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும். கணக்கு தேவையில்லை.',
   modules: 'பாடங்கள்', min: 'நிமி', start: 'தொடங்கு →',
   beatsH: 'ஒவ்வொரு பாடமும் ஒரே மாதிரி',
   beats: [['தொடக்கம்', 'ஒரு எண் அல்லது ஒரு நிஜ வாழ்க்கைத் தருணம்.'], ['கற்க', '3 நிமிட வாசிப்பு. ஒரு கருத்து, எளிய வார்த்தைகள்.'], ['சொல்லுங்கள்', 'பயன்படுத்த வேண்டிய சரியான வார்த்தைகள்.'], ['செய்யுங்கள்', 'இந்த வாரம் ஒரு சிறிய செயல்.'], ['சரிபார்', 'சில சூழ்நிலைகள். மதிப்பெண் இல்லை.']],

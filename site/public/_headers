@@ -1,6 +1,7 @@
-# Cloudflare Pages / Netlify headers. No third-party anything: everything is served from this origin.
+# Cloudflare Pages / Netlify headers. Everything is served from this origin except the cookie-free
+# Cloudflare Web Analytics beacon and our own module counter.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://notstrangers-metrics.vaikunthln.workers.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'none'
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=()

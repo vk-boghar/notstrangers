@@ -20,6 +20,9 @@ export const METRICS_URL = 'https://notstrangers-metrics.vaikunthln.workers.dev'
 /** Public count lines stay hidden until the real count reaches this number. Real counts only. */
 export const COUNTER_SHOW_FROM = 108;
 
+/** Cloudflare Web Analytics (cookie-free, no fingerprinting). Empty = off. */
+export const CF_ANALYTICS_TOKEN = 'f3073e5b1be143f8b971a4ccf0d590c3';
+
 /** Where "Found an error?" goes. */
 export const CONTACT_EMAIL = 'hello@notstrangers.org';
 

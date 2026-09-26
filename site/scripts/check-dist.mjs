@@ -18,7 +18,7 @@ const warn = [];
 const fail = (f, msg) => errors.push(`${relative(dist, f)}: ${msg}`);
 
 const TRACKERS = /google-analytics|googletagmanager|gtag\(|fbq\(|facebook\.net|hotjar|clarity\.ms|doubleclick|segment\.io|mixpanel/i;
-const EXTERNAL_ASSET = /<(script|img|iframe|link)\b[^>]*\b(src|href)=["']https?:\/\/(?![^"']*(cybercrime\.gov\.in|ncpcr\.gov\.in))[^"']+["'][^>]*>/gi;
+const EXTERNAL_ASSET = /<(script|img|iframe|link)\b[^>]*\b(src|href)=["']https?:\/\/(?![^"']*(cybercrime\.gov\.in|ncpcr\.gov\.in|static\.cloudflareinsights\.com\/beacon\.min\.js))[^"']+["'][^>]*>/gi;
 
 for (const f of html) {
   const s = readFileSync(f, 'utf8');
@@ -41,7 +41,9 @@ for (const f of html) {
   const js = [...s.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]).join('');
   const budget = isLearn ? 9000 : 6000;
   if (js.length > budget) fail(f, `inline JS ${js.length} bytes > ${budget} budget`);
-  if (/<script\b[^>]*\bsrc=/i.test(s)) fail(f, 'external <script src> found');
+  // The only allowed external script is Cloudflare's cookie-free Web Analytics beacon.
+  for (const m of s.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi))
+    if (m[1] !== 'https://static.cloudflareinsights.com/beacon.min.js') fail(f, `external <script src> found: ${m[1]}`);
   // 5. page weight (HTML incl. inlined CSS) — 3G budget
   if (s.length > 180_000) warn.push(`${name}: HTML ${Math.round(s.length / 1024)} KB`);
 
