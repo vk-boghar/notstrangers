@@ -44,10 +44,13 @@ const { lang } = Astro.props;
   function send(o) { if (!MURL || !window.fetch) return; try { fetch(MURL + '/event', { method: 'POST', mode: 'cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(o) }).catch(function () {}); } catch (e) {} }
   function completed(id, s) {
     if (done.indexOf(id) < 0) { done.push(id); save(KEY, done); }
-    s = s || slug(id); var k = 'ns_done_' + s;
+    // Only remember "already counted" when a count is actually sent, so modules finished while
+    // counting was off (or on an older page) still count later. Keys are versioned (ns_c1_*).
+    if (!MURL) return;
+    s = s || slug(id); var k = 'ns_c1_' + s;
     if (load(k, null)) return; save(k, 1);
     send({ event: 'module_complete', module: s, v: 1 });
-    if (!load('ns_learner', null)) { save('ns_learner', 1); send({ event: 'learner', v: 1 }); }
+    if (!load('ns_c1_learner', null)) { save('ns_c1_learner', 1); send({ event: 'learner', v: 1 }); }
   }
   function paint() {
     document.querySelectorAll('[data-mod]').forEach(function (el) { el.classList.toggle('is-done', done.indexOf(el.dataset.mod) > -1); });

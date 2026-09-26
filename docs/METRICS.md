@@ -7,9 +7,9 @@ No accounts, no emails, no IPs, no user agents, no fingerprints, no cookies, no 
 
 | Event | When | Counted once per |
 |---|---|---|
-| `module_complete` + slug (`parents-01` … `parents-08`, `teens-01` … `teens-03`, `kids-01` … `kids-03`) | The visitor clicks **Next / Back to Learn** at the end of a module, or **Mark this module done** | browser + module (`localStorage["ns_done_<slug>"]`) |
+| `module_complete` + slug (`parents-01` … `parents-08`, `teens-01` … `teens-03`, `kids-01` … `kids-03`) | The visitor clicks **Next / Back to Learn** at the end of a module, or **Mark this module done** | browser + module (`localStorage["ns_c1_<slug>"]`) |
 | `module_complete` + `family-safety-plan` | The visitor prints the family safety plan (also counts `parents-08`) | browser |
-| `learner` | The first module a browser ever completes | browser (`localStorage["ns_learner"]`) |
+| `learner` | The first module a browser ever completes | browser (`localStorage["ns_c1_learner"]`) |
 
 Clearing browser storage can double-count. That's acceptable for a directional number.
 
